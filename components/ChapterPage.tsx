@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ChapterContent } from "@/content/types";
 import { keysOf } from "@/content/parse";
 import { useLang } from "@/lib/lang";
@@ -39,10 +39,30 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
   const movements = chapter.movements;
   const summary = chapter.summary[lang];
   const sectionIds = useMemo(() => ["hb-top", "hb-map", ...movements.map((m) => `hb-${m.id}`), "hb-summary"], [movements]);
-  const { active, progress } = useScrollSpy(sectionIds);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const active = useScrollSpy(sectionIds, progressRef);
 
-  const closeWord = useCallback(() => setWord(null), []);
+  const closeWord = useCallback(() => {
+    setWord((w) => {
+      if (w) {
+        const trigger = document.querySelector<HTMLElement>(`[data-word="${w.mid}:${w.key}"]`);
+        requestAnimationFrame(() => trigger?.focus());
+      }
+      return null;
+    });
+  }, []);
   useEscape(closeWord, word !== null);
+
+  const sheetOpen = isMobile && word !== null;
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+    main.inert = sheetOpen;
+    return () => {
+      main.inert = false;
+    };
+  }, [sheetOpen]);
 
   const go = useCallback(
     (id: string) => {
@@ -81,11 +101,11 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
         navItems={navItems}
         activeId={activeId}
         activeLabel={activeLabel}
-        progress={progress}
+        progressRef={progressRef}
         onGo={go}
         onTop={() => scrollToTop(reduced)}
       />
-      <main>
+      <main ref={mainRef}>
         <Hero onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} reduceMotion={reduceMotion} />
         <ChapterMap movements={movements} summary={summary} onGo={go} />
         {movements.map((m, i) => (
@@ -111,7 +131,7 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
         <BookIndex current={chapter.number} liveSubtitle={movements[0][lang].title} />
       </main>
       <Footer />
-      {isMobile && word && sheetMovement && sheetWord && sheetWords && (
+      {sheetOpen && word && sheetMovement && sheetWord && sheetWords && (
         <WordSheet
           word={sheetWord}
           prev={sheetIndex > 0 ? sheetWords[sheetKeys[sheetIndex - 1]] : undefined}

@@ -137,6 +137,3 @@
 .fragment {
   will-change: transform;
 }
-.fragCap {
-  transition: opacity 600ms ease;
-}

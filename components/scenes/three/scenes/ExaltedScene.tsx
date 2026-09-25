@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { Group, type Mesh, type ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
@@ -26,6 +26,8 @@ export function ExaltedScene({ mobile }: SceneProps) {
   const top = 0.24 * height;
   const bottom = -0.35 * height;
   const horizonY = -0.08 * height;
+  const beamFrom = useMemo<[number, number, number]>(() => [0, 0, 0], []);
+  const beamTo = useMemo<[number, number, number]>(() => [0, -0.6 * height, 0.5], [height]);
 
   useSceneTime((t) => {
     const rise = easeOutCubic(t / 6);
@@ -56,7 +58,7 @@ export function ExaltedScene({ mobile }: SceneProps) {
         <Light size={mobile ? 0.6 : 0.8} coronaScale={8} intensity={1.15} renderOrder={12} />
       </group>
       <group ref={beamGroup} position={[0, bottom, 0]}>
-        <GodRay from={[0, 0, 0]} to={[0, -0.6 * height, 0.5]} radiusStart={0.02} radiusEnd={0.12} alpha={0.35} renderOrder={6} />
+        <GodRay from={beamFrom} to={beamTo} radiusStart={0.02} radiusEnd={0.12} alpha={0.35} renderOrder={6} />
       </group>
       <Glow position={[0, horizonY, 0]} size={1} scaleX={mobile ? 5 : 9} scaleY={0.045} color="#F3D38A" inner="#FFF8E8" alpha={0} power={1} renderOrder={8} onMesh={(m) => { horizon.current = m; }} onMaterial={(m) => { horizonMat.current = m; }} />
       <Glow position={[0, horizonY - 0.12, 0]} size={1} scaleX={mobile ? 2.6 : 4.2} scaleY={0.28} color="#B7892C" alpha={0} power={1.4} renderOrder={7} onMaterial={(m) => { hazeMat.current = m; }} />

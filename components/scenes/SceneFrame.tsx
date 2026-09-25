@@ -63,7 +63,8 @@ export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, c
 
   const onReady = useCallback(() => setCanvasReady(true), []);
   const onUnmount = useCallback(() => setCanvasReady(false), []);
-  const onLost = useCallback(() => gate.setLost(true), [gate]);
+  const { setLost } = gate;
+  const onLost = useCallback(() => setLost(true), [setLost]);
 
   const showCanvas = gate.mount && canvasReady;
 

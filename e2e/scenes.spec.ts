@@ -113,3 +113,25 @@ test("three.js is not in the initial HTML and renders a non-blank frame", async 
   });
   expect(nonBlank).toBeGreaterThan(20);
 });
+
+test("hero fragments return home when the hero canvas unmounts", async ({ page }) => {
+  await page.goto("/");
+  await expect.poll(async () => page.locator("#hb-top canvas").count(), { timeout: 15_000 }).toBe(1);
+  await page.waitForTimeout(1500);
+  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y <= height * 0.7; y += 700) {
+    await page.evaluate((y) => window.scrollTo(0, y), y);
+    await page.waitForTimeout(250);
+  }
+  await expect.poll(async () => page.locator("#hb-top canvas").count(), { timeout: 15_000 }).toBe(0);
+  const leftovers = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>("#hb-top [class*=fragment]")].map((el) => ({
+      transform: el.style.transform,
+      caption: (el.lastElementChild as HTMLElement).style.opacity,
+    })),
+  );
+  for (const f of leftovers) {
+    expect(f.transform).toBe("");
+    expect(f.caption).toBe("");
+  }
+});

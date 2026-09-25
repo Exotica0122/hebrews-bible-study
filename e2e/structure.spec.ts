@@ -27,3 +27,10 @@ test("shows the chapter index with chapter 1 live", async ({ page }) => {
   await expect(book.getByRole("link")).toHaveCount(13);
   await expect(book).toContainText("Studying now");
 });
+
+test("never scrolls horizontally on a 320px phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto("/");
+  const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  expect(widths.scroll).toBe(widths.client);
+});

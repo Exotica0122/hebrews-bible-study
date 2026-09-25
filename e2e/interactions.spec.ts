@@ -132,3 +132,18 @@ test("section nav scroll-spies and the progress bar grows", async ({ page }, tes
   const width = await page.locator("header > div:last-child").evaluate((el) => parseFloat(getComputedStyle(el).width));
   expect(width).toBeGreaterThan(500);
 });
+
+test("word study dialogs take focus and give it back to the word", async ({ page }) => {
+  await page.goto("/");
+  const key = page.locator("#hb-m1").getByRole("button", { name: "radiance", exact: true });
+  await key.scrollIntoViewIfNeeded();
+  await key.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog", { name: "Radiance" });
+  await expect(dialog).toBeVisible();
+  const inside = await page.evaluate(() => !!document.activeElement?.closest("[role=dialog]"));
+  expect(inside).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(key).toBeFocused();
+});

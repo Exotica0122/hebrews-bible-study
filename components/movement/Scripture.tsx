@@ -1,6 +1,6 @@
 "use client";
 
-import type { KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import type { MovementCopy, WordStudy } from "@/content/types";
 import { parseMarked } from "@/content/parse";
 import { useLang } from "@/lib/lang";
@@ -8,6 +8,7 @@ import { LabelBar } from "@/components/ornaments/Ornaments";
 import s from "./movement.module.css";
 
 interface ScriptureProps {
+  movementId: string;
   copy: MovementCopy;
   words: Record<string, WordStudy>;
   openKey: string | null;
@@ -27,7 +28,27 @@ function activate(fn: () => void) {
   };
 }
 
-export function Scripture({ copy, words, openKey, showPopover, dropCap, ruled, onToggle, onClose }: ScriptureProps) {
+function Popover({ word, onClose }: { word: WordStudy; onClose: () => void }) {
+  const { t } = useLang();
+  const close = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    close.current?.focus({ preventScroll: true });
+  }, []);
+  return (
+    <span role="dialog" aria-label={word.t} className={s.popover}>
+      <span className={s.popHead}>
+        <span className={`hb-eyebrow ${s.popLabel}`}>{t.wordStudy} · {word.v}</span>
+        <button ref={close} type="button" className={s.popClose} aria-label={t.close} onClick={onClose}>×</button>
+      </span>
+      <span className={s.popTitle}>{word.t}</span>
+      <span className={s.popGreek}>{word.g}</span>
+      <span className={s.popRule} />
+      <span className={s.popDef}>{word.d}</span>
+    </span>
+  );
+}
+
+export function Scripture({ movementId, copy, words, openKey, showPopover, dropCap, ruled, onToggle, onClose }: ScriptureProps) {
   const { t } = useLang();
   return (
     <>
@@ -59,24 +80,14 @@ export function Scripture({ copy, words, openKey, showPopover, dropCap, ruled, o
                           tabIndex={0}
                           aria-haspopup="dialog"
                           aria-expanded={open}
+                          data-word={`${movementId}:${key}`}
                           className={s.key}
                           onClick={() => onToggle(key)}
                           onKeyDown={activate(() => onToggle(key))}
                         >
                           {seg.text}
                         </span>
-                        {open && showPopover && w && (
-                          <span role="dialog" aria-label={w.t} className={s.popover}>
-                            <span className={s.popHead}>
-                              <span className={`hb-eyebrow ${s.popLabel}`}>{t.wordStudy} · {w.v}</span>
-                              <button type="button" className={s.popClose} aria-label={t.close} onClick={onClose}>×</button>
-                            </span>
-                            <span className={s.popTitle}>{w.t}</span>
-                            <span className={s.popGreek}>{w.g}</span>
-                            <span className={s.popRule} />
-                            <span className={s.popDef}>{w.d}</span>
-                          </span>
-                        )}
+                        {open && showPopover && w && <Popover word={w} onClose={onClose} />}
                       </span>
                     );
                   })}

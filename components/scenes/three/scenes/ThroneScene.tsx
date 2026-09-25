@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import type { Mesh, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
@@ -22,7 +22,10 @@ export function ThroneScene({ mobile }: SceneProps) {
   const windMeshB = useRef<Mesh>(null);
 
   const px = 0.16 * width;
-  const emitters = EMBERS.map(([l, t]) => [(l - 0.5) * width, (0.5 - t) * height - 0.3, 0] as [number, number, number]);
+  const emitters = useMemo(
+    () => EMBERS.map(([l, t]) => [(l - 0.5) * width, (0.5 - t) * height - 0.3, 0] as [number, number, number]),
+    [width, height],
+  );
 
   useSceneTime((t) => {
     const g = (0.5 + 0.5 * Math.sin(t * 0.7)) * (0.6 + 0.4 * Math.sin(t * 1.9 + 1.3));

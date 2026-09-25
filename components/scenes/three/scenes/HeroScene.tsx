@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { Group, type ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
@@ -10,6 +10,7 @@ import { easeInSine, lerp, smoothstep, useSceneTime } from "../primitives/Timeli
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const CYCLE = 14;
+const HERO_SPREAD: [number, number] = [28, 16];
 const FRAGMENTS = [
   { left: 0.16, top: 0.24, phase: 0.0, color: "#C8553D", inner: "#F3D38A", size: 0.34, sx: 1, sy: 1 },
   { left: 0.83, top: 0.2, phase: 0.28, color: "#F3D38A", inner: "#FFF8E8", size: 0.3, sx: 1, sy: 1 },
@@ -31,6 +32,18 @@ export function HeroScene({ mobile, captions }: SceneProps) {
   const centre = useRef({ x: 0, y: 0.24 * height });
   const centreGroup = useRef<Group>(null);
   const frame = useRef(0);
+
+  useEffect(
+    () => () => {
+      captions?.current.forEach((el) => {
+        if (!el) return;
+        el.style.transform = "";
+        const cap = el.lastElementChild as HTMLElement | null;
+        if (cap) cap.style.opacity = "";
+      });
+    },
+    [captions],
+  );
 
   useSceneTime((t) => {
     frame.current++;
@@ -78,7 +91,7 @@ export function HeroScene({ mobile, captions }: SceneProps) {
 
   return (
     <>
-      <Starfield count={mobile ? 500 : 1100} spread={[28, 16]} />
+      <Starfield count={mobile ? 500 : 1100} spread={HERO_SPREAD} />
       <group ref={centreGroup} position={[0, 0.24 * height, 0]}>
         <Glow size={mobile ? 10 : 16} color="#B7892C" alpha={0.24} power={2.4} renderOrder={2} />
         <Light size={mobile ? 0.4 : 0.5} coronaScale={6} intensity={1.2} renderOrder={10} />

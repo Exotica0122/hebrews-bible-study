@@ -1,16 +1,23 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState, useSyncExternalStore } from "react";
+import { useEffect, useEffectEvent, useState, useSyncExternalStore, type RefObject } from "react";
 
 export const MOBILE_QUERY = "(max-width: 859px)";
 const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
 
+const mediaSubscribers = new Map<string, (onChange: () => void) => () => void>();
+
 function subscribeMedia(query: string) {
-  return (onChange: () => void) => {
-    const mq = window.matchMedia(query);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  };
+  let sub = mediaSubscribers.get(query);
+  if (!sub) {
+    sub = (onChange: () => void) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    };
+    mediaSubscribers.set(query, sub);
+  }
+  return sub;
 }
 
 export function useMediaQuery(query: string): boolean {
@@ -44,8 +51,9 @@ export function useEscape(onEscape: () => void, active = true) {
 export const SPY_OFFSET = 120;
 export const SCROLL_OFFSET = 63;
 
-export function useScrollSpy(ids: string[]) {
-  const [state, setState] = useState({ active: ids[0] ?? "", progress: 0 });
+/** Tracks the active section in state and writes scroll progress straight to `barRef` to avoid re-rendering per tick. */
+export function useScrollSpy(ids: string[], barRef: RefObject<HTMLElement | null>) {
+  const [active, setActive] = useState(ids[0] ?? "");
   const key = ids.join("|");
 
   useEffect(() => {
@@ -60,7 +68,8 @@ export function useScrollSpy(ids: string[]) {
       const se = document.scrollingElement ?? document.documentElement;
       const max = Math.max(1, se.scrollHeight - se.clientHeight);
       const progress = Math.round((1000 * se.scrollTop) / max) / 10;
-      setState((s) => (s.active === active && Math.abs(s.progress - progress) < 0.5 ? s : { active, progress }));
+      if (barRef.current) barRef.current.style.width = `${progress}%`;
+      setActive((a) => (a === active ? a : active));
     };
     const onScroll = () => {
       if (raf == null) raf = requestAnimationFrame(measure);
@@ -76,7 +85,7 @@ export function useScrollSpy(ids: string[]) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
-  return state;
+  return active;
 }
 
 export function scrollToSection(id: string, reduced: boolean) {

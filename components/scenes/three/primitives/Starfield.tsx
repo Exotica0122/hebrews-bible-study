@@ -47,7 +47,10 @@ interface StarfieldProps {
 }
 
 /** Twinkling additive star points on a slab behind the scene. */
-export function Starfield({ count, spread = [20, 12], depth = [-25, -6], alpha = 0.75, size = 1.1 }: StarfieldProps) {
+const DEFAULT_SPREAD: [number, number] = [20, 12];
+const DEFAULT_DEPTH: [number, number] = [-25, -6];
+
+export function Starfield({ count, spread = DEFAULT_SPREAD, depth = DEFAULT_DEPTH, alpha = 0.75, size = 1.1 }: StarfieldProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const canvasHeight = useThree((s) => s.size.height);
   const heightScale = Math.min(1, Math.max(0.5, canvasHeight / 520));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import type { ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
@@ -16,8 +16,8 @@ export function RadianceScene({ mobile }: SceneProps) {
   const coreMat = useRef<ShaderMaterial>(null);
   useResetCameraOnUnmount();
 
-  const sun: [number, number, number] = [0.14 * width, 0.16 * height, 0];
-  const rayEnd: [number, number, number] = [sun[0] - 0.08 * width, -1.2 * height, 2.5];
+  const sun = useMemo<[number, number, number]>(() => [0.14 * width, 0.16 * height, 0], [width, height]);
+  const rayEnd = useMemo<[number, number, number]>(() => [sun[0] - 0.08 * width, -1.2 * height, 2.5], [sun, width, height]);
 
   useSceneTime((t) => {
     const dolly = lerp(9, 7.2, easeOutCubic(t / 20));

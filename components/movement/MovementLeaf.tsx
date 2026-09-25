@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import type { Movement } from "@/content/types";
 import { keysOf } from "@/content/parse";
 import { ORD_KO } from "@/content/ui";
@@ -40,6 +41,7 @@ export function MovementLeaf(p: MovementLeafProps) {
       ? `${ORD_KO[p.index]} 흐름 · 히브리서 ${p.chapter}:${m.range}`
       : `Movement ${m.num} · Hebrews ${p.chapter}:${m.range}`;
   const folio = lang === "ko" ? `${p.index + 1}면` : `fol. ${p.index + 1}`;
+  const labels = useMemo(() => ({ loading: t.loading, reduced: t.reduced }), [t.loading, t.reduced]);
 
   return (
     <section id={`hb-${m.id}`} aria-label={c.cap} className="hb-section">
@@ -53,7 +55,7 @@ export function MovementLeaf(p: MovementLeafProps) {
           <SceneFrame
             id={m.id}
             scene={alt ? "seal" : m.scene}
-            labels={{ loading: t.loading, reduced: t.reduced }}
+            labels={labels}
             artNote={p.artNote}
             reduceMotion={p.reduceMotion}
           >
@@ -75,6 +77,7 @@ export function MovementLeaf(p: MovementLeafProps) {
           <article className={s.article}>
             <h2 className="hb-h2">{c.title}</h2>
             <Scripture
+              movementId={m.id}
               copy={c}
               words={words}
               openKey={p.openKey}

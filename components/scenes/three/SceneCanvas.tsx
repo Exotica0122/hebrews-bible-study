@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import type { SceneId } from "../types";
 import { registry } from "./registry";
@@ -56,6 +56,7 @@ const testMode = typeof window !== "undefined" && new URLSearchParams(window.loc
 
 export default function SceneCanvas({ scene, active, mobile, captions, onReady, onUnmount, onContextLost }: SceneCanvasProps) {
   const Scene = registry[scene];
+  const sceneElement = useMemo(() => <Scene mobile={mobile} captions={captions} />, [Scene, mobile, captions]);
   useEffect(() => () => onUnmount(), [onUnmount]);
   return (
     <Canvas
@@ -69,7 +70,7 @@ export default function SceneCanvas({ scene, active, mobile, captions, onReady, 
       <ContextWatch onLost={onContextLost} />
       <SceneLoop active={active}>
         <FirstFrame onReady={onReady} />
-        <Scene mobile={mobile} captions={captions} />
+        {sceneElement}
       </SceneLoop>
     </Canvas>
   );

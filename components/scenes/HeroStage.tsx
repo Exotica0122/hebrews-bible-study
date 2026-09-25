@@ -33,7 +33,8 @@ export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyC
 
   const onReady = useCallback(() => setReady(true), []);
   const onUnmount = useCallback(() => setReady(false), []);
-  const onLost = useCallback(() => gate.setLost(true), [gate]);
+  const { setLost } = gate;
+  const onLost = useCallback(() => setLost(true), [setLost]);
 
   if (!gate.mount || !idle) return null;
   return (

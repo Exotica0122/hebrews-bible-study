@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type RefObject } from "react";
 import { CHAPTER_COUNT, isLive } from "@/content/hebrews";
 import { useLang } from "@/lib/lang";
 import { useEscape } from "@/lib/hooks";
@@ -17,7 +17,7 @@ interface HeaderProps {
   navItems?: NavItem[];
   activeId?: string;
   activeLabel?: string;
-  progress?: number;
+  progressRef?: RefObject<HTMLDivElement | null>;
   onGo?: (id: string) => void;
   onTop?: () => void;
 }
@@ -26,7 +26,7 @@ export function chapterHref(n: number) {
   return n === 1 ? "/" : `/${n}`;
 }
 
-export function Header({ chapter, navItems = [], activeId, activeLabel = "", progress = 0, onGo, onTop }: HeaderProps) {
+export function Header({ chapter, navItems = [], activeId, activeLabel = "", progressRef, onGo, onTop }: HeaderProps) {
   const { lang, t, setLang } = useLang();
   const [open, setOpen] = useState(false);
   useEscape(() => setOpen(false), open);
@@ -110,7 +110,7 @@ export function Header({ chapter, navItems = [], activeId, activeLabel = "", pro
           </button>
         </div>
       </div>
-      <div className={s.progress} style={{ width: `${progress}%` }} />
+      <div ref={progressRef} className={s.progress} style={{ width: 0 }} />
     </header>
   );
 }

@@ -78,6 +78,8 @@ void main() {
 }`;
 
 const CYCLE = 16;
+const FAR_DEPTH: [number, number] = [-40, -20];
+const FAR_SPREAD: [number, number] = [40, 20];
 
 function foldAt(t: number) {
   const p = t % CYCLE;
@@ -90,6 +92,7 @@ function foldAt(t: number) {
 export function FoldScene({ mobile }: SceneProps) {
   const { height } = useThree((s) => s.viewport);
   const size = useThree((s) => s.size);
+  const dpr = useThree((s) => s.viewport.dpr);
   useResetCameraOnUnmount();
   const mesh = useRef<Mesh>(null);
 
@@ -125,13 +128,12 @@ export function FoldScene({ mobile }: SceneProps) {
     if (!m) return;
     m.uniforms.uTime.value = t;
     m.uniforms.uFold.value = foldAt(t);
-    const dpr = size.width > 0 ? window.devicePixelRatio || 1 : 1;
     m.uniforms.uResolution.value.set(size.width * dpr, size.height * dpr);
   });
 
   return (
     <>
-      <Starfield count={mobile ? 200 : 400} alpha={0.35} depth={[-40, -20]} spread={[40, 20]} />
+      <Starfield count={mobile ? 200 : 400} alpha={0.35} depth={FAR_DEPTH} spread={FAR_SPREAD} />
       <mesh ref={mesh} geometry={geometry} material={material} position={[0, 0, -2.5]} frustumCulled={false} renderOrder={1} />
       <Light position={[0, 0.1 * height, 1]} size={mobile ? 0.5 : 0.6} coronaScale={mobile ? 5 : 7} renderOrder={20} />
     </>

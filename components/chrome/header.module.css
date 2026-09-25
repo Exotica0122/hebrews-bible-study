@@ -216,6 +216,25 @@
   }
 }
 
+@media (max-width: 379px) {
+  .inner {
+    gap: 6px;
+  }
+  .left {
+    gap: 4px;
+  }
+  .brand {
+    font-size: 22px;
+  }
+  .chapterBtn {
+    padding: 0 6px;
+    letter-spacing: 0.12em;
+  }
+  .langBtn {
+    padding: 0 8px;
+  }
+}
+
 .progress {
   position: absolute;
   left: 0;
