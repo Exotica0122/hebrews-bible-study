@@ -1,0 +1,52 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useState, type RefObject } from "react";
+import { useSceneGate } from "./SceneFrame";
+import s from "./scene.module.css";
+
+const SceneCanvas = dynamic(() => import("./three/SceneCanvas"), { ssr: false, loading: () => null });
+
+interface HeroStageProps {
+  hostRef: RefObject<HTMLElement | null>;
+  captionRefs: RefObject<(HTMLElement | null)[]>;
+  reduceMotion?: boolean;
+  onReadyChange?: (ready: boolean) => void;
+}
+
+export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyChange }: HeroStageProps) {
+  const gate = useSceneGate("hero", hostRef, reduceMotion);
+  const [idle, setIdle] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    let t: number | undefined;
+    if (w.requestIdleCallback) w.requestIdleCallback(() => setIdle(true), { timeout: 1500 });
+    else t = window.setTimeout(() => setIdle(true), 1200);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    onReadyChange?.(ready);
+  }, [ready, onReadyChange]);
+
+  const onReady = useCallback(() => setReady(true), []);
+  const onUnmount = useCallback(() => setReady(false), []);
+  const onLost = useCallback(() => gate.setLost(true), [gate]);
+
+  if (!gate.mount || !idle) return null;
+  return (
+    <div className={`${s.canvasWrap} ${ready ? s.canvasReady : ""}`}>
+      <SceneCanvas
+        scene="hero"
+        active={gate.visible}
+        mobile={gate.mobile}
+        captions={captionRefs}
+        onReady={onReady}
+        onUnmount={onUnmount}
+        onContextLost={onLost}
+      />
+    </div>
+  );
+}

@@ -121,3 +121,22 @@
   border: 1px dashed rgba(168, 154, 130, 0.5);
   padding: 6px 10px;
 }
+.cssLayers {
+  position: absolute;
+  inset: 0;
+  transition: opacity 800ms ease;
+}
+.cssLayersHidden {
+  opacity: 0;
+}
+.dotHidden,
+.haloHidden {
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+.fragment {
+  will-change: transform;
+}
+.fragCap {
+  transition: opacity 600ms ease;
+}

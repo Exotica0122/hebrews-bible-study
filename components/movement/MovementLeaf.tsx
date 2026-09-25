@@ -51,6 +51,7 @@ export function MovementLeaf(p: MovementLeafProps) {
 
         <div className={s.mat}>
           <SceneFrame
+            id={m.id}
             scene={alt ? "seal" : m.scene}
             labels={{ loading: t.loading, reduced: t.reduced }}
             artNote={p.artNote}

@@ -86,7 +86,7 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
         onTop={() => scrollToTop(reduced)}
       />
       <main>
-        <Hero onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} />
+        <Hero onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} reduceMotion={reduceMotion} />
         <ChapterMap movements={movements} summary={summary} onGo={go} />
         {movements.map((m, i) => (
           <MovementLeaf

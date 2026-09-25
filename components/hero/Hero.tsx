@@ -1,8 +1,10 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { Fleuron, DoubleFrame } from "@/components/ornaments/Ornaments";
 import { CssStarfield } from "@/components/scenes/fallback/CssStarfield";
 import { HeroHalo } from "@/components/scenes/fallback/CssScene";
+import { HeroStage } from "@/components/scenes/HeroStage";
 import { useLang } from "@/lib/lang";
 import s from "./hero.module.css";
 
@@ -10,29 +12,46 @@ interface HeroProps {
   onBegin: () => void;
   onMap: () => void;
   artNote?: string;
+  reduceMotion?: boolean;
 }
 
-const FRAGMENTS = [
-  { key: "fragBush", cls: "bush", left: "16%", top: "24%" },
-  { key: "fragFire", cls: "fire", left: "83%", top: "20%" },
-  { key: "fragCloud", cls: "cloud", left: "86%", top: "58%" },
-  { key: "fragTablet", cls: "tablet", left: "13%", top: "60%" },
+export const HERO_FRAGMENTS = [
+  { key: "fragBush", cls: "bush", left: 16, top: 24 },
+  { key: "fragFire", cls: "fire", left: 83, top: 20 },
+  { key: "fragCloud", cls: "cloud", left: 86, top: 58 },
+  { key: "fragTablet", cls: "tablet", left: 13, top: 60 },
 ] as const;
 
-export function Hero({ onBegin, onMap, artNote }: HeroProps) {
+export function Hero({ onBegin, onMap, artNote, reduceMotion }: HeroProps) {
   const { t } = useLang();
+  const hostRef = useRef<HTMLElement>(null);
+  const captionRefs = useRef<(HTMLElement | null)[]>([]);
+  const [live, setLive] = useState(false);
+
   return (
-    <section id="hb-top" aria-label={t.heroTitle} className={s.hero}>
-      <CssStarfield />
+    <section id="hb-top" ref={hostRef} aria-label={t.heroTitle} className={s.hero}>
+      <div className={`${s.cssLayers} ${live ? s.cssLayersHidden : ""}`}>
+        <CssStarfield />
+      </div>
+      <HeroStage hostRef={hostRef} captionRefs={captionRefs} reduceMotion={reduceMotion} onReadyChange={setLive} />
       <DoubleFrame />
-      {FRAGMENTS.map((f) => (
-        <div key={f.key} className={s.fragment} style={{ left: f.left, top: f.top }}>
-          <span className={s[f.cls]} />
+      {HERO_FRAGMENTS.map((f, i) => (
+        <div
+          key={f.key}
+          ref={(el) => {
+            captionRefs.current[i] = el;
+          }}
+          className={s.fragment}
+          style={{ left: `${f.left}%`, top: `${f.top}%` }}
+        >
+          <span className={`${s[f.cls]} ${live ? s.dotHidden : ""}`} />
           <span className={s.fragCap}>{t[f.key]}</span>
         </div>
       ))}
       <div className={s.stack}>
-        <HeroHalo />
+        <div id="hb-hero-centre" className={live ? s.haloHidden : undefined}>
+          <HeroHalo />
+        </div>
         <div className={`hb-eyebrow ${s.eyebrow}`}>{t.heroEyebrow}</div>
         <h1 className={s.title}>{t.heroTitle}</h1>
         <Fleuron />
