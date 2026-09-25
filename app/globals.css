@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --vellum: #f4ecda;
+  --vellum-deep: #ece2cb;
+  --ink: #2b2218;
+  --ink-muted: #6a5d4d;
+  --rubric: #9e3b2b;
+  --gold: #b7892c;
+  --gold-text: #8a6414;
+  --gold-bright: #d9ae4e;
+  --gold-illum: #e4b75a;
+  --gold-glow: #f3d38a;
+  --night: #14110d;
+  --night-2: #241e17;
+  --parchment: #eee4cf;
+  --dust: #a89a82;
+  --ember: #c8553d;
+
+  --gold-12: rgba(183, 137, 44, 0.12);
+  --gold-16: rgba(183, 137, 44, 0.16);
+  --gold-25: rgba(183, 137, 44, 0.25);
+  --gold-35: rgba(183, 137, 44, 0.35);
+  --gold-45: rgba(183, 137, 44, 0.45);
+  --gold-55: rgba(183, 137, 44, 0.55);
+
+  --font-text: var(--font-eb-garamond), var(--font-noto-serif-kr), serif;
+  --font-display: var(--font-cormorant), var(--font-noto-serif-kr), serif;
+
+  --mat-shadow: 0 0 0 4px var(--vellum), 0 0 0 5px rgba(183, 137, 44, 0.5),
+    0 20px 50px rgba(43, 34, 24, 0.18);
+  --double-rule: 3px double var(--gold);
+
+  --content-max: 1240px;
+  --gutter: clamp(20px, 5vw, 64px);
+  --section-pad: clamp(48px, 7vw, 96px);
+  --header-h: 64px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  background: var(--vellum);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100%;
+  background: var(--vellum);
+  color: var(--ink);
+  font-family: var(--font-text);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--gold-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    color: var(--rubric);
+  }
+}
+
+::selection {
+  background: rgba(183, 137, 44, 0.3);
+}
+
+button,
+[role="button"] {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  font-family: inherit;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--gold-text);
+  outline-offset: 2px;
+}
+
+@keyframes hb-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
