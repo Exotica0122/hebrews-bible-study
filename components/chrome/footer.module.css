@@ -1,0 +1,19 @@
+.footer {
+  background: var(--night);
+  color: var(--dust);
+  border-top: var(--double-rule);
+}
+.inner {
+  padding-top: 40px;
+  padding-bottom: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font: 400 15px/22px var(--font-text);
+}
+.quote {
+  font: italic 500 clamp(20px, 2vw, 26px) / 1.4 var(--font-display);
+  color: var(--parchment);
+}

@@ -1,0 +1,115 @@
+.panel {
+  position: relative;
+  overflow: hidden;
+  height: clamp(300px, 42vw, 520px);
+  background: var(--night);
+  color: var(--parchment);
+  border: 1px solid rgba(138, 100, 20, 0.6);
+}
+.cssLayer {
+  transition: opacity 600ms ease;
+}
+.cssHidden {
+  opacity: 0;
+}
+.canvasWrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.canvasReady {
+  opacity: 1;
+}
+.canvasSwap {
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+.bottomFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+  background: linear-gradient(rgba(20, 17, 13, 0), rgba(20, 17, 13, 0.92) 75%);
+}
+.shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(20, 17, 13, 0.6);
+  overflow: hidden;
+}
+.shimmerSweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(238, 228, 207, 0) 30%, rgba(238, 228, 207, 0.08) 50%, rgba(238, 228, 207, 0) 70%);
+  animation: hb-shimmer 2.2s ease-in-out infinite;
+}
+.loading {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: italic 400 14px/16px var(--font-text);
+  color: var(--dust);
+}
+.loadingBar {
+  display: block;
+  width: 80px;
+  height: 1px;
+  background: rgba(238, 228, 207, 0.2);
+}
+.loadingBar span {
+  display: block;
+  width: 45%;
+  height: 1px;
+  background: var(--gold-bright);
+}
+.badge {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(20, 17, 13, 0.85);
+  border: 1px solid rgba(183, 137, 44, 0.4);
+  font: italic 400 14px/16px var(--font-text);
+  color: var(--parchment);
+}
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+}
+.artNote {
+  position: absolute;
+  right: 24px;
+  top: 20px;
+  z-index: 3;
+  max-width: 360px;
+  font: italic 400 13px/18px var(--font-text);
+  color: var(--dust);
+  border: 1px dashed rgba(168, 154, 130, 0.5);
+  padding: 6px 10px;
+}
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  padding: 0 clamp(20px, 4vw, 48px) clamp(24px, 4vw, 40px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+}

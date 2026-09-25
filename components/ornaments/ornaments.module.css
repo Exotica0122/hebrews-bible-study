@@ -1,0 +1,61 @@
+.fleuron {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold);
+}
+.fleuron.hero {
+  margin: 6px 0;
+}
+.fleuron .glyph {
+  font: 400 18px/1 var(--font-text);
+}
+.fleuron .lineL,
+.fleuron .lineR {
+  width: 56px;
+  height: 1px;
+}
+.fleuron .lineL {
+  background: linear-gradient(90deg, rgba(183, 137, 44, 0), var(--gold));
+}
+.fleuron .lineR {
+  background: linear-gradient(90deg, var(--gold), rgba(183, 137, 44, 0));
+}
+.fleuron.rule {
+  gap: 10px;
+}
+.fleuron.rule .glyph {
+  font-size: 16px;
+}
+.fleuron.rule .lineL,
+.fleuron.rule .lineR {
+  flex: 1;
+  width: auto;
+  background: var(--gold);
+  opacity: 0.6;
+}
+
+.frameOuter,
+.frameInner {
+  position: absolute;
+  pointer-events: none;
+  border: 1px solid var(--gold-55);
+}
+.frameOuter {
+  inset: 20px;
+}
+.frameInner {
+  inset: 26px;
+  border-color: var(--gold-25);
+}
+
+.labelBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold);
+}
+.labelBar .aside {
+  color: var(--gold-text);
+}

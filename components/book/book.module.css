@@ -1,0 +1,113 @@
+.inner {
+  padding-top: var(--section-pad);
+  padding-bottom: var(--section-pad);
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 48px;
+}
+.copy {
+  max-width: 620px;
+}
+.title {
+  margin-top: 10px;
+}
+.intro {
+  margin: 12px 0 0;
+  font: italic 400 19px/30px var(--font-text);
+  color: var(--ink-muted);
+}
+.legend {
+  display: flex;
+  gap: 16px;
+  font: 500 14px/20px var(--font-text);
+  color: var(--ink-muted);
+}
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.swatchLive {
+  width: 12px;
+  height: 12px;
+  background: var(--ink);
+}
+.swatchSoon {
+  width: 12px;
+  height: 12px;
+  border: 1px dashed var(--gold-text);
+  box-sizing: border-box;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
+  gap: 10px;
+  margin-top: 40px;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 132px;
+  padding: 16px;
+  box-sizing: border-box;
+  border: 1px solid;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease;
+}
+.tile:active {
+  transform: scale(0.98);
+}
+.num {
+  font: 500 44px/44px var(--font-display);
+}
+.status {
+  margin-top: auto;
+  font: 500 11px/16px var(--font-text);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sub {
+  font: italic 400 15px/20px var(--font-text);
+}
+.live {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--parchment);
+  box-shadow: inset 0 0 0 4px var(--ink), inset 0 0 0 5px rgba(183, 137, 44, 0.6);
+}
+.live .num,
+.live .status {
+  color: var(--gold-illum);
+}
+.viewing {
+  border-color: var(--gold-text);
+  background: rgba(183, 137, 44, 0.14);
+  color: var(--ink);
+}
+.viewing .status {
+  color: var(--gold-text);
+}
+.soon {
+  border: 1px dashed rgba(138, 100, 20, 0.5);
+  background: transparent;
+  color: var(--ink-muted);
+}
+@media (hover: hover) and (pointer: fine) {
+  .soon:hover {
+    background: rgba(183, 137, 44, 0.08);
+    color: var(--ink);
+    border-style: solid;
+  }
+}

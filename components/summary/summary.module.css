@@ -1,0 +1,48 @@
+.section {
+  background: var(--vellum-deep);
+  color: var(--ink);
+  border-top: var(--double-rule);
+}
+.inner {
+  padding-top: var(--section-pad);
+  padding-bottom: var(--section-pad);
+}
+.title {
+  margin-top: 10px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 40px clamp(32px, 4vw, 56px);
+  margin-top: 48px;
+}
+.groupTitle {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold);
+  font: 600 24px/30px var(--font-display);
+  color: var(--rubric);
+}
+.item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gold-35);
+}
+.itemRef {
+  font: 500 14px/28px var(--font-text);
+  letter-spacing: 0.06em;
+  color: var(--rubric);
+}
+.itemText {
+  font: 400 19px/28px var(--font-text);
+}
+.intent {
+  margin-top: 64px;
+  max-width: 760px;
+}
+.intentP {
+  margin: 16px 0 0;
+  font: 400 21px/34px var(--font-text);
+}

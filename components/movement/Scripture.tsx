@@ -1,0 +1,91 @@
+"use client";
+
+import type { KeyboardEvent } from "react";
+import type { MovementCopy, WordStudy } from "@/content/types";
+import { parseMarked } from "@/content/parse";
+import { useLang } from "@/lib/lang";
+import { LabelBar } from "@/components/ornaments/Ornaments";
+import s from "./movement.module.css";
+
+interface ScriptureProps {
+  copy: MovementCopy;
+  words: Record<string, WordStudy>;
+  openKey: string | null;
+  showPopover: boolean;
+  dropCap: boolean;
+  ruled: boolean;
+  onToggle: (key: string) => void;
+  onClose: () => void;
+}
+
+function activate(fn: () => void) {
+  return (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fn();
+    }
+  };
+}
+
+export function Scripture({ copy, words, openKey, showPopover, dropCap, ruled, onToggle, onClose }: ScriptureProps) {
+  const { t } = useLang();
+  return (
+    <>
+      <LabelBar label={t.scripture} aside={t.version} className={s.label} />
+      <div className={s.scripture}>
+        {ruled && <div aria-hidden="true" className={s.rules} />}
+        <div className={s.verses}>
+          {copy.verses.map(([n, text], vi) => {
+            const segs = parseMarked(text);
+            let cap = "";
+            if (dropCap && vi === 0 && segs[0] && !segs[0].key) {
+              cap = segs[0].text[0];
+              segs[0] = { text: segs[0].text.slice(1) };
+            }
+            return (
+              <div key={n} className={s.verse}>
+                <span aria-hidden="true" className={s.verseNum}>{n}</span>
+                <div>
+                  {cap && <span aria-hidden="true" className={s.dropCap}>{cap}</span>}
+                  {segs.map((seg, i) => {
+                    if (!seg.key) return <span key={i}>{seg.text}</span>;
+                    const key = seg.key;
+                    const open = openKey === key;
+                    const w = words[key];
+                    return (
+                      <span key={i} className={s.keyWrap}>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          aria-haspopup="dialog"
+                          aria-expanded={open}
+                          className={s.key}
+                          onClick={() => onToggle(key)}
+                          onKeyDown={activate(() => onToggle(key))}
+                        >
+                          {seg.text}
+                        </span>
+                        {open && showPopover && w && (
+                          <span role="dialog" aria-label={w.t} className={s.popover}>
+                            <span className={s.popHead}>
+                              <span className={`hb-eyebrow ${s.popLabel}`}>{t.wordStudy} · {w.v}</span>
+                              <button type="button" className={s.popClose} aria-label={t.close} onClick={onClose}>×</button>
+                            </span>
+                            <span className={s.popTitle}>{w.t}</span>
+                            <span className={s.popGreek}>{w.g}</span>
+                            <span className={s.popRule} />
+                            <span className={s.popDef}>{w.d}</span>
+                          </span>
+                        )}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}

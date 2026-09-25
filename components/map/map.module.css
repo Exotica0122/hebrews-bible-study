@@ -1,0 +1,90 @@
+.inner {
+  padding-top: var(--section-pad);
+  padding-bottom: var(--section-pad);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px 80px;
+}
+.intro {
+  flex: 1 1 300px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.introText {
+  margin: 0;
+  font: 400 19px/30px var(--font-text);
+  color: var(--ink-muted);
+}
+.intent {
+  margin: 0;
+  font: 400 19px/30px var(--font-text);
+}
+.list {
+  flex: 2 1 460px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--gold);
+}
+.row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 8px clamp(12px, 2vw, 24px);
+  padding: 22px 0;
+  border-bottom: 1px solid var(--gold-45);
+  align-items: baseline;
+}
+.num {
+  font: 500 40px/40px var(--font-display);
+  color: var(--gold);
+}
+.title {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font: 500 clamp(24px, 2.4vw, 30px) / 1.25 var(--font-display);
+  color: var(--ink);
+  transition: color 120ms ease;
+}
+.snips {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.snip {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 6px;
+  font: italic 400 17px/26px var(--font-text);
+  color: var(--ink-muted);
+}
+.snipNum {
+  font: 500 13px/26px var(--font-text);
+  font-style: normal;
+  color: var(--rubric);
+}
+.study {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  white-space: nowrap;
+  font: 500 13px/16px var(--font-text);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .title:hover,
+  .study:hover {
+    color: var(--rubric);
+  }
+}

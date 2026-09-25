@@ -1,0 +1,123 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: max(640px, calc(100svh - var(--header-h)));
+  background: var(--night);
+  color: var(--parchment);
+}
+.fragment {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(-50%);
+}
+.fragCap {
+  font: italic 400 14px/16px var(--font-text);
+  color: var(--dust);
+  white-space: nowrap;
+}
+.bush {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 24px 6px rgba(200, 85, 61, 0.6), 14px 6px 28px 2px rgba(200, 85, 61, 0.25);
+}
+.fire {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold-glow);
+  box-shadow: 0 0 22px 6px rgba(243, 211, 138, 0.55), -14px 6px 28px 2px rgba(243, 211, 138, 0.2);
+}
+.cloud {
+  width: 26px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(238, 228, 207, 0.55);
+  filter: blur(3px);
+  box-shadow: 0 0 30px 8px rgba(238, 228, 207, 0.25);
+}
+.tablet {
+  width: 10px;
+  height: 14px;
+  border-radius: 4px 4px 1px 1px;
+  background: #d8d1c2;
+  box-shadow: 0 0 20px 4px rgba(238, 228, 207, 0.3);
+}
+.stack {
+  position: relative;
+  min-height: max(640px, calc(100svh - var(--header-h)));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 48px 40px 120px;
+  text-align: center;
+}
+.eyebrow {
+  letter-spacing: 0.24em;
+  color: var(--gold-bright);
+}
+.title {
+  margin: 0;
+  font: 500 clamp(64px, 9vw, 112px) / 1 var(--font-display);
+  color: var(--parchment);
+  letter-spacing: -0.01em;
+}
+.tagline {
+  margin: 0;
+  max-width: 640px;
+  font: italic 400 clamp(20px, 2.2vw, 25px) / 1.6 var(--font-text);
+  color: var(--parchment);
+}
+.ref {
+  font: 500 13px/20px var(--font-text);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+.begin {
+  box-shadow: 0 0 32px rgba(183, 137, 44, 0.35);
+}
+.scrollCue {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.scrollText {
+  font: 500 11px/16px var(--font-text);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.scrollLine {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(var(--gold), rgba(183, 137, 44, 0));
+}
+.artNote {
+  position: absolute;
+  right: 44px;
+  top: 44px;
+  font: italic 400 13px/18px var(--font-text);
+  color: var(--dust);
+  border: 1px dashed rgba(168, 154, 130, 0.5);
+  padding: 6px 10px;
+}

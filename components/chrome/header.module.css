@@ -1,0 +1,225 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--header-h);
+  background: rgba(244, 236, 218, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gold);
+  box-shadow: 0 3px 0 -2px var(--gold-35);
+}
+.inner {
+  position: relative;
+  height: 100%;
+  padding-left: clamp(16px, 5vw, 64px);
+  padding-right: clamp(16px, 5vw, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: 600 26px/28px var(--font-display);
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.chapterBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.chapterBtn:active {
+  background: var(--gold-12);
+}
+.caret {
+  font-size: 9px;
+  letter-spacing: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .chapterBtn:hover {
+    background: var(--gold-12);
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+.menu {
+  position: absolute;
+  top: var(--header-h);
+  left: clamp(16px, 5vw, 64px);
+  width: min(440px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 20px;
+  background: var(--vellum-deep);
+  border: 1px solid var(--gold);
+  box-shadow: var(--mat-shadow);
+  transform-origin: top left;
+  transition:
+    opacity 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+.menuHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.legend {
+  font: italic 400 14px/16px var(--font-text);
+  color: var(--ink-muted);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 6px;
+  margin-top: 14px;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border: 1px solid;
+  font: 500 20px var(--font-display);
+  text-decoration: none;
+  transition:
+    transform 120ms var(--ease-out),
+    border-color 120ms ease,
+    color 120ms ease;
+}
+.chip:active {
+  transform: scale(0.96);
+}
+.chipLive {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--parchment);
+}
+.chipViewing {
+  border-color: var(--gold-text);
+  background: rgba(183, 137, 44, 0.18);
+  color: var(--ink);
+}
+.chipSoon {
+  border: 1px dashed rgba(138, 100, 20, 0.5);
+  background: transparent;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+@media (hover: hover) and (pointer: fine) {
+  .chipSoon:hover {
+    border-color: var(--gold-text);
+    color: var(--ink);
+  }
+}
+
+.nav {
+  display: flex;
+  gap: 2px;
+}
+.navItem {
+  height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  font: 500 16px var(--font-text);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+.navItem[aria-current="true"] {
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+@media (hover: hover) and (pointer: fine) {
+  .navItem:not([aria-current="true"]):hover {
+    color: var(--rubric);
+  }
+}
+.activeLabel {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font: italic 400 15px/18px var(--font-text);
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 859px) {
+  .nav {
+    display: none;
+  }
+  .activeLabel {
+    display: block;
+  }
+}
+
+.lang {
+  display: flex;
+  border: 1px solid var(--gold);
+  padding: 2px;
+  gap: 2px;
+  flex: none;
+}
+.langBtn {
+  height: 38px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 500 14px var(--font-text);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.langBtn[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--parchment);
+}
+.langKo {
+  letter-spacing: 0;
+  font-family: var(--font-noto-serif-kr), serif;
+}
+@media (hover: hover) and (pointer: fine) {
+  .langBtn[aria-pressed="false"]:hover {
+    background: var(--gold-16);
+  }
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--gold);
+}

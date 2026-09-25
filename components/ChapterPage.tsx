@@ -1,0 +1,126 @@
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
+import type { ChapterContent } from "@/content/types";
+import { keysOf } from "@/content/parse";
+import { useLang } from "@/lib/lang";
+import { scrollToSection, scrollToTop, useEscape, useIsMobile, useReducedMotion, useScrollSpy } from "@/lib/hooks";
+import { Header, type NavItem } from "@/components/chrome/Header";
+import { Footer } from "@/components/chrome/Footer";
+import { Hero } from "@/components/hero/Hero";
+import { ChapterMap } from "@/components/map/ChapterMap";
+import { MovementLeaf } from "@/components/movement/MovementLeaf";
+import { Summary } from "@/components/summary/Summary";
+import { BookIndex } from "@/components/book/BookIndex";
+import { WordSheet } from "@/components/sheet/WordSheet";
+
+interface ChapterPageProps {
+  chapter: ChapterContent;
+  ruledLines?: boolean;
+  showArtNotes?: boolean;
+  reduceMotion?: boolean;
+}
+
+interface OpenWord {
+  mid: string;
+  key: string;
+}
+
+const HERO_ART = "3D · R3F — fragments drift inward, trails dim as they merge into one light";
+
+export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, reduceMotion = false }: ChapterPageProps) {
+  const { lang, t } = useLang();
+  const isMobile = useIsMobile();
+  const reduced = useReducedMotion(reduceMotion);
+  const [word, setWord] = useState<OpenWord | null>(null);
+  const [chips, setChips] = useState<Record<string, string | null>>({ m1: "col" });
+  const [alt, setAlt] = useState(false);
+
+  const movements = chapter.movements;
+  const summary = chapter.summary[lang];
+  const sectionIds = useMemo(() => ["hb-top", "hb-map", ...movements.map((m) => `hb-${m.id}`), "hb-summary"], [movements]);
+  const { active, progress } = useScrollSpy(sectionIds);
+
+  const closeWord = useCallback(() => setWord(null), []);
+  useEscape(closeWord, word !== null);
+
+  const go = useCallback(
+    (id: string) => {
+      scrollToSection(`hb-${id}`, reduced);
+      setWord(null);
+    },
+    [reduced],
+  );
+
+  const toggleWord = (mid: string) => (key: string) =>
+    setWord((w) => (w && w.mid === mid && w.key === key ? null : { mid, key }));
+  const toggleChip = (mid: string) => (id: string) =>
+    setChips((c) => ({ ...c, [mid]: c[mid] === id ? null : id }));
+
+  const navItems: NavItem[] = [
+    { id: "map", label: t.map },
+    ...movements.map((m) => ({ id: m.id, label: m.num })),
+    { id: "summary", label: t.summary },
+  ];
+  const activeId = active.replace(/^hb-/, "");
+  const activeMovement = movements.find((m) => m.id === activeId);
+  const activeLabel = activeMovement
+    ? `${activeMovement.num} · ${activeMovement[lang].title}`
+    : activeId === "map" ? t.map : activeId === "summary" ? t.summary : "";
+
+  const sheetMovement = word ? movements.find((m) => m.id === word.mid) : undefined;
+  const sheetKeys = sheetMovement ? keysOf(sheetMovement[lang].verses) : [];
+  const sheetIndex = word ? sheetKeys.indexOf(word.key) : -1;
+  const sheetWords = sheetMovement?.words[lang];
+  const sheetWord = word && sheetWords ? sheetWords[word.key] : undefined;
+
+  return (
+    <>
+      <Header
+        chapter={chapter.number}
+        navItems={navItems}
+        activeId={activeId}
+        activeLabel={activeLabel}
+        progress={progress}
+        onGo={go}
+        onTop={() => scrollToTop(reduced)}
+      />
+      <main>
+        <Hero onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} />
+        <ChapterMap movements={movements} summary={summary} onGo={go} />
+        {movements.map((m, i) => (
+          <MovementLeaf
+            key={m.id}
+            movement={m}
+            index={i}
+            chapter={chapter.number}
+            openKey={word?.mid === m.id ? word.key : null}
+            showPopover={!isMobile}
+            onToggleWord={toggleWord(m.id)}
+            onCloseWord={closeWord}
+            openChip={chips[m.id] ?? null}
+            onToggleChip={toggleChip(m.id)}
+            alt={alt}
+            onAlt={setAlt}
+            ruled={ruledLines}
+            artNote={showArtNotes && !isMobile ? m.art : undefined}
+            reduceMotion={reduceMotion}
+          />
+        ))}
+        <Summary summary={summary} />
+        <BookIndex current={chapter.number} liveSubtitle={movements[0][lang].title} />
+      </main>
+      <Footer />
+      {isMobile && word && sheetMovement && sheetWord && sheetWords && (
+        <WordSheet
+          word={sheetWord}
+          prev={sheetIndex > 0 ? sheetWords[sheetKeys[sheetIndex - 1]] : undefined}
+          next={sheetIndex >= 0 && sheetIndex < sheetKeys.length - 1 ? sheetWords[sheetKeys[sheetIndex + 1]] : undefined}
+          onPrev={() => setWord({ mid: sheetMovement.id, key: sheetKeys[sheetIndex - 1] })}
+          onNext={() => setWord({ mid: sheetMovement.id, key: sheetKeys[sheetIndex + 1] })}
+          onClose={closeWord}
+        />
+      )}
+    </>
+  );
+}

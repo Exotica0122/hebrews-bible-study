@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, EB_Garamond, Noto_Serif_KR } from "next/font/google";
+import { LangProvider } from "@/lib/lang";
 import "./globals.css";
 
 const ebGaramond = EB_Garamond({
@@ -44,7 +45,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${ebGaramond.variable} ${cormorant.variable} ${notoSerifKr.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <LangProvider>{children}</LangProvider>
+      </body>
     </html>
   );
 }
