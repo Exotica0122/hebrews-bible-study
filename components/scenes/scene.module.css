@@ -1,6 +1,7 @@
 .panel {
   position: relative;
   overflow: hidden;
+  touch-action: pan-y;
   height: clamp(300px, 42vw, 520px);
   background: var(--night);
   color: var(--parchment);

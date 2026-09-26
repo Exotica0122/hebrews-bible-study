@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, Group, Line, LineBasicMaterial, type ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
+import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow, Light } from "../primitives/Glow";
 import { Starfield } from "../primitives/Starfield";
 import { smoothstep, useSceneTime } from "../primitives/Timeline";
@@ -18,7 +19,7 @@ function bowAt(t: number) {
   return smoothstep(0, 3, p) * (1 - smoothstep(6, 8, p));
 }
 
-export function AngelsScene({ mobile }: SceneProps) {
+export function AngelsScene({ mobile, effects }: SceneProps) {
   const { width, height } = useThree((s) => s.viewport);
   useResetCameraOnUnmount();
   const group = useRef<Group>(null);
@@ -85,6 +86,7 @@ export function AngelsScene({ mobile }: SceneProps) {
           </group>
         ))}
       </group>
+      {effects && <SceneEffects bloom={0.9} />}
     </>
   );
 }

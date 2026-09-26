@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import type { Mesh, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
+import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Flames } from "../primitives/Flames";
 import { Starfield } from "../primitives/Starfield";
@@ -12,7 +13,7 @@ import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const EMBERS: [number, number][] = [[0.18, 0.62], [0.27, 0.5], [0.13, 0.43], [0.34, 0.68]];
 
-export function ThroneScene({ mobile }: SceneProps) {
+export function ThroneScene({ mobile, effects }: SceneProps) {
   const { width, height } = useThree((s) => s.viewport);
   useResetCameraOnUnmount();
   const gust = useRef(0);
@@ -48,6 +49,7 @@ export function ThroneScene({ mobile }: SceneProps) {
       <Flames emitters={emitters} count={mobile ? 60 : 120} rise={mobile ? 1.1 : 1.5} size={mobile ? 7 : 9} gust={gust} />
       <Glow position={[-0.3 * width, 0.05 * height, 0]} size={1} scaleX={mobile ? 2.2 : 3.4} scaleY={0.02} color="#EEE4CF" alpha={0.1} power={1} rotation={0.14} renderOrder={4} onMesh={(m) => { windMeshA.current = m; }} onMaterial={(m) => { windA.current = m; }} />
       <Glow position={[-0.28 * width, -0.04 * height, 0]} size={1} scaleX={mobile ? 2 : 3} scaleY={0.02} color="#EEE4CF" alpha={0.08} power={1} rotation={0.09} renderOrder={4} onMesh={(m) => { windMeshB.current = m; }} onMaterial={(m) => { windB.current = m; }} />
+      {effects && <SceneEffects bloom={0.9} />}
     </>
   );
 }

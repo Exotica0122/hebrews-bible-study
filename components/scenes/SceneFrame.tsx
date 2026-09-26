@@ -1,12 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useDrag } from "@use-gesture/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsMobile, useReducedMotion } from "@/lib/hooks";
 import { CssScene } from "./fallback/CssScene";
 import { useSceneVisibility } from "./hooks/useSceneVisibility";
 import { useWebGLSupport } from "./hooks/useWebGLSupport";
 import { useSceneSlot } from "./hooks/useSceneBudget";
+import { effectsForTier, useGpuTier } from "./hooks/useGpuTier";
 import type { SceneId } from "./types";
 import s from "./scene.module.css";
 
@@ -32,11 +34,12 @@ export function useSceneGate(id: string, ref: React.RefObject<HTMLElement | null
   const reduced = useReducedMotion(reduceMotion);
   const mobile = useIsMobile();
   const webgl = useWebGLSupport();
+  const tier = useGpuTier();
   const { near, visible } = useSceneVisibility(ref);
   const [lost, setLost] = useState(false);
-  const wants = near && webgl === true && !reduced && !lost;
+  const wants = near && webgl === true && tier !== null && tier >= 1 && !reduced && !lost;
   const held = useSceneSlot(id, wants, ref, mobile ? 2 : 3, visible ? 1 : 0);
-  return { reduced, mobile, webgl, near, visible, lost, setLost, mount: wants && held };
+  return { reduced, mobile, webgl, tier, effects: effectsForTier(tier), near, visible, lost, setLost, mount: wants && held };
 }
 
 export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, children }: SceneFrameProps) {
@@ -46,6 +49,13 @@ export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, c
   const [canvasReady, setCanvasReady] = useState(false);
   const [swapping, setSwapping] = useState(false);
   const lastScene = useRef(scene);
+  const drag = useRef({ dx: 0, active: false });
+  const bindDrag = useDrag(
+    ({ movement: [mx], active }) => {
+      drag.current = { dx: mx, active };
+    },
+    { axis: "x", filterTaps: true, threshold: 6 },
+  );
 
   useEffect(() => {
     if (!gate.near || shimmerDone) return;
@@ -69,7 +79,7 @@ export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, c
   const showCanvas = gate.mount && canvasReady;
 
   return (
-    <div ref={ref} className={s.panel} data-scene={id}>
+    <div ref={ref} className={s.panel} data-scene={id} data-effects={gate.effects ? "on" : "off"} {...bindDrag()}>
       <CssScene scene={scene} className={`${s.cssLayer} ${showCanvas ? s.cssHidden : ""}`} />
       {gate.mount && (
         <div className={`${s.canvasWrap} ${showCanvas ? s.canvasReady : ""} ${swapping ? s.canvasSwap : ""}`}>
@@ -77,6 +87,8 @@ export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, c
             scene={scene}
             active={gate.visible}
             mobile={gate.mobile}
+            effects={gate.effects}
+            drag={drag}
             onReady={onReady}
             onUnmount={onUnmount}
             onContextLost={onLost}

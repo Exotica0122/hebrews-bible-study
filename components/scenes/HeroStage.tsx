@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState, type RefObject } from "react";
+import { useMove } from "@use-gesture/react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { useSceneGate } from "./SceneFrame";
 import s from "./scene.module.css";
 
@@ -18,6 +19,14 @@ export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyC
   const gate = useSceneGate("hero", hostRef, reduceMotion);
   const [idle, setIdle] = useState(false);
   const [ready, setReady] = useState(false);
+  const pointer = useRef({ x: 0, y: 0 });
+  useMove(
+    ({ xy: [px, py], currentTarget }) => {
+      const r = (currentTarget as HTMLElement).getBoundingClientRect();
+      pointer.current = { x: (px - r.left) / r.width - 0.5, y: (py - r.top) / r.height - 0.5 };
+    },
+    { target: hostRef },
+  );
 
   useEffect(() => {
     const w = window as Window & {
@@ -48,7 +57,9 @@ export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyC
         scene="hero"
         active={gate.visible}
         mobile={gate.mobile}
+        effects={gate.effects}
         captions={captionRefs}
+        pointer={pointer}
         onReady={onReady}
         onUnmount={onUnmount}
         onContextLost={onLost}

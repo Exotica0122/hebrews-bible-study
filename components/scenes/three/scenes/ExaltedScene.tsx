@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { Group, type Mesh, type ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
+import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow, Light } from "../primitives/Glow";
 import { GodRay } from "../primitives/GodRay";
 import { Starfield } from "../primitives/Starfield";
@@ -12,7 +13,7 @@ import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const DUST: [number, number, number][] = [[0.36, 0.66, 0.4], [0.46, 0.68, 0.35], [0.56, 0.67, 0.4], [0.64, 0.69, 0.3]];
 
-export function ExaltedScene({ mobile }: SceneProps) {
+export function ExaltedScene({ mobile, effects }: SceneProps) {
   const { width, height } = useThree((s) => s.viewport);
   useResetCameraOnUnmount();
   const light = useRef<Group>(null);
@@ -75,6 +76,7 @@ export function ExaltedScene({ mobile }: SceneProps) {
           onMaterial={(m) => { dustMats.current[i] = m; }}
         />
       ))}
+      {effects && <SceneEffects bloom={0.9} />}
     </>
   );
 }

@@ -1,0 +1,11 @@
+import { chromium } from "@playwright/test";
+const S = process.argv[2];
+const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+page.on("pageerror", (e) => console.log("[pageerror]", e.message));
+await page.goto("http://localhost:3000/?gpu=3&scenetest&tune", { waitUntil: "networkidle" });
+await page.locator('[data-scene="m1"]').scrollIntoViewIfNeeded();
+await page.waitForTimeout(5000);
+console.log("leva panel:", await page.locator("#leva__root").count());
+await page.screenshot({ path: `${S}/shots/tune.png` });
+await browser.close();

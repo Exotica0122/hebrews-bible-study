@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { Color, DoubleSide, Mesh, PlaneGeometry, ShaderMaterial, Vector2 } from "three";
 import type { SceneProps } from "../registry";
+import { SceneEffects } from "../primitives/SceneEffects";
 import { Light } from "../primitives/Glow";
 import { Starfield } from "../primitives/Starfield";
 import { easeInOutCubic, smoothstep, useSceneTime } from "../primitives/Timeline";
@@ -89,7 +90,7 @@ function foldAt(t: number) {
   return 1 - (1 - base) * smoothstep(12, 15.5, p);
 }
 
-export function FoldScene({ mobile }: SceneProps) {
+export function FoldScene({ mobile, effects }: SceneProps) {
   const { height } = useThree((s) => s.viewport);
   const size = useThree((s) => s.size);
   const dpr = useThree((s) => s.viewport.dpr);
@@ -136,6 +137,7 @@ export function FoldScene({ mobile }: SceneProps) {
       <Starfield count={mobile ? 200 : 400} alpha={0.35} depth={FAR_DEPTH} spread={FAR_SPREAD} />
       <mesh ref={mesh} geometry={geometry} material={material} position={[0, 0, -2.5]} frustumCulled={false} renderOrder={1} />
       <Light position={[0, 0.1 * height, 1]} size={mobile ? 0.5 : 0.6} coronaScale={mobile ? 5 : 7} renderOrder={20} />
+      {effects && <SceneEffects bloom={0.8} />}
     </>
   );
 }

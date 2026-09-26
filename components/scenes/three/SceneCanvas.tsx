@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { PerformanceMonitor } from "@react-three/drei";
 import type { SceneId } from "../types";
-import { registry } from "./registry";
+import { registry, type DragState, type PointerState } from "./registry";
 
 interface SceneCanvasProps {
   scene: SceneId;
   active: boolean;
   mobile: boolean;
+  effects: boolean;
   captions?: RefObject<(HTMLElement | null)[]>;
+  drag?: RefObject<DragState>;
+  pointer?: RefObject<PointerState>;
   onReady: () => void;
   onUnmount: () => void;
   onContextLost: () => void;
@@ -54,19 +58,27 @@ function ContextWatch({ onLost }: { onLost: () => void }) {
 
 const testMode = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("scenetest");
 
-export default function SceneCanvas({ scene, active, mobile, captions, onReady, onUnmount, onContextLost }: SceneCanvasProps) {
+export default function SceneCanvas({ scene, active, mobile, effects, captions, drag, pointer, onReady, onUnmount, onContextLost }: SceneCanvasProps) {
   const Scene = registry[scene];
-  const sceneElement = useMemo(() => <Scene mobile={mobile} captions={captions} />, [Scene, mobile, captions]);
+  const maxDpr = mobile ? 1.5 : 2;
+  const [dpr, setDpr] = useState(() => Math.min(maxDpr, typeof window === "undefined" ? 1 : window.devicePixelRatio || 1));
+  const sceneElement = useMemo(() => <Scene mobile={mobile} effects={effects} captions={captions} drag={drag} pointer={pointer} />, [Scene, mobile, effects, captions, drag, pointer]);
   useEffect(() => () => onUnmount(), [onUnmount]);
   return (
     <Canvas
       frameloop="demand"
-      dpr={mobile ? [1, 1.5] : [1, 2]}
+      dpr={dpr}
       gl={{ alpha: true, antialias: false, powerPreference: "low-power", stencil: false, preserveDrawingBuffer: testMode }}
       camera={{ fov: 40, position: [0, 0, 8], near: 0.1, far: 80 }}
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       style={{ position: "absolute", inset: 0 }}
     >
+      <PerformanceMonitor
+        flipflops={3}
+        onDecline={() => setDpr((d) => Math.max(0.75, d - 0.25))}
+        onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
+        onFallback={() => setDpr(0.75)}
+      />
       <ContextWatch onLost={onContextLost} />
       <SceneLoop active={active}>
         <FirstFrame onReady={onReady} />

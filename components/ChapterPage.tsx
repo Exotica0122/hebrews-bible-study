@@ -49,7 +49,7 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
     setWord((w) => {
       if (w) {
         const trigger = document.querySelector<HTMLElement>(`[data-word="${w.mid}:${w.key}"]`);
-        requestAnimationFrame(() => trigger?.focus());
+        requestAnimationFrame(() => trigger?.focus({ preventScroll: true }));
       }
       return null;
     });

@@ -11,8 +11,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.1",
+    "@react-three/postprocessing": "3.1.2",
+    "@use-gesture/react": "^10.3.1",
+    "detect-gpu": "^5.0.70",
+    "leva": "^0.10.1",
+    "maath": "^0.10.8",
     "next": "16.3.6",
+    "postprocessing": "6.39.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "three": "0.186.1"
