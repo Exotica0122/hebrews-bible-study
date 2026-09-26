@@ -1,0 +1,11 @@
+import { chromium } from "@playwright/test";
+const S = process.argv[2];
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto("http://localhost:3000/");
+await page.waitForTimeout(1400);
+await page.screenshot({ path: `${S}/shots/intro-1400.png` });
+await page.waitForTimeout(600);
+await page.screenshot({ path: `${S}/shots/intro-2000.png` });
+await browser.close();
+console.log("intro shots done");

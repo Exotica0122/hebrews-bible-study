@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
 import type { Lang } from "@/content/types";
 import { UI, type UiStrings } from "@/content/ui";
+import { LANG_COOKIE, setCookie } from "./cookies";
 
 const STORAGE_KEY = "hb-lang";
 const DEFAULT_LANG: Lang = "en";
@@ -24,6 +25,11 @@ function getSnapshot(): Lang {
   return current;
 }
 
+/** Adopt the language the server rendered so the first client render matches the HTML. */
+function adopt(initial: Lang) {
+  if (current === null) current = initial;
+}
+
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
   return () => listeners.delete(onChange);
@@ -31,6 +37,7 @@ function subscribe(onChange: () => void) {
 
 export function setLang(next: Lang) {
   current = next;
+  setCookie(LANG_COOKIE, next);
   try {
     window.localStorage.setItem(STORAGE_KEY, next);
   } catch {}
@@ -45,8 +52,16 @@ interface LangContextValue {
 
 const LangContext = createContext<LangContextValue | null>(null);
 
-export function LangProvider({ children }: { children: React.ReactNode }) {
-  const lang = useSyncExternalStore(subscribe, getSnapshot, () => DEFAULT_LANG);
+export function LangProvider({ initial, children }: { initial: Lang; children: React.ReactNode }) {
+  adopt(initial);
+  const lang = useSyncExternalStore(subscribe, getSnapshot, () => initial);
+
+  useEffect(() => {
+    // Visitors from before the cookie existed still carry the choice in localStorage; promote it once.
+    const stored = readStored();
+    if (stored !== initial && stored !== DEFAULT_LANG) setLang(stored);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;

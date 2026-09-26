@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { Cormorant_Garamond, EB_Garamond, Noto_Serif_KR } from "next/font/google";
 import { LangProvider } from "@/lib/lang";
+import { INTRO_COOKIE, LANG_COOKIE } from "@/lib/cookies";
+import { IntroVeil } from "@/components/intro/IntroVeil";
 import "./globals.css";
 import "./print.css";
 
@@ -40,14 +43,20 @@ export const viewport: Viewport = {
   themeColor: "#14110D",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const jar = await cookies();
+  const lang = jar.get(LANG_COOKIE)?.value === "ko" ? "ko" : "en";
+  const showIntro = jar.get(INTRO_COOKIE)?.value !== "1";
   return (
     <html
-      lang="en"
+      lang={lang}
       className={`${ebGaramond.variable} ${cormorant.variable} ${notoSerifKr.variable}`}
     >
       <body>
-        <LangProvider>{children}</LangProvider>
+        <LangProvider initial={lang}>
+          {showIntro && <IntroVeil />}
+          {children}
+        </LangProvider>
       </body>
     </html>
   );
