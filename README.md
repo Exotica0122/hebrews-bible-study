@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hebrews Bible Study
 
-## Getting Started
+A bilingual (English / 한국어), verse-by-verse study of the letter to the Hebrews, written for a small group
+working through it one chapter at a time. Each chapter pairs the Scripture text with word studies, commentary,
+Old and New Testament threads, and a 3D scene for each movement of the passage.
 
-First, run the development server:
+Chapter 1 is live; later chapters appear as the class reaches them.
+
+## Features
+
+- English (ESV) and Korean (개역한글) text, rendered on the server in the reader's chosen language
+- Tap-to-open word studies with the Greek term behind each key word
+- React Three Fiber scenes with GPU-tiered post-processing, and a CSS fallback when WebGL is unavailable or motion is reduced
+- Built for phones as much as desktops, and print-friendly
+
+## Stack
+
+Next.js 16 (App Router) · React 19 · three.js / React Three Fiber / drei · CSS Modules · Vitest · Playwright
+
+## Getting started
+
+Requires Node 22+ and pnpm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Command          | What it does                            |
+| ---------------- | --------------------------------------- |
+| `pnpm test`      | Unit tests (Vitest)                     |
+| `pnpm exec playwright test` | End-to-end tests (starts the dev server) |
+| `pnpm lint`      | ESLint                                  |
+| `pnpm typecheck` | TypeScript                              |
+| `pnpm build`     | Production build                        |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Debug query flags
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `?tune`: opens a [leva](https://github.com/pmndrs/leva) panel for live-tuning scene values
+- `?gpu=0|1|2|3`: forces a GPU tier instead of detecting it
+- `?scenetest`: deterministic scene rendering for screenshots and tests
 
-## Learn More
+## Project layout
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/                     routes: / (chapter 1), /[chapter], not-found
+components/
+  movement/              scripture, commentary, word-study asides, threads
+  scenes/three/          R3F scenes and shared primitives; registry.ts maps scene ids to components
+  scenes/fallback/       CSS-only fallback scenes
+content/
+  hebrews/<n>.ts         one file per chapter, en + ko
+  ui.ts                  interface strings
+  parse.ts               verse markup parser
+e2e/                     Playwright specs; e2e/tools/ holds screenshot scripts
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Adding a chapter
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create `content/hebrews/<n>.ts` exporting a `ChapterContent` (see `content/types.ts` and `1.ts`).
+2. Mark key words in verses as `[key|display text]`. Each `key` needs an entry in `words.en` and `words.ko`.
+3. Register the loader in `content/hebrews/index.ts`.
+4. Give each movement a `scene` id; new scenes go in `components/scenes/three/scenes/` and `registry.ts`.
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Issues and pull requests are welcome, whether for corrections to the text, translation fixes, or bugs.
+Please run `pnpm lint && pnpm typecheck && pnpm test` before opening a PR.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+- **Code:** [MIT](LICENSE)
+- **Study content** (commentary, word studies, summaries, captions): [CC BY-NC-SA 4.0](content/LICENSE.md)
+- **Scripture:** not covered by either license; see below.
+
+### Scripture and credits
+
+Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), © 2001 by Crossway,
+a publishing ministry of Good News Publishers. Used by permission. All rights reserved.
+
+One word study briefly quotes the NIV®: Holy Bible, New International Version®, © 1973, 1978, 1984, 2011 by
+Biblica, Inc.™ Used by permission. All rights reserved worldwide.
+
+Korean text is from 개역한글 (Korean Revised Version, 1961), which is in the public domain.
+
+- Fonts: EB Garamond, Cormorant Garamond and Noto Serif KR, via Google Fonts (SIL Open Font License)
+- GPU benchmark data in `public/benchmarks/` is from [detect-gpu](https://github.com/pmndrs/detect-gpu) (MIT)
+- Cloud texture in `public/textures/` is generated by `e2e/tools/make-cloud.mjs` and is covered by the MIT license

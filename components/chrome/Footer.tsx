@@ -10,6 +10,7 @@ export function Footer() {
       <div className={`hb-container ${s.inner}`}>
         <span className={s.quote}>{t.footQuote}</span>
         <span>{t.footCredit}</span>
+        <small className={s.legal}>{t.footLegal}</small>
       </div>
     </footer>
   );
