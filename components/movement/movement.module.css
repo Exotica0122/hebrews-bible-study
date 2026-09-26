@@ -192,6 +192,34 @@
 .popLabel {
   letter-spacing: 0.16em;
 }
+.popActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.popLink,
+.sheetLink {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid rgba(138, 100, 20, 0.5);
+  background: transparent;
+  font: 500 13px var(--font-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 120ms var(--ease-out);
+}
+.popLink:active,
+.sheetLink:active {
+  transform: scale(0.96);
+}
+@media (hover: hover) and (pointer: fine) {
+  .popLink:hover,
+  .sheetLink:hover {
+    background: var(--gold-12);
+  }
+}
 .popClose {
   width: 32px;
   height: 32px;
@@ -370,6 +398,10 @@
 .noteTitle {
   font: 500 20px/26px var(--font-display);
   color: var(--ink);
+}
+.noteDef {
+  font: 400 14px/20px var(--font-text);
+  margin-top: 4px;
 }
 .noteGloss {
   font: italic 400 15px/22px var(--font-text);

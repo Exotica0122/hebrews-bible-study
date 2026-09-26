@@ -1,0 +1,71 @@
+.wrap {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 10px var(--gutter);
+  pointer-events: none;
+}
+.pill,
+.dismiss {
+  pointer-events: auto;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 16px;
+  background: var(--vellum-deep);
+  border: 1px solid var(--gold);
+  box-shadow: var(--mat-shadow);
+  color: var(--ink);
+  text-decoration: none;
+  font: 500 15px var(--font-text);
+  transition: transform 140ms var(--ease-out), background-color 140ms ease;
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.pill:active {
+  transform: scale(0.97);
+}
+.label {
+  font: 500 11px/16px var(--font-text);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rubric);
+}
+.num {
+  font: 500 20px/20px var(--font-display);
+  color: var(--gold);
+}
+.title {
+  max-width: 50vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dismiss {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--gold);
+  background: var(--vellum-deep);
+  color: var(--ink-muted);
+  font: 400 22px/1 var(--font-text);
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pill:hover {
+    background: var(--vellum);
+  }
+}
+@media print {
+  .wrap {
+    display: none;
+  }
+}

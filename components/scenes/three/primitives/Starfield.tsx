@@ -84,7 +84,7 @@ export function Starfield({ count, spread = DEFAULT_SPREAD, depth = DEFAULT_DEPT
         fragmentShader: FRAG,
         uniforms: {
           uTime: { value: 0 },
-          uPixelRatio: { value: pixelRatio * heightScale },
+          uPixelRatio: { value: 1 },
           uColorA: { value: new Color("#EEE4CF") },
           uColorB: { value: new Color("#F3D38A") },
           uAlpha: { value: alpha },
@@ -96,7 +96,7 @@ export function Starfield({ count, spread = DEFAULT_SPREAD, depth = DEFAULT_DEPT
         blendSrc: OneFactor,
         blendDst: OneFactor,
       }),
-    [pixelRatio, heightScale, alpha],
+    [alpha],
   );
 
   useEffect(
@@ -109,7 +109,9 @@ export function Starfield({ count, spread = DEFAULT_SPREAD, depth = DEFAULT_DEPT
 
   useFrame((_, delta) => {
     const m = ref.current?.material as ShaderMaterial | undefined;
-    if (m) m.uniforms.uTime.value += Math.min(delta, 0.05);
+    if (!m) return;
+    m.uniforms.uTime.value += Math.min(delta, 0.05);
+    m.uniforms.uPixelRatio.value = pixelRatio * heightScale;
   });
 
   return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} renderOrder={0} />;

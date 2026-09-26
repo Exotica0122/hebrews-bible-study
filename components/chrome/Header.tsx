@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react";
 import { CHAPTER_COUNT, isLive } from "@/content/hebrews";
 import { useLang } from "@/lib/lang";
 import { useEscape } from "@/lib/hooks";
@@ -29,7 +29,28 @@ export function chapterHref(n: number) {
 export function Header({ chapter, navItems = [], activeId, activeLabel = "", progressRef, onGo, onTop }: HeaderProps) {
   const { lang, t, setLang } = useLang();
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   useEscape(() => setOpen(false), open);
+
+  useEffect(() => {
+    if (!open) return;
+    const items = menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]');
+    items?.[chapter - 1]?.focus();
+  }, [open, chapter]);
+
+  const onMenuKey = (e: KeyboardEvent) => {
+    const items = [...(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
+    const i = items.indexOf(document.activeElement as HTMLElement);
+    if (items.length === 0) return;
+    const step: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    let next: number | null = null;
+    if (e.key in step) next = (i + step[e.key] + items.length) % items.length;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = items.length - 1;
+    if (next === null) return;
+    e.preventDefault();
+    items[next].focus();
+  };
 
   const chLabel = lang === "ko" ? `${chapter}장` : `Chapter ${chapter}`;
   const bookName = (n: number) => (lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`);
@@ -58,7 +79,7 @@ export function Header({ chapter, navItems = [], activeId, activeLabel = "", pro
         {open && (
           <>
             <div className={s.backdrop} onClick={() => setOpen(false)} />
-            <div role="menu" aria-label={t.chapters} className={s.menu}>
+            <div ref={menuRef} role="menu" aria-label={t.chapters} className={s.menu} onKeyDown={onMenuKey}>
               <div className={s.menuHead}>
                 <span className="hb-eyebrow">{t.chapters}</span>
                 <span className={s.legend}>{t.chLegend}</span>
@@ -70,6 +91,7 @@ export function Header({ chapter, navItems = [], activeId, activeLabel = "", pro
                     <Link
                       key={n}
                       role="menuitem"
+                      tabIndex={n === chapter ? 0 : -1}
                       href={chapterHref(n)}
                       className={`${s.chip} ${cls}`}
                       aria-label={isLive(n) ? undefined : `${bookName(n)} · ${t.comingSoon}`}

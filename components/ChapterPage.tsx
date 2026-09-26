@@ -13,6 +13,8 @@ import { MovementLeaf } from "@/components/movement/MovementLeaf";
 import { Summary } from "@/components/summary/Summary";
 import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
+import { ResumePill } from "@/components/chrome/ResumePill";
+import { parseWordHash, resumeKey, setHash, wordHash } from "@/lib/share";
 
 interface ChapterPageProps {
   chapter: ChapterContent;
@@ -53,6 +55,31 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
     });
   }, []);
   useEscape(closeWord, word !== null);
+
+  useEffect(() => {
+    const openFromHash = () => {
+      const target = parseWordHash(window.location.hash);
+      if (!target || !movements.some((m) => m.id === target.mid)) return;
+      const el = document.getElementById(`hb-${target.mid}`);
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 63, behavior: "auto" });
+      setWord({ mid: target.mid, key: target.key });
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, [movements]);
+
+  useEffect(() => {
+    if (word) setHash(wordHash(word.mid, word.key));
+    else if (parseWordHash(window.location.hash)) setHash(null);
+  }, [word]);
+
+  useEffect(() => {
+    if (!active.startsWith("hb-m")) return;
+    try {
+      window.localStorage.setItem(resumeKey(chapter.number), active.slice(3));
+    } catch {}
+  }, [active, chapter.number]);
 
   const sheetOpen = isMobile && word !== null;
   useEffect(() => {
@@ -105,6 +132,7 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
         onGo={go}
         onTop={() => scrollToTop(reduced)}
       />
+      <ResumePill chapter={chapter.number} movements={movements} onGo={go} />
       <main ref={mainRef}>
         <Hero onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} reduceMotion={reduceMotion} />
         <ChapterMap movements={movements} summary={summary} onGo={go} />

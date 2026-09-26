@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type KeyboardEvent } from "react";
+import { CopyLinkButton } from "@/components/movement/CopyLinkButton";
 import type { MovementCopy, WordStudy } from "@/content/types";
 import { parseMarked } from "@/content/parse";
 import { useLang } from "@/lib/lang";
@@ -38,7 +39,10 @@ function Popover({ word, onClose }: { word: WordStudy; onClose: () => void }) {
     <span role="dialog" aria-label={word.t} className={s.popover}>
       <span className={s.popHead}>
         <span className={`hb-eyebrow ${s.popLabel}`}>{t.wordStudy} · {word.v}</span>
-        <button ref={close} type="button" className={s.popClose} aria-label={t.close} onClick={onClose}>×</button>
+        <span className={s.popActions}>
+          <CopyLinkButton className={s.popLink} />
+          <button ref={close} type="button" className={s.popClose} aria-label={t.close} onClick={onClose}>×</button>
+        </span>
       </span>
       <span className={s.popTitle}>{word.t}</span>
       <span className={s.popGreek}>{word.g}</span>

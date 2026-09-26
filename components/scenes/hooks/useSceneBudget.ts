@@ -9,8 +9,10 @@ interface Slot {
 
 const alive = new Map<string, Slot>();
 const listeners = new Set<() => void>();
+let version = 0;
 
 function notify() {
+  version++;
   listeners.forEach((l) => l());
 }
 
@@ -56,11 +58,12 @@ function release(id: string) {
 
 export function useSceneSlot(id: string, wants: boolean, ref: RefObject<HTMLElement | null>, max: number, retryKey = 0): boolean {
   const held = useSyncExternalStore(subscribe, () => alive.has(id), () => false);
+  const tick = useSyncExternalStore(subscribe, () => version, () => 0);
 
   useEffect(() => {
     if (wants) request(id, ref.current, max);
     else release(id);
-  }, [id, wants, ref, max, retryKey]);
+  }, [id, wants, ref, max, retryKey, tick]);
 
   useEffect(() => () => release(id), [id]);
 

@@ -30,6 +30,15 @@ export function Threads({ chips, openId, onToggle }: ThreadsProps) {
           </button>
         ))}
       </div>
+      <div className="hb-print-only">
+        {chips.map((c) => (
+          <div key={c.id} className={s.chipPanel}>
+            <div className={`hb-eyebrow ${s.chipLabel}`}>{c.tag} · {c[lang]}</div>
+            <p className={s.chipText}>“{lang === "ko" ? c.tko : c.ten}”</p>
+            <p className={s.chipWhy}>{lang === "ko" ? c.wko : c.wen}</p>
+          </div>
+        ))}
+      </div>
       {open && (
         <div className={s.chipPanel}>
           <div className={`hb-eyebrow ${s.chipLabel}`}>{open[lang]}</div>

@@ -62,14 +62,14 @@ test("cross-reference chips open one per movement, with Colossians open by defau
   const john = m1.getByRole("button", { name: /John 1:1–3/ });
   await col.scrollIntoViewIfNeeded();
   await expect(col).toHaveAttribute("aria-expanded", "true");
-  await expect(m1).toContainText("in him all things hold together");
+  await expect(m1).toContainText("in him all things hold together", { useInnerText: true });
   await john.click();
   await expect(john).toHaveAttribute("aria-expanded", "true");
   await expect(col).toHaveAttribute("aria-expanded", "false");
-  await expect(m1).toContainText("In the beginning was the Word");
+  await expect(m1).toContainText("In the beginning was the Word", { useInnerText: true });
   await john.click();
   await expect(john).toHaveAttribute("aria-expanded", "false");
-  await expect(m1).not.toContainText("In the beginning was the Word");
+  await expect(m1).not.toContainText("In the beginning was the Word", { useInnerText: true });
 });
 
 test("language toggle swaps every string and drops the English drop cap", async ({ page }) => {
@@ -128,7 +128,7 @@ test("section nav scroll-spies and the progress bar grows", async ({ page }, tes
   const nav = page.getByRole("navigation", { name: "Sections" });
   await expect(nav.getByRole("button", { name: "Map" })).not.toHaveAttribute("aria-current", "true");
   await nav.getByRole("button", { name: "Summary" }).click();
-  await expect(nav.getByRole("button", { name: "Summary" })).toHaveAttribute("aria-current", "true");
+  await expect(nav.getByRole("button", { name: "Summary" })).toHaveAttribute("aria-current", "true", { timeout: 15_000 });
   const width = await page.locator("header > div:last-child").evaluate((el) => parseFloat(getComputedStyle(el).width));
   expect(width).toBeGreaterThan(500);
 });

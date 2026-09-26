@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, EB_Garamond, Noto_Serif_KR } from "next/font/google";
 import { LangProvider } from "@/lib/lang";
 import "./globals.css";
+import "./print.css";
 
 const ebGaramond = EB_Garamond({
   variable: "--font-eb-garamond",

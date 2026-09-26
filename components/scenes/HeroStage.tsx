@@ -20,10 +20,15 @@ export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyC
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
-    let t: number | undefined;
-    if (w.requestIdleCallback) w.requestIdleCallback(() => setIdle(true), { timeout: 1500 });
-    else t = window.setTimeout(() => setIdle(true), 1200);
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => setIdle(true), { timeout: 1500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setIdle(true), 1200);
     return () => window.clearTimeout(t);
   }, []);
 
