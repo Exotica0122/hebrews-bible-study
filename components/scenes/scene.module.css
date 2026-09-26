@@ -100,6 +100,18 @@
   border: 1px dashed rgba(168, 154, 130, 0.5);
   padding: 6px 10px;
 }
+@media (max-width: 859px) {
+  .overlay {
+    padding: 0 16px 16px;
+    gap: 10px 16px;
+  }
+  .badge,
+  .loading {
+    top: 12px;
+    left: 14px;
+  }
+}
+
 .overlay {
   position: absolute;
   left: 0;

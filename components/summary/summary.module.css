@@ -46,3 +46,16 @@
   margin: 16px 0 0;
   font: 400 21px/34px var(--font-text);
 }
+@media (max-width: 859px) {
+  .itemText {
+    font-size: 18px;
+    line-height: 27px;
+  }
+  .item {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .intentP {
+    font-size: 19px;
+    line-height: 31px;
+  }
+}

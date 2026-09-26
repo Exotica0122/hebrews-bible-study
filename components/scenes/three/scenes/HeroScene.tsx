@@ -8,15 +8,17 @@ import { Glow, Light } from "../primitives/Glow";
 import { Starfield } from "../primitives/Starfield";
 import { easeInSine, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { HERO_FRAGMENTS } from "@/components/hero/fragments";
 
 const CYCLE = 14;
 const HERO_SPREAD: [number, number] = [28, 16];
-const FRAGMENTS = [
-  { left: 0.16, top: 0.24, phase: 0.0, color: "#C8553D", inner: "#F3D38A", size: 0.34, sx: 1, sy: 1 },
-  { left: 0.83, top: 0.2, phase: 0.28, color: "#F3D38A", inner: "#FFF8E8", size: 0.3, sx: 1, sy: 1 },
-  { left: 0.86, top: 0.58, phase: 0.55, color: "#EEE4CF", inner: "#EEE4CF", size: 0.5, sx: 2.2, sy: 1 },
-  { left: 0.13, top: 0.6, phase: 0.8, color: "#D8D1C2", inner: "#FFFFFF", size: 0.26, sx: 0.8, sy: 1.1 },
+const LOOKS = [
+  { phase: 0.0, color: "#C8553D", inner: "#F3D38A", size: 0.34, sx: 1, sy: 1 },
+  { phase: 0.28, color: "#F3D38A", inner: "#FFF8E8", size: 0.3, sx: 1, sy: 1 },
+  { phase: 0.55, color: "#EEE4CF", inner: "#EEE4CF", size: 0.5, sx: 2.2, sy: 1 },
+  { phase: 0.8, color: "#D8D1C2", inner: "#FFFFFF", size: 0.26, sx: 0.8, sy: 1.1 },
 ];
+const FRAGMENTS = HERO_FRAGMENTS.map((f, i) => ({ ...LOOKS[i], left: f.left / 100, top: f.top / 100, leftMobile: f.leftMobile / 100, topMobile: f.topMobile / 100 }));
 
 export function HeroScene({ mobile, captions }: SceneProps) {
   const { width, height } = useThree((s) => s.viewport);
@@ -64,8 +66,8 @@ export function HeroScene({ mobile, captions }: SceneProps) {
     let pulse = 0;
     FRAGMENTS.forEach((f, i) => {
       const p = ((t / CYCLE + f.phase) % 1 + 1) % 1;
-      const hx = (f.left - 0.5) * width;
-      const hy = (0.5 - f.top) * height;
+      const hx = ((mobile ? f.leftMobile : f.left) - 0.5) * width;
+      const hy = (0.5 - (mobile ? f.topMobile : f.top)) * height;
       const k = easeInSine(p);
       const x = lerp(hx, centre.current.x, k);
       const y = lerp(hy, centre.current.y, k);
@@ -99,8 +101,8 @@ export function HeroScene({ mobile, captions }: SceneProps) {
       </group>
       {FRAGMENTS.map((f, i) => (
         <group key={i} ref={(g) => { groups.current[i] = g; }}>
-          <Glow size={f.size * 3} scaleX={f.sx} scaleY={f.sy} color={f.color} alpha={0.22} power={2.2} renderOrder={6} onMaterial={(m) => { trailMats.current[i] = m; }} />
-          <Glow size={f.size} scaleX={f.sx} scaleY={f.sy} color={f.color} inner={f.inner} alpha={1} power={1.2} renderOrder={8} onMaterial={(m) => { mats.current[i] = m; }} />
+          <Glow size={f.size * (mobile ? 2.2 : 3)} scaleX={f.sx} scaleY={f.sy} color={f.color} alpha={0.22} power={2.2} renderOrder={6} onMaterial={(m) => { trailMats.current[i] = m; }} />
+          <Glow size={f.size * (mobile ? 0.8 : 1)} scaleX={f.sx} scaleY={f.sy} color={f.color} inner={f.inner} alpha={1} power={1.2} renderOrder={8} onMaterial={(m) => { mats.current[i] = m; }} />
         </group>
       ))}
     </>

@@ -7,6 +7,8 @@
 }
 .fragment {
   position: absolute;
+  left: var(--l);
+  top: var(--t);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -121,6 +123,24 @@
   border: 1px dashed rgba(168, 154, 130, 0.5);
   padding: 6px 10px;
 }
+@media (max-width: 859px) {
+  .fragment {
+    left: var(--lm);
+    top: var(--tm);
+  }
+  .stack {
+    padding: 40px 24px 124px;
+    gap: 10px;
+  }
+  .tagline {
+    font-size: 19px;
+    line-height: 1.55;
+  }
+  .actions {
+    margin-top: 12px;
+  }
+}
+
 .cssLayers {
   position: absolute;
   inset: 0;

@@ -15,12 +15,7 @@ interface HeroProps {
   reduceMotion?: boolean;
 }
 
-export const HERO_FRAGMENTS = [
-  { key: "fragBush", cls: "bush", left: 16, top: 24 },
-  { key: "fragFire", cls: "fire", left: 83, top: 20 },
-  { key: "fragCloud", cls: "cloud", left: 86, top: 58 },
-  { key: "fragTablet", cls: "tablet", left: 13, top: 60 },
-] as const;
+import { HERO_FRAGMENTS } from "./fragments";
 
 export function Hero({ onBegin, onMap, artNote, reduceMotion }: HeroProps) {
   const { t } = useLang();
@@ -42,7 +37,7 @@ export function Hero({ onBegin, onMap, artNote, reduceMotion }: HeroProps) {
             captionRefs.current[i] = el;
           }}
           className={s.fragment}
-          style={{ left: `${f.left}%`, top: `${f.top}%` }}
+          style={{ "--l": `${f.left}%`, "--t": `${f.top}%`, "--lm": `${f.leftMobile}%`, "--tm": `${f.topMobile}%` } as React.CSSProperties}
         >
           <span className={`${s[f.cls]} ${live ? s.dotHidden : ""}`} />
           <span className={s.fragCap}>{t[f.key]}</span>

@@ -82,6 +82,32 @@
   cursor: pointer;
   transition: color 120ms ease;
 }
+@media (max-width: 859px) {
+  .inner {
+    gap: 40px;
+  }
+  .row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 6px 12px;
+    padding: 18px 0;
+  }
+  .num {
+    font-size: 30px;
+    line-height: 32px;
+  }
+  .title {
+    font-size: 24px;
+  }
+  .snips {
+    grid-column: 2;
+  }
+  .study {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 4px;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .title:hover,
   .study:hover {

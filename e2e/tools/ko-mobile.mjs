@@ -1,0 +1,18 @@
+import { chromium, devices } from "@playwright/test";
+const S = process.argv[2];
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ ...devices["Pixel 7"], viewport: { width: 360, height: 800 }, deviceScaleFactor: 2 });
+const page = await ctx.newPage();
+await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+await page.getByRole("button", { name: "한국어" }).click();
+await page.waitForTimeout(600);
+await page.locator("#hb-map").scrollIntoViewIfNeeded();
+await page.evaluate(() => window.scrollBy(0, -70));
+await page.waitForTimeout(300);
+await page.screenshot({ path: `${S}/mobile/ko-map.png` });
+await page.locator("#hb-m1 h2").scrollIntoViewIfNeeded();
+await page.evaluate(() => window.scrollBy(0, -80));
+await page.waitForTimeout(300);
+await page.screenshot({ path: `${S}/mobile/ko-m1.png` });
+console.log(JSON.stringify(await page.evaluate(() => ({ scrollW: document.documentElement.scrollWidth, clientW: document.documentElement.clientWidth }))));
+await browser.close();
