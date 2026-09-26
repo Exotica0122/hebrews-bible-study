@@ -94,3 +94,14 @@ test("page scroll is locked behind the mobile word sheet", async ({ page }, test
   await page.keyboard.press("Escape");
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).not.toBe("hidden");
 });
+
+test("a back-to-top button appears after the hero and returns to the top", async ({ page }) => {
+  await page.goto("/");
+  const top = page.getByRole("button", { name: "Back to top" });
+  await expect(top).toBeHidden();
+  await page.locator("#hb-m2").scrollIntoViewIfNeeded();
+  await expect(top).toBeVisible();
+  await top.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 8_000 }).toBeLessThan(5);
+  await expect(top).toBeHidden();
+});

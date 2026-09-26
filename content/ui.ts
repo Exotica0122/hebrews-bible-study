@@ -14,7 +14,7 @@ const T = {
     soonParts: [{ k: '01', t: 'Opening scene' }, { k: '02', t: 'Chapter map' }, { k: '03', t: 'Word studies & commentary' }, { k: '04', t: 'Summary' }],
     backCh1: 'Back to Hebrews 1', bookEyebrow: 'The letter to the Hebrews', bookTitle: 'Thirteen chapters, one at a time',
     bookIntro: 'New chapters appear here as the class reaches them.', studying: 'Studying now', comingSoon: 'Coming soon',
-    link: 'Link', copied: 'Copied', resume: 'Continue from', dismiss: 'Dismiss' },
+    link: 'Link', copied: 'Copied', resume: 'Continue from', dismiss: 'Dismiss', backToTop: 'Back to top' },
   ko: { brand: '히브리서', chapter: '1장', map: '지도', summary: '요약', heroEyebrow: '한 절씩 읽는 성경 공부 · 개역한글', heroTitle: '히브리서 1장',
     tagline: '“옛적에 선지자들로 여러 부분과 여러 모양으로… 이 모든 날 마지막에 아들로 우리에게 말씀하셨으니”', taglineRef: '히브리서 1:1–2', begin: '공부 시작하기', seeMap: '장 지도 보기', scroll: '스크롤',
     fragBush: '떨기나무 불꽃 · 출 3', fragFire: '불 · 출 19', fragCloud: '구름 · 출 13', fragTablet: '돌판 · 출 34',
@@ -27,7 +27,7 @@ const T = {
     soonParts: [{ k: '01', t: '여는 장면' }, { k: '02', t: '장 지도' }, { k: '03', t: '단어 연구와 주석' }, { k: '04', t: '요약' }],
     backCh1: '히브리서 1장으로 돌아가기', bookEyebrow: '히브리서', bookTitle: '열세 장, 한 장씩',
     bookIntro: '모임이 진도를 나가면 새 장이 이곳에 추가됩니다.', studying: '공부 중', comingSoon: '준비 중',
-    link: '링크', copied: '복사됨', resume: '이어서 보기', dismiss: '닫기' }
+    link: '링크', copied: '복사됨', resume: '이어서 보기', dismiss: '닫기', backToTop: '맨 위로' }
 };
 
 export type UiStrings = typeof T.en;

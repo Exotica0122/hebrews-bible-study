@@ -1,0 +1,58 @@
+.button {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vellum-deep);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 0 3px var(--vellum), 0 0 0 4px rgba(183, 137, 44, 0.45), 0 10px 24px rgba(43, 34, 24, 0.18);
+  color: var(--gold-text);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.96);
+  pointer-events: none;
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    background-color 140ms ease,
+    visibility 0s linear 200ms;
+}
+.button[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.button:active {
+  transform: scale(0.94);
+}
+.arrow {
+  font: 500 22px/1 var(--font-display);
+  transform: translateY(-1px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    background: var(--vellum);
+    color: var(--rubric);
+  }
+}
+@media (max-width: 859px) {
+  .button {
+    width: 40px;
+    height: 40px;
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+}
+@media print {
+  .button {
+    display: none;
+  }
+}

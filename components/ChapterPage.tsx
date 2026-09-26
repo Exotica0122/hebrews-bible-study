@@ -14,6 +14,7 @@ import { Summary } from "@/components/summary/Summary";
 import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
 import { ResumePill } from "@/components/chrome/ResumePill";
+import { BackToTop } from "@/components/chrome/BackToTop";
 import { parseWordHash, resumeKey, setHash, wordHash } from "@/lib/share";
 
 interface ChapterPageProps {
@@ -159,6 +160,7 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
         <BookIndex current={chapter.number} liveSubtitle={movements[0][lang].title} />
       </main>
       <Footer />
+      <BackToTop visible={activeId !== "top" && !sheetOpen} onClick={() => scrollToTop(reduced)} />
       {sheetOpen && word && sheetMovement && sheetWord && sheetWords && (
         <WordSheet
           word={sheetWord}
