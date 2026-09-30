@@ -1,6 +1,8 @@
 .wrap {
-  position: sticky;
+  position: fixed;
   top: var(--header-h);
+  left: 0;
+  right: 0;
   z-index: 40;
   display: flex;
   justify-content: center;
