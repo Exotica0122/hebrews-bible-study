@@ -367,31 +367,17 @@
   box-shadow: 0 0 10px rgba(243, 211, 138, 0.25);
 }
 
-/* gather: clay lamps in a ring around one lamp */
-.ga_floor {
-  background: radial-gradient(ellipse at 50% 58%, #4a3420 0, #2a221a 32%, #0d0b09 70%);
+/* gather: shadow play on a lamplit wall */
+.ga_people {
+  left: 0;
+  width: 100%;
+  bottom: 28%;
+  height: 33%;
 }
-.ga_lamp {
-  width: 34px;
-  height: 14px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: linear-gradient(#8a6040, #5a3c26);
-}
-.ga_lamp::after {
-  content: "";
-  position: absolute;
-  left: 78%;
-  top: -14px;
-  width: 7px;
-  height: 14px;
-  border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
-  background: radial-gradient(circle at 50% 70%, #fff8e8, #f3c77a 55%, rgba(243, 199, 122, 0));
-  box-shadow: 0 0 20px 8px rgba(243, 199, 122, 0.35);
-}
-.ga_centre {
-  width: 48px;
-  height: 20px;
+.ga_wall {
+  background:
+    linear-gradient(transparent 72%, rgba(13, 11, 9, 0.55) 72%),
+    radial-gradient(ellipse 50% 65% at 50% 55%, #b07a42 0, #5a3e22 45%, #0d0b09 100%);
 }
 
 /* freed: chains broken before a veil, light between its halves */

@@ -1,140 +1,144 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { Group, LatheGeometry, MeshStandardMaterial, Vector2, type ShaderMaterial } from "three";
+import { Color, Group, MeshBasicMaterial, PlaneGeometry, Shape, ShapeGeometry, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import { easeInOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setOpacity } from "../primitives/mutate";
+import { setUniform } from "../primitives/mutate";
 
-const PERIOD = 14;
-const COUNT = 8;
-/** Start position on the floor (x, z) and a stagger in seconds for each lamp brought in. */
-const STARTS: [number, number, number][] = [
-  [-4.6, -1.8, 0], [4.4, -2.4, 0.5], [-3.4, 2.4, 1.0], [3.6, 2.2, 0.3],
-  [-5.2, 0.6, 1.4], [5.0, 0.2, 0.8], [-1.4, -3.8, 1.7], [1.8, -3.6, 1.2],
+const PERIOD = 15;
+const FLOOR_Y = -1.25;
+/** The children: final x beside him, height scale, and when they set out (s). */
+const CHILDREN: [number, number, number][] = [
+  [-0.62, 0.66, 1.2], [0.64, 0.62, 1.8], [-1.12, 0.74, 2.6], [1.16, 0.7, 3.1], [-1.6, 0.6, 3.9], [1.62, 0.76, 4.4],
 ];
-const EMBER_BOX: [number, number, number] = [3, 2.2, 3];
+const WALK = 4.2;
+const EMBER_BOX: [number, number, number] = [3, 2.6, 1];
 
-/** A round clay oil lamp: shallow body, filling hole, and a nozzle for the wick. */
-function lampProfile() {
-  const pts = [
-    [0, 0], [0.16, 0.005], [0.26, 0.04], [0.3, 0.1], [0.28, 0.15], [0.2, 0.19], [0.1, 0.205], [0.06, 0.19], [0.045, 0.16], [0, 0.16],
-  ];
-  return new LatheGeometry(pts.map(([x, y]) => new Vector2(x, y)), 28);
+const WALL_VERT = /* glsl */ `
+varying vec3 vWorld;
+void main() {
+  vec4 w = modelMatrix * vec4(position, 1.0);
+  vWorld = w.xyz;
+  gl_Position = projectionMatrix * viewMatrix * w;
+}`;
+
+const WALL_FRAG = /* glsl */ `
+uniform float uLight;
+uniform float uFloorY;
+uniform vec3 uDark;
+uniform vec3 uWarm;
+uniform vec3 uHot;
+varying vec3 vWorld;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
+}
+void main() {
+  vec2 p = vWorld.xy - vec2(0.0, -0.2);
+  float r = length(p * vec2(0.4, 0.6));
+  float pool = exp(-r * r * 0.7) * uLight;
+  float plaster = 0.9 + 0.1 * noise(vWorld.xy * 6.0) + 0.05 * noise(vWorld.xy * 23.0);
+  vec3 c = mix(uDark, uWarm, pool) * plaster;
+  c += uHot * pow(pool, 2.5) * 0.45;
+  if (vWorld.y < uFloorY) {
+    float d = uFloorY - vWorld.y;
+    c = mix(uDark, uWarm * 0.55, exp(-abs(vWorld.x) * 0.5) * uLight) * (1.0 - smoothstep(0.0, 1.6, d) * 0.6);
+  }
+  float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  c += (grain - 0.5) * (2.0 / 255.0);
+  gl_FragColor = vec4(c, 1.0);
+}`;
+
+/** A robed standing figure facing us, feet at y = 0, about 1.75 units tall. */
+function figureGeometry() {
+  const s = new Shape();
+  s.moveTo(-0.3, 0);
+  s.quadraticCurveTo(-0.27, 0.6, -0.22, 0.95);
+  s.quadraticCurveTo(-0.25, 1.2, -0.27, 1.3);
+  s.quadraticCurveTo(-0.25, 1.4, -0.07, 1.44);
+  s.lineTo(-0.055, 1.5);
+  s.quadraticCurveTo(-0.13, 1.54, -0.12, 1.62);
+  s.quadraticCurveTo(-0.11, 1.75, 0, 1.75);
+  s.quadraticCurveTo(0.11, 1.75, 0.12, 1.62);
+  s.quadraticCurveTo(0.13, 1.54, 0.055, 1.5);
+  s.lineTo(0.07, 1.44);
+  s.quadraticCurveTo(0.25, 1.4, 0.27, 1.3);
+  s.quadraticCurveTo(0.25, 1.2, 0.22, 0.95);
+  s.quadraticCurveTo(0.27, 0.6, 0.3, 0);
+  s.closePath();
+  return new ShapeGeometry(s, 16);
 }
 
-function lerpAngle(a: number, b: number, k: number) {
-  const d = Math.atan2(Math.sin(b - a), Math.cos(b - a));
-  return a + d * k;
-}
-
-function flameFlicker(t: number, seed: number) {
-  return 0.85 + 0.1 * Math.sin(t * 9 + seed * 7) + 0.05 * Math.sin(t * 23 + seed * 3);
-}
-
+/** “Behold, I and the children God has given me”: one figure in the lamplight, the children coming out of the dark to stand beside him. */
 export function GatherScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
-  const lampsRef = useRef<Group>(null);
-  const flames = useRef<(ShaderMaterial | null)[]>([]);
-  const halos = useRef<(ShaderMaterial | null)[]>([]);
-  const pools = useRef<(ShaderMaterial | null)[]>([]);
-  const centreFlame = useRef<ShaderMaterial>(null);
-
-  const body = useMemo(() => lampProfile(), []);
-  const clay = useMemo(() => new MeshStandardMaterial({ color: "#6A4A30", roughness: 0.85, transparent: true }), []);
+  const children = useRef<Group>(null);
+  const figure = useMemo(() => figureGeometry(), []);
+  const ink = useMemo(() => new MeshBasicMaterial({ color: "#0B0907" }), []);
+  const wall = useMemo(() => {
+    const g = new PlaneGeometry(40, 20);
+    const m = new ShaderMaterial({
+      vertexShader: WALL_VERT,
+      fragmentShader: WALL_FRAG,
+      uniforms: {
+        uLight: { value: 0 },
+        uFloorY: { value: FLOOR_Y },
+        uDark: { value: new Color("#0D0B09") },
+        uWarm: { value: new Color("#B07A42") },
+        uHot: { value: new Color("#F3D38A") },
+      },
+    });
+    return { g, m };
+  }, []);
   useEffect(
     () => () => {
-      body.dispose();
-      clay.dispose();
+      figure.dispose();
+      ink.dispose();
+      wall.g.dispose();
+      wall.m.dispose();
     },
-    [body, clay],
+    [figure, ink, wall],
   );
 
-  const ring = mobile ? 1.55 : 1.9;
-  const targets = useMemo(
-    () => Array.from({ length: COUNT }, (_, i) => {
-      const a = (i / COUNT) * Math.PI * 2 + 0.2;
-      return { x: Math.cos(a) * ring, z: Math.sin(a) * ring, face: -a };
-    }),
-    [ring],
-  );
+  const spread = mobile ? 0.8 : 1;
+  const edge = mobile ? 3.4 : 5.6;
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(0, mobile ? 5.2 : 4.3, mobile ? 7.8 : 6.4);
-    camera.lookAt(0, 0, 0.1);
+    camera.position.set(0, 0.1, mobile ? 9.5 : 7.4);
+    camera.lookAt(0, -0.05, 0);
     const p = t % PERIOD;
-    const vanish = 1 - smoothstep(12.6, 14, p);
-    setOpacity(clay, smoothstep(0, 1, p) * vanish);
-    if (centreFlame.current) centreFlame.current.uniforms.uAlpha.value = 1.3 * flameFlicker(t, 0);
+    const arrived = CHILDREN.reduce((n, [, , start]) => n + smoothstep(start + WALK - 0.8, start + WALK, p), 0) / CHILDREN.length;
+    const light = (0.55 + 0.45 * arrived) * smoothstep(0, 1.4, p) * (1 - smoothstep(13.2, 15, p));
+    setUniform(wall.m, "uLight", light + Math.sin(t * 7) * 0.012 + Math.sin(t * 11.3) * 0.008);
 
-    lampsRef.current?.children.forEach((g, i) => {
-      const [sx, sz, delay] = STARTS[i];
-      const k = easeInOutCubic((p - 1 - delay) / 3.8);
-      const tg = targets[i];
-      g.position.set(lerp(sx, tg.x, k), 0.35 * Math.sin(k * Math.PI), lerp(sz, tg.z, k));
-      g.rotation.y = lerpAngle(-Math.atan2(-sz, -sx), tg.face, k);
-      const lit = smoothstep(4.8 + delay, 5.6 + delay, p) * vanish;
-      const f = flameFlicker(t, i + 1);
-      const fl = flames.current[i];
-      if (fl) fl.uniforms.uAlpha.value = 1.2 * lit * f;
-      const h = halos.current[i];
-      if (h) h.uniforms.uAlpha.value = 0.3 * lit * f;
-      const pl = pools.current[i];
-      if (pl) pl.uniforms.uAlpha.value = 0.22 * lit;
+    children.current?.children.forEach((g, i) => {
+      const [x, , start] = CHILDREN[i];
+      const k = easeInOutCubic((p - start) / WALK);
+      g.position.x = lerp(Math.sign(x) * edge, x * spread, k);
+      const walking = k > 0 && k < 1 ? 1 : 0;
+      const step = Math.sin((p - start) * 5.5);
+      g.position.y = FLOOR_Y + walking * Math.abs(step) * 0.025;
+      g.rotation.z = walking * step * 0.015;
     });
   });
 
   return (
     <>
-      <color attach="background" args={["#0D0B09"]} />
-      <hemisphereLight args={["#3A2E22", "#0A0806", 0.35]} />
-      <pointLight position={[0.4, 1.7, 0]} intensity={9} distance={10} decay={1.6} color="#F3C77A" />
-      <fog attach="fog" args={["#0D0B09", 5, 14]} />
-
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <circleGeometry args={[40, 48]} />
-        <meshStandardMaterial color="#2A221A" roughness={0.95} />
-      </mesh>
-      <group rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-        <Glow size={mobile ? 6.5 : 8} color="#8A5A22" alpha={0.25} power={1.8} renderOrder={2} />
-      </group>
-
-      <group>
-        <mesh geometry={body} material={clay} scale={1.35} />
-        <mesh position={[0.46, 0.1, 0]} rotation={[0, 0, Math.PI / 2 - 0.25]} scale={1.35}>
-          <cylinderGeometry args={[0.05, 0.07, 0.22, 10]} />
-          <primitive object={clay} attach="material" />
-        </mesh>
-        <Glow position={[0.58, 0.42, 0]} size={mobile ? 2.4 : 3} color="#B7892C" alpha={0.35} power={2.2} renderOrder={10} billboard />
-        <Glow position={[0.58, 0.32, 0]} size={0.34} scaleY={1.7} color="#F3C77A" inner="#FFF8E8" alpha={1.3} power={1.1} renderOrder={11} billboard onMaterial={(m) => { centreFlame.current = m; }} />
-      </group>
-
-      <group ref={lampsRef}>
-        {STARTS.map(([x, z], i) => (
-          <group key={i} position={[x, 0, z]}>
-            <mesh geometry={body} material={clay} />
-            <mesh position={[-0.3, 0.13, 0]} rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[0.06, 0.018, 6, 14]} />
-              <primitive object={clay} attach="material" />
-            </mesh>
-            <mesh position={[0.34, 0.08, 0]} rotation={[0, 0, Math.PI / 2 - 0.25]}>
-              <cylinderGeometry args={[0.04, 0.05, 0.16, 8]} />
-              <primitive object={clay} attach="material" />
-            </mesh>
-            <group rotation={[-Math.PI / 2, 0, 0]} position={[0.3, 0.02, 0]}>
-              <Glow size={1.8} color="#8A5A22" alpha={0} power={1.8} renderOrder={3} onMaterial={(m) => { pools.current[i] = m; }} />
-            </group>
-            <Glow position={[0.42, 0.3, 0]} size={1.3} color="#B7892C" alpha={0} power={2.2} renderOrder={10} billboard onMaterial={(m) => { halos.current[i] = m; }} />
-            <Glow position={[0.42, 0.22, 0]} size={0.2} scaleY={1.7} color="#F3C77A" inner="#FFF8E8" alpha={0} power={1.1} renderOrder={11} billboard onMaterial={(m) => { flames.current[i] = m; }} />
-          </group>
+      <mesh geometry={wall.g} material={wall.m} position={[0, 0, -1.2]} renderOrder={-10} />
+      <mesh geometry={figure} material={ink} position={[0, FLOOR_Y, 0]} />
+      <group ref={children}>
+        {CHILDREN.map(([x, h]) => (
+          <mesh key={x} geometry={figure} material={ink} position={[Math.sign(x) * edge, FLOOR_Y, 0.05]} scale={[h * 1.05, h, 1]} />
         ))}
       </group>
-      <Embers count={mobile ? 14 : 26} box={EMBER_BOX} position={[0.6, 0.4, 0]} rise={0.06} size={1.6} alpha={0.5} />
-      {effects && <SceneEffects bloom={0.55} />}
+      <Embers count={mobile ? 12 : 22} box={EMBER_BOX} position={[0, -0.9, -0.6]} rise={0.05} size={1.6} alpha={0.45} />
+      {effects && <SceneEffects bloom={0.4} />}
     </>
   );
 }

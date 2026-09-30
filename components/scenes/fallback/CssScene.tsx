@@ -13,10 +13,9 @@ const EMBERS: [number, number, number, number][] = [
   [18, 38, 18, 26], [27, 50, 12, 18], [13, 57, 10, 15], [34, 32, 9, 13],
 ];
 const DUST: [number, number, number][] = [[36, 66, 0.4], [46, 68, 0.35], [56, 67, 0.4], [64, 69, 0.3]];
-const LAMPS = Array.from({ length: 8 }, (_, i) => {
-  const a = (i / 8) * Math.PI * 2 + 0.2;
-  return [50 + Math.cos(a) * 17, 58 + Math.sin(a) * 11] as const;
-});
+/** Robed figure, feet at 0, 18 units tall; the SVG twin of GatherScene's figure. */
+const FIGURE = "M-3 0Q-2.7-6-2.2-9.5Q-2.5-12-2.7-13Q-2.5-14-0.7-14.4L-0.55-15Q-1.3-15.4-1.2-16.2Q-1.1-17.5 0-17.5Q1.1-17.5 1.2-16.2Q1.3-15.4 0.55-15L0.7-14.4Q2.5-14 2.7-13Q2.5-12 2.2-9.5Q2.7-6 3 0Z";
+const GATHERED: [number, number][] = [[50, 1], [44, 0.66], [56.4, 0.62], [39, 0.74], [61.6, 0.7], [34, 0.6], [66.2, 0.76]];
 const LEAVES = Array.from({ length: 22 }, (_, i) => {
   const side = i < 11 ? 1 : -1;
   const k = (i % 11) / 10;
@@ -124,11 +123,12 @@ function Scene({ scene }: { scene: SceneId }) {
     case "gather":
       return (
         <>
-          <div className={`${s.layer} ${s.ga_floor}`} />
-          {LAMPS.map(([l, t]) => (
-            <span key={`${l}-${t}`} className={`${A} ${s.ga_lamp}`} style={{ left: `${l}%`, top: `${t}%` }} />
-          ))}
-          <div className={`${A} ${s.ga_lamp} ${s.ga_centre}`} style={{ left: "50%", top: "58%" }} />
+          <div className={`${s.layer} ${s.ga_wall}`} />
+          <svg className={`${A} ${s.ga_people}`} viewBox="30 25 40 18" preserveAspectRatio="xMidYMax meet">
+            {GATHERED.map(([x, h]) => (
+              <path key={x} d={FIGURE} fill="#0B0907" transform={`translate(${x} 43) scale(${h * 1.05} ${h})`} />
+            ))}
+          </svg>
         </>
       );
     case "freed":
