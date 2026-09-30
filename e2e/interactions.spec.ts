@@ -107,12 +107,12 @@ test("chapter menu routes to a coming-soon chapter with prev, next and back", as
   await expect(page).toHaveURL(/\/6$/);
   await page.getByRole("link", { name: /← Hebrews 5/ }).click();
   await expect(page).toHaveURL(/\/5$/);
-  await page.getByRole("link", { name: "Back to Hebrews 2" }).click();
-  await expect(page).toHaveURL(/\/2$/);
+  await page.getByRole("link", { name: "Back to Hebrews 3" }).click();
+  await expect(page).toHaveURL(/\/3$/);
 });
 
-test("chapter 3 has no previous link and chapter 13 has no next link", async ({ page }) => {
-  await page.goto("/3");
+test("chapter 4 has no previous link and chapter 13 has no next link", async ({ page }) => {
+  await page.goto("/4");
   await expect(page.getByRole("link", { name: /← Hebrews/ })).toHaveCount(0);
   await page.goto("/13");
   await expect(page.getByRole("link", { name: /Hebrews 14/ })).toHaveCount(0);

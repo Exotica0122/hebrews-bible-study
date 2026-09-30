@@ -1,9 +1,9 @@
 export type Lang = "en" | "ko";
 
-/** Where a chapter's scenes are set: chapter 1 in the heavens, chapter 2 on earth. */
-export type Setting = "heavens" | "earth";
+/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk. */
+export type Setting = "heavens" | "earth" | "wilderness";
 
-export type SceneId = "radiance" | "angels" | "throne" | "fold" | "exalted" | "drift" | "crowned" | "gather" | "freed";
+export type SceneId = "radiance" | "angels" | "throne" | "fold" | "exalted" | "drift" | "crowned" | "gather" | "freed" | "tabernacle" | "rock" | "coals" | "threshold";
 
 export type CommentaryBlock = ["h" | "p" | "q", string];
 

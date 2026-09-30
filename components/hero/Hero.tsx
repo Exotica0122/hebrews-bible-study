@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ComponentType } from "react";
 import type { ChapterCopy, Setting } from "@/content/types";
 import { Fleuron, DoubleFrame } from "@/components/ornaments/Ornaments";
 import { CssStarfield } from "@/components/scenes/fallback/CssStarfield";
-import { CssEarthBackdrop, HeroHalo } from "@/components/scenes/fallback/CssScene";
+import { CssEarthBackdrop, CssWildernessBackdrop, HeroHalo } from "@/components/scenes/fallback/CssScene";
 import { HeroStage } from "@/components/scenes/HeroStage";
+import type { SceneId } from "@/components/scenes/types";
 import { useLang } from "@/lib/lang";
 import s from "./hero.module.css";
 
@@ -20,18 +21,25 @@ interface HeroProps {
 
 import { HERO_FRAGMENTS } from "./fragments";
 
+const STAGES: Record<Setting, { scene: SceneId; Backdrop: ComponentType }> = {
+  heavens: { scene: "hero", Backdrop: CssStarfield },
+  earth: { scene: "heroEarth", Backdrop: CssEarthBackdrop },
+  wilderness: { scene: "heroCamp", Backdrop: CssWildernessBackdrop },
+};
+
 export function Hero({ copy, setting, onBegin, onMap, artNote, reduceMotion }: HeroProps) {
   const { t } = useLang();
   const hostRef = useRef<HTMLElement>(null);
   const captionRefs = useRef<(HTMLElement | null)[]>([]);
   const [live, setLive] = useState(false);
+  const { scene, Backdrop } = STAGES[setting];
 
   return (
     <section id="hb-top" ref={hostRef} aria-label={copy.heroTitle} className={s.hero}>
       <div className={`${s.cssLayers} ${live ? s.cssLayersHidden : ""}`}>
-        {setting === "earth" ? <CssEarthBackdrop /> : <CssStarfield />}
+        <Backdrop />
       </div>
-      <HeroStage scene={setting === "earth" ? "heroEarth" : "hero"} hostRef={hostRef} captionRefs={captionRefs} reduceMotion={reduceMotion} onReadyChange={setLive} />
+      <HeroStage scene={scene} hostRef={hostRef} captionRefs={captionRefs} reduceMotion={reduceMotion} onReadyChange={setLive} />
       <DoubleFrame />
       {copy.fragments &&
         HERO_FRAGMENTS.map((f, i) => (

@@ -22,7 +22,13 @@ const LEAVES = Array.from({ length: 22 }, (_, i) => {
   const a = -Math.PI / 2 + k * (Math.PI - 0.32);
   return [50 + side * Math.cos(a) * 9, 44 - Math.sin(a) * 14, side * (k * 180 - 90) + (i % 2 ? 30 : -30)] as const;
 });
+const BED: [number, number, number][] = Array.from({ length: 16 }, (_, i) => {
+  const a = i * 2.39996;
+  const r = Math.sqrt((i + 0.5) / 16) * 12;
+  return [44 + Math.cos(a) * r, 62 + Math.sin(a) * r * 0.45, 0.6 + ((i * 7) % 5) * 0.1];
+});
 const EARTH_SCENES: SceneId[] = ["drift", "crowned", "gather", "freed", "heroEarth"];
+const WILDERNESS_SCENES: SceneId[] = ["tabernacle", "rock", "coals", "threshold", "heroCamp"];
 
 function Scene({ scene }: { scene: SceneId }) {
   switch (scene) {
@@ -141,8 +147,55 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.fr_chain} ${s.fr_chainR}`} />
         </>
       );
+    case "tabernacle":
+      return (
+        <>
+          <CssWildernessBackdrop pillar={false} />
+          <div className={`${C} ${s.ta_glory}`} />
+          <div className={`${A} ${s.ta_back}`} />
+          <div className={`${A} ${s.ta_tent}`} />
+          <div className={`${A} ${s.ta_door}`} />
+          <div className={`${A} ${s.ta_altar}`} />
+          <div className={`${A} ${s.ta_front}`} />
+        </>
+      );
+    case "rock":
+      return (
+        <>
+          <CssWildernessBackdrop pillar={false} />
+          <div className={`${A} ${s.ro_pool}`} />
+          <div className={`${A} ${s.ro_rock}`} />
+          <div className={`${A} ${s.ro_cleft}`} />
+          <div className={`${A} ${s.ro_water}`} />
+        </>
+      );
+    case "coals":
+      return (
+        <>
+          <div className={`${s.layer} ${s.co_ground}`} />
+          {BED.map(([l, t, o], i) => (
+            <span key={i} className={`${A} ${s.co_coal}`} style={{ left: `${l}%`, top: `${t}%`, opacity: o }} />
+          ))}
+          <span className={`${A} ${s.co_coal} ${s.co_lone}`} />
+        </>
+      );
+    case "threshold":
+      return (
+        <>
+          <div className={`${s.layer} ${s.wi_sky}`} />
+          <div className={`${A} ${s.th_land}`} />
+          <div className={`${A} ${s.th_river}`} />
+          <svg className={`${A} ${s.th_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
+            {[[48.6, 1], [51.4, 0.96]].map(([x, h]) => (
+              <path key={x} d={FIGURE} fill="#120D0C" transform={`translate(${x} 43) scale(${h * 0.5})`} />
+            ))}
+          </svg>
+        </>
+      );
     case "heroEarth":
       return <CssEarthBackdrop />;
+    case "heroCamp":
+      return <CssWildernessBackdrop />;
     default:
       return null;
   }
@@ -151,7 +204,7 @@ function Scene({ scene }: { scene: SceneId }) {
 export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      {!EARTH_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
+      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
       <Scene scene={scene} />
     </div>
   );
@@ -164,6 +217,19 @@ export function CssEarthBackdrop() {
       <div className={`${s.layer} ${s.he_far}`} />
       <div className={`${s.layer} ${s.he_mid}`} />
       <div className={`${s.layer} ${s.he_near}`} />
+    </div>
+  );
+}
+
+/** Dusk wilderness: indigo sky with a terracotta horizon, dunes, and the pillar of fire over the camp. */
+export function CssWildernessBackdrop({ pillar = true }: { pillar?: boolean }) {
+  return (
+    <div aria-hidden="true" className={s.layer}>
+      <div className={`${s.layer} ${s.wi_sky}`} />
+      <div className={`${s.layer} ${s.wi_stars}`} />
+      {pillar && <div className={`${A} ${s.wi_pillar}`} />}
+      <div className={`${s.layer} ${s.wi_far}`} />
+      <div className={`${s.layer} ${s.wi_near}`} />
     </div>
   );
 }

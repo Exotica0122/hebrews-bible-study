@@ -415,6 +415,177 @@
   right: 12%;
 }
 
+/* wilderness: the dusk sky, dunes and pillar of fire shared by Hebrews 3 */
+.wi_sky {
+  background: linear-gradient(#12132b 0, #262344 38%, #3a2a3c 56%, #8a4b2e 64%, #3b2a26 66%);
+}
+.wi_stars {
+  bottom: 45%;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(232, 223, 203, 0.8), transparent),
+    radial-gradient(1px 1px at 27% 8%, rgba(232, 223, 203, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 41% 24%, rgba(232, 223, 203, 0.7), transparent),
+    radial-gradient(1px 1px at 58% 12%, rgba(232, 223, 203, 0.6), transparent),
+    radial-gradient(1px 1px at 71% 28%, rgba(232, 223, 203, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 84% 10%, rgba(232, 223, 203, 0.8), transparent),
+    radial-gradient(1px 1px at 93% 30%, rgba(232, 223, 203, 0.5), transparent);
+}
+.wi_pillar {
+  left: 55%;
+  top: 18%;
+  width: 3.4%;
+  height: 46%;
+  transform: translateX(-50%);
+  background: linear-gradient(rgba(240, 154, 62, 0), rgba(255, 227, 176, 0.85) 55%, rgba(240, 154, 62, 0.9));
+  filter: blur(6px);
+  box-shadow: 0 0 80px 30px rgba(138, 75, 46, 0.45);
+  border-radius: 40%;
+}
+.wi_far {
+  top: 62%;
+  background: #2a1e1b;
+  clip-path: polygon(0 10%, 14% 4%, 30% 12%, 46% 2%, 62% 10%, 78% 3%, 100% 9%, 100% 100%, 0 100%);
+}
+.wi_near {
+  top: 78%;
+  background: #1b1413;
+  clip-path: polygon(0 20%, 20% 8%, 42% 22%, 64% 10%, 86% 24%, 100% 14%, 100% 100%, 0 100%);
+}
+
+/* tabernacle: linen courtyard, tent, altar, and the cloud of glory */
+.ta_glory {
+  left: 41%;
+  top: 40%;
+  width: 360px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(255, 248, 232, 0.5) 0, rgba(232, 223, 203, 0.18) 35%, rgba(0, 0, 0, 0) 65%);
+}
+.ta_back,
+.ta_front {
+  height: 6%;
+  background:
+    repeating-linear-gradient(90deg, #8a5a2e 0 3px, rgba(0, 0, 0, 0) 3px 7%),
+    linear-gradient(#e8dfcb, #b9ab92);
+}
+.ta_back {
+  left: 30%;
+  top: 50%;
+  width: 42%;
+  box-shadow: 0 0 30px rgba(243, 211, 138, 0.3);
+}
+.ta_tent {
+  left: 34%;
+  top: 46%;
+  width: 11%;
+  height: 11%;
+  border-radius: 40% 40% 4% 4% / 50% 50% 4% 4%;
+  background: linear-gradient(#6e3a30, #3a201b);
+}
+.ta_door {
+  left: 44%;
+  top: 49%;
+  width: 1.6%;
+  height: 8%;
+  background: repeating-linear-gradient(90deg, #f3d38a 0 2px, #6e2a4e 2px 5px);
+  box-shadow: 0 0 24px 6px rgba(243, 211, 138, 0.5);
+}
+.ta_altar {
+  left: 55%;
+  top: 56%;
+  width: 3.4%;
+  height: 3.6%;
+  background: linear-gradient(#b0703a, #6a3e1e);
+  box-shadow: 0 -12px 24px 4px rgba(240, 154, 62, 0.45);
+}
+.ta_front {
+  left: 26%;
+  top: 60%;
+  width: 50%;
+  height: 8%;
+}
+
+/* rock: water from the rock in the wilderness at dusk */
+.ro_rock {
+  left: 50%;
+  top: 40%;
+  width: min(300px, 36%);
+  height: 36%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 38% 30%, #8a6a52, #6b4e3c 55%, #2e211b);
+  border-radius: 46% 54% 40% 44% / 58% 52% 30% 28%;
+}
+.ro_cleft {
+  left: 51%;
+  top: 44%;
+  width: 6px;
+  height: 17%;
+  transform: translateX(-50%);
+  background: linear-gradient(#fff8e8, #f3d38a);
+  box-shadow: 0 0 26px 8px rgba(243, 211, 138, 0.55);
+  border-radius: 3px;
+}
+.ro_water {
+  left: 51%;
+  top: 61%;
+  width: 3%;
+  height: 16%;
+  transform: translateX(-50%);
+  background: linear-gradient(rgba(220, 232, 230, 0.8), rgba(220, 232, 230, 0.15));
+  filter: blur(2px);
+}
+.ro_pool {
+  left: 50%;
+  top: 76%;
+  width: 44%;
+  height: 7%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(220, 232, 230, 0.55), rgba(111, 140, 146, 0.25) 45%, rgba(0, 0, 0, 0) 70%);
+}
+
+/* coals: a bed of glowing coals, one coal apart and grey */
+.co_ground {
+  background: radial-gradient(ellipse 40% 26% at 44% 64%, rgba(194, 83, 26, 0.55), rgba(23, 18, 14, 0) 70%), #120e0b;
+}
+.co_coal {
+  width: 24px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  border-radius: 45% 55% 50% 40%;
+  background: radial-gradient(circle at 40% 40%, #ffd08a, #e2621b 45%, #5a2410);
+  box-shadow: 0 0 14px 4px rgba(226, 98, 27, 0.45);
+}
+.co_lone {
+  left: 76%;
+  top: 70%;
+  opacity: 1;
+  background: radial-gradient(circle at 40% 40%, #6a625b, #4a4541 60%, #2a2622);
+  box-shadow: none;
+}
+
+/* threshold: the wilderness, the river, the lit land beyond */
+.th_land {
+  left: 0;
+  right: 0;
+  top: 40%;
+  height: 22%;
+  background:
+    radial-gradient(ellipse 30% 60% at 50% 80%, rgba(255, 227, 176, 0.55), rgba(0, 0, 0, 0) 70%),
+    linear-gradient(transparent 70%, #7a6236 70%, #4e3e26 100%);
+}
+.th_river {
+  left: 0;
+  right: 0;
+  top: 61%;
+  height: 1.6%;
+  background: linear-gradient(90deg, rgba(94, 122, 128, 0), rgba(201, 217, 218, 0.7) 50%, rgba(94, 122, 128, 0));
+}
+.th_people {
+  left: 0;
+  width: 100%;
+  top: 38%;
+  height: 22%;
+}
+
 /* hero, earth: night hills under a warm afterglow */
 .he_sky {
   background: linear-gradient(#0e0c0a 0, #16120e 40%, #3a2716 66%, #2a2017 72%);
