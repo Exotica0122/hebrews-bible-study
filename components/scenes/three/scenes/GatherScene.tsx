@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { Color, Group, MeshBasicMaterial, PlaneGeometry, Shape, ShapeGeometry, ShaderMaterial } from "three";
+import { Color, Group, MeshBasicMaterial, PlaneGeometry, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Embers } from "../primitives/Earth";
+import { Embers, figureGeometry } from "../primitives/Earth";
 import { easeInOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setUniform } from "../primitives/mutate";
@@ -55,25 +55,6 @@ void main() {
   gl_FragColor = vec4(c, 1.0);
 }`;
 
-/** A robed standing figure facing us, feet at y = 0, about 1.75 units tall. */
-function figureGeometry() {
-  const s = new Shape();
-  s.moveTo(-0.3, 0);
-  s.quadraticCurveTo(-0.27, 0.6, -0.22, 0.95);
-  s.quadraticCurveTo(-0.25, 1.2, -0.27, 1.3);
-  s.quadraticCurveTo(-0.25, 1.4, -0.07, 1.44);
-  s.lineTo(-0.055, 1.5);
-  s.quadraticCurveTo(-0.13, 1.54, -0.12, 1.62);
-  s.quadraticCurveTo(-0.11, 1.75, 0, 1.75);
-  s.quadraticCurveTo(0.11, 1.75, 0.12, 1.62);
-  s.quadraticCurveTo(0.13, 1.54, 0.055, 1.5);
-  s.lineTo(0.07, 1.44);
-  s.quadraticCurveTo(0.25, 1.4, 0.27, 1.3);
-  s.quadraticCurveTo(0.25, 1.2, 0.22, 0.95);
-  s.quadraticCurveTo(0.27, 0.6, 0.3, 0);
-  s.closePath();
-  return new ShapeGeometry(s, 16);
-}
 
 /** “Behold, I and the children God has given me”: one figure in the lamplight, the children coming out of the dark to stand beside him. */
 export function GatherScene({ mobile, effects }: SceneProps) {

@@ -12,6 +12,11 @@ import { DriftScene } from "./scenes/DriftScene";
 import { CrownedScene } from "./scenes/CrownedScene";
 import { GatherScene } from "./scenes/GatherScene";
 import { FreedScene } from "./scenes/FreedScene";
+import { HeroCampScene } from "./scenes/HeroCampScene";
+import { TabernacleScene } from "./scenes/TabernacleScene";
+import { RockScene } from "./scenes/RockScene";
+import { CoalsScene } from "./scenes/CoalsScene";
+import { ThresholdScene } from "./scenes/ThresholdScene";
 
 export interface DragState {
   dx: number;
@@ -34,6 +39,7 @@ export interface SceneProps {
 export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   hero: HeroScene,
   heroEarth: HeroRoadScene,
+  heroCamp: HeroCampScene,
   radiance: RadianceScene,
   seal: SealScene,
   angels: AngelsScene,
@@ -44,4 +50,8 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   crowned: CrownedScene,
   gather: GatherScene,
   freed: FreedScene,
+  tabernacle: TabernacleScene,
+  rock: RockScene,
+  coals: CoalsScene,
+  threshold: ThresholdScene,
 };

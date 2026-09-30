@@ -1,4 +1,4 @@
-import type { Material, ShaderMaterial } from "three";
+import type { Material, MeshStandardMaterial, ShaderMaterial } from "three";
 
 // Frame-loop writes to memoised three.js objects go through these so the React Compiler lint allows them.
 
@@ -14,4 +14,8 @@ export function writeXYZ(target: Float32Array, i: number, x: number, y: number, 
   target[i * 3] = x;
   target[i * 3 + 1] = y;
   target[i * 3 + 2] = z;
+}
+
+export function setEmissive(material: MeshStandardMaterial, intensity: number) {
+  material.emissiveIntensity = intensity;
 }

@@ -240,3 +240,23 @@ export function Embers({ count, box, position = [0, 0, 0], color = "#F3D38A", ri
   });
   return <points ref={ref} position={position} geometry={geometry} material={material} frustumCulled={false} renderOrder={20} />;
 }
+
+/** A robed standing figure facing us, feet at y = 0, about 1.75 units tall. */
+export function figureGeometry() {
+  const s = new Shape();
+  s.moveTo(-0.3, 0);
+  s.quadraticCurveTo(-0.27, 0.6, -0.22, 0.95);
+  s.quadraticCurveTo(-0.25, 1.2, -0.27, 1.3);
+  s.quadraticCurveTo(-0.25, 1.4, -0.07, 1.44);
+  s.lineTo(-0.055, 1.5);
+  s.quadraticCurveTo(-0.13, 1.54, -0.12, 1.62);
+  s.quadraticCurveTo(-0.11, 1.75, 0, 1.75);
+  s.quadraticCurveTo(0.11, 1.75, 0.12, 1.62);
+  s.quadraticCurveTo(0.13, 1.54, 0.055, 1.5);
+  s.lineTo(0.07, 1.44);
+  s.quadraticCurveTo(0.25, 1.4, 0.27, 1.3);
+  s.quadraticCurveTo(0.25, 1.2, 0.22, 0.95);
+  s.quadraticCurveTo(0.27, 0.6, 0.3, 0);
+  s.closePath();
+  return new ShapeGeometry(s, 16);
+}

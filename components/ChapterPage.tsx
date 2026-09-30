@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ChapterContent } from "@/content/types";
+import type { ChapterContent, Setting } from "@/content/types";
 import { keysOf } from "@/content/parse";
 import { useLang } from "@/lib/lang";
 import { scrollToSection, scrollToTop, useEscape, useIsMobile, useReducedMotion, useScrollSpy } from "@/lib/hooks";
@@ -29,7 +29,11 @@ interface OpenWord {
   key: string;
 }
 
-const HERO_ART = "3D · R3F — fragments drift inward, trails dim as they merge into one light";
+const HERO_ART: Record<Setting, string> = {
+  heavens: "3D · R3F — fragments drift inward, trails dim as they merge into one light",
+  earth: "3D · R3F — lamp-lit travellers on a road through the night hills toward a lit town",
+  wilderness: "3D · R3F — the camp of Israel at dusk, tents around the tabernacle under the pillar of fire",
+};
 
 export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, reduceMotion = false }: ChapterPageProps) {
   const { lang, t } = useLang();
@@ -136,7 +140,7 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
       />
       <ResumePill chapter={chapter.number} movements={movements} onGo={go} />
       <main ref={mainRef}>
-        <Hero copy={copy} setting={chapter.setting} onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} reduceMotion={reduceMotion} />
+        <Hero copy={copy} setting={chapter.setting} onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART[chapter.setting] : undefined} reduceMotion={reduceMotion} />
         <ChapterMap copy={copy} movements={movements} summary={summary} onGo={go} />
         {movements.map((m, i) => (
           <MovementLeaf
