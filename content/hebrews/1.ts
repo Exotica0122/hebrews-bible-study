@@ -1,4 +1,4 @@
-import type { ChapterContent, Lang, Movement, Summary } from "../types";
+import type { ChapterContent, ChapterCopy, Lang, Movement, Summary } from "../types";
 
 // Content copied verbatim from the design handoff prototype (MV / SUM constants).
 // Verse strings mark key words as [key|display text]; see content/parse.ts.
@@ -252,4 +252,17 @@ const SUM: Record<Lang, Summary> = {
     intent: ['예수 그리스도가 천사나 어떤 영적 존재보다 훨씬 뛰어나심을 증명하는 것.', '유대인들은 모세의 율법이 시내산에서 천사들을 통해 전해졌다고 믿었기에 천사를 매우 높였습니다. 어떤 이들은 예수님을 높은 계급의 천사로 보았고, 어떤 이들은 천사를 숭배했습니다.', '저자는 분명한 선을 긋습니다. 천사는 종이며 피조물이고 왕께 경배하는 자들입니다. 예수 그리스도는 창조주이시며 주권자이십니다.'] }
 };
 
-export const chapter1: ChapterContent = { number: 1, movements: MV, summary: SUM };
+const COPY: Record<Lang, ChapterCopy> = {
+  en: { heroEyebrow: 'A verse-by-verse study · ESV', heroTitle: 'Hebrews 1',
+    tagline: '“Long ago, at many times and in many ways… but in these last days he has spoken to us by his Son.”', taglineRef: 'Hebrews 1:1–2',
+    fragments: ['burning bush · Ex 3', 'fire · Ex 19', 'cloud · Ex 13', 'stone tablet · Ex 34'],
+    mapTitle: 'Fourteen verses, five movements', mapIntro: 'God speaks, the Son is named, the angels bow, creation wears out, and the Son sits enthroned.',
+    summaryTitle: 'What Hebrews 1 says', footQuote: '“But you are the same, and your years will have no end.”', version: 'ESV' },
+  ko: { heroEyebrow: '한 절씩 읽는 성경 공부 · 개역한글', heroTitle: '히브리서 1장',
+    tagline: '“옛적에 선지자들로 여러 부분과 여러 모양으로… 이 모든 날 마지막에 아들로 우리에게 말씀하셨으니”', taglineRef: '히브리서 1:1–2',
+    fragments: ['떨기나무 불꽃 · 출 3', '불 · 출 19', '구름 · 출 13', '돌판 · 출 34'],
+    mapTitle: '열네 절, 다섯 흐름', mapIntro: '하나님이 말씀하시고, 아들의 이름이 선포되며, 천사들이 엎드리고, 피조물은 낡아지며, 아들은 보좌에 앉으십니다.',
+    summaryTitle: '히브리서 1장이 말하는 것', footQuote: '“주는 여전하여 연대가 다함이 없으리라”', version: '개역한글' }
+};
+
+export const chapter1: ChapterContent = { number: 1, setting: 'heavens', copy: COPY, movements: MV, summary: SUM };

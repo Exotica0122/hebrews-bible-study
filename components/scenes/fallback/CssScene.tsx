@@ -13,6 +13,17 @@ const EMBERS: [number, number, number, number][] = [
   [18, 38, 18, 26], [27, 50, 12, 18], [13, 57, 10, 15], [34, 32, 9, 13],
 ];
 const DUST: [number, number, number][] = [[36, 66, 0.4], [46, 68, 0.35], [56, 67, 0.4], [64, 69, 0.3]];
+const LAMPS = Array.from({ length: 8 }, (_, i) => {
+  const a = (i / 8) * Math.PI * 2 + 0.2;
+  return [50 + Math.cos(a) * 17, 58 + Math.sin(a) * 11] as const;
+});
+const LEAVES = Array.from({ length: 22 }, (_, i) => {
+  const side = i < 11 ? 1 : -1;
+  const k = (i % 11) / 10;
+  const a = -Math.PI / 2 + k * (Math.PI - 0.32);
+  return [50 + side * Math.cos(a) * 9, 44 - Math.sin(a) * 14, side * (k * 180 - 90) + (i % 2 ? 30 : -30)] as const;
+});
+const EARTH_SCENES: SceneId[] = ["drift", "crowned", "gather", "freed", "heroEarth"];
 
 function Scene({ scene }: { scene: SceneId }) {
   switch (scene) {
@@ -86,6 +97,52 @@ function Scene({ scene }: { scene: SceneId }) {
           ))}
         </>
       );
+    case "drift":
+      return (
+        <>
+          <div className={`${s.layer} ${s.dr_sky}`} />
+          <div className={`${s.layer} ${s.dr_sea}`} />
+          <div className={`${A} ${s.dr_post}`} />
+          <div className={`${C} ${s.dr_lampHalo}`} />
+          <div className={`${CR} ${s.dr_lamp}`} />
+          <div className={`${A} ${s.dr_glint}`} />
+          <div className={`${A} ${s.dr_rope}`} />
+          <div className={`${A} ${s.dr_hull}`} />
+          <div className={`${A} ${s.dr_mast}`} />
+        </>
+      );
+    case "crowned":
+      return (
+        <>
+          <div className={`${s.layer} ${s.cr_sky}`} />
+          <div className={`${C} ${s.cr_halo}`} />
+          {LEAVES.map(([l, t, r], i) => (
+            <span key={i} className={`${A} ${s.cr_leaf}`} style={{ left: `${l}%`, top: `${t}%`, transform: `translate(-50%, -50%) rotate(${r}deg)` }} />
+          ))}
+        </>
+      );
+    case "gather":
+      return (
+        <>
+          <div className={`${s.layer} ${s.ga_floor}`} />
+          {LAMPS.map(([l, t]) => (
+            <span key={`${l}-${t}`} className={`${A} ${s.ga_lamp}`} style={{ left: `${l}%`, top: `${t}%` }} />
+          ))}
+          <div className={`${A} ${s.ga_lamp} ${s.ga_centre}`} style={{ left: "50%", top: "58%" }} />
+        </>
+      );
+    case "freed":
+      return (
+        <>
+          <div className={`${s.layer} ${s.fr_back}`} />
+          <div className={`${A} ${s.fr_veil} ${s.fr_left}`} />
+          <div className={`${A} ${s.fr_veil} ${s.fr_right}`} />
+          <div className={`${A} ${s.fr_chain} ${s.fr_chainL}`} />
+          <div className={`${A} ${s.fr_chain} ${s.fr_chainR}`} />
+        </>
+      );
+    case "heroEarth":
+      return <CssEarthBackdrop />;
     default:
       return null;
   }
@@ -94,8 +151,19 @@ function Scene({ scene }: { scene: SceneId }) {
 export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      <CssStarfield opacity={0.75} second={false} />
+      {!EARTH_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
       <Scene scene={scene} />
+    </div>
+  );
+}
+
+export function CssEarthBackdrop() {
+  return (
+    <div aria-hidden="true" className={s.layer}>
+      <div className={`${s.layer} ${s.he_sky}`} />
+      <div className={`${s.layer} ${s.he_far}`} />
+      <div className={`${s.layer} ${s.he_mid}`} />
+      <div className={`${s.layer} ${s.he_near}`} />
     </div>
   );
 }

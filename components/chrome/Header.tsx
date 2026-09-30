@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react";
-import { CHAPTER_COUNT, isLive } from "@/content/hebrews";
+import { CHAPTER_COUNT, LIVE_COUNT, isLive } from "@/content/hebrews";
 import { useLang } from "@/lib/lang";
 import { useEscape } from "@/lib/hooks";
 import s from "./header.module.css";
@@ -82,7 +82,7 @@ export function Header({ chapter, navItems = [], activeId, activeLabel = "", pro
             <div ref={menuRef} role="menu" aria-label={t.chapters} className={s.menu} onKeyDown={onMenuKey}>
               <div className={s.menuHead}>
                 <span className="hb-eyebrow">{t.chapters}</span>
-                <span className={s.legend}>{t.chLegend}</span>
+                <span className={s.legend}>{t.chLegend(LIVE_COUNT)}</span>
               </div>
               <div className={s.grid}>
                 {Array.from({ length: CHAPTER_COUNT }, (_, i) => i + 1).map((n) => {

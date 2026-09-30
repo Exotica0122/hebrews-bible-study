@@ -1,25 +1,26 @@
 "use client";
 
-import type { Movement, Summary } from "@/content/types";
+import type { ChapterCopy, Movement, Summary } from "@/content/types";
 import { Fleuron } from "@/components/ornaments/Ornaments";
 import { useLang } from "@/lib/lang";
 import s from "./map.module.css";
 
 interface ChapterMapProps {
+  copy: ChapterCopy;
   movements: Movement[];
   summary: Summary;
   onGo: (id: string) => void;
 }
 
-export function ChapterMap({ movements, summary, onGo }: ChapterMapProps) {
+export function ChapterMap({ copy, movements, summary, onGo }: ChapterMapProps) {
   const { lang, t } = useLang();
   return (
     <section id="hb-map" className="hb-section">
       <div className={`hb-container ${s.inner}`}>
         <div className={s.intro}>
           <div className="hb-eyebrow">{t.mapEyebrow}</div>
-          <h2 className="hb-h2">{t.mapTitle}</h2>
-          <p className={s.introText}>{t.mapIntro}</p>
+          <h2 className="hb-h2">{copy.mapTitle}</h2>
+          <p className={s.introText}>{copy.mapIntro}</p>
           <Fleuron variant="rule" />
           <div className="hb-eyebrow">{summary.intentH}</div>
           <p className={s.intent}>{summary.intentShort}</p>

@@ -11,6 +11,7 @@ import s from "./movement.module.css";
 interface ScriptureProps {
   movementId: string;
   copy: MovementCopy;
+  version: string;
   words: Record<string, WordStudy>;
   openKey: string | null;
   showPopover: boolean;
@@ -52,11 +53,11 @@ function Popover({ word, onClose }: { word: WordStudy; onClose: () => void }) {
   );
 }
 
-export function Scripture({ movementId, copy, words, openKey, showPopover, dropCap, ruled, onToggle, onClose }: ScriptureProps) {
+export function Scripture({ movementId, copy, version, words, openKey, showPopover, dropCap, ruled, onToggle, onClose }: ScriptureProps) {
   const { t } = useLang();
   return (
     <>
-      <LabelBar label={t.scripture} aside={t.version} className={s.label} />
+      <LabelBar label={t.scripture} aside={version} className={s.label} />
       <div className={s.scripture}>
         {ruled && <div aria-hidden="true" className={s.rules} />}
         <div className={s.verses}>

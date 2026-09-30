@@ -4,13 +4,13 @@ import type { Summary as SummaryData } from "@/content/types";
 import { useLang } from "@/lib/lang";
 import s from "./summary.module.css";
 
-export function Summary({ summary }: { summary: SummaryData }) {
+export function Summary({ summary, title }: { summary: SummaryData; title: string }) {
   const { t } = useLang();
   return (
     <section id="hb-summary" className={s.section}>
       <div className={`hb-container ${s.inner}`}>
         <div className="hb-eyebrow">{t.summaryEyebrow}</div>
-        <h2 className={`hb-h2 ${s.title}`}>{t.summaryTitle}</h2>
+        <h2 className={`hb-h2 ${s.title}`}>{title}</h2>
         <div className={s.grid}>
           {summary.groups.map((g) => (
             <div key={g.h}>

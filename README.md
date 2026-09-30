@@ -4,11 +4,11 @@ A bilingual (English / 한국어), verse-by-verse study of the letter to the Heb
 working through it one chapter at a time. Each chapter pairs the Scripture text with word studies, commentary,
 Old and New Testament threads, and a 3D scene for each movement of the passage.
 
-Chapter 1 is live; later chapters appear as the class reaches them.
+Chapters 1 and 2 are live; later chapters appear as the class reaches them.
 
 ## Features
 
-- English (ESV) and Korean (개역한글) text, rendered on the server in the reader's chosen language
+- English (ESV) and Korean (개역한글 for chapter 1, 새번역 for chapter 2) text, rendered on the server in the reader's chosen language
 - Tap-to-open word studies with the Greek term behind each key word
 - React Three Fiber scenes with GPU-tiered post-processing, and a CSS fallback when WebGL is unavailable or motion is reduced
 - Built for phones as much as desktops, and print-friendly
@@ -57,9 +57,10 @@ e2e/                     Playwright specs; e2e/tools/ holds screenshot scripts
 
 ## Adding a chapter
 
-1. Create `content/hebrews/<n>.ts` exporting a `ChapterContent` (see `content/types.ts` and `1.ts`).
+1. Create `content/hebrews/<n>.ts` exporting a `ChapterContent` (see `content/types.ts`, `1.ts` and `2.ts`), including its
+   `copy` (hero, map and summary text) and `setting` (`"heavens"` or `"earth"`, which picks the hero and fallback backdrops).
 2. Mark key words in verses as `[key|display text]`. Each `key` needs an entry in `words.en` and `words.ko`.
-3. Register the loader in `content/hebrews/index.ts`.
+3. Register the loader and a short title in `content/hebrews/index.ts`.
 4. Give each movement a `scene` id; new scenes go in `components/scenes/three/scenes/` and `registry.ts`.
 
 ## Contributing
@@ -81,7 +82,8 @@ a publishing ministry of Good News Publishers. Used by permission. All rights re
 One word study briefly quotes the NIV®: Holy Bible, New International Version®, © 1973, 1978, 1984, 2011 by
 Biblica, Inc.™ Used by permission. All rights reserved worldwide.
 
-Korean text is from 개역한글 (Korean Revised Version, 1961), which is in the public domain.
+Korean text for chapter 1 is from 개역한글 (Korean Revised Version, 1961), which is in the public domain. Korean text for
+chapter 2 is from 성경전서 새번역 (New Korean Revised Version), © 1993, 2001 Korean Bible Society (대한성서공회).
 
 - Fonts: EB Garamond, Cormorant Garamond and Noto Serif KR, via Google Fonts (SIL Open Font License)
 - GPU benchmark data in `public/benchmarks/` is from [detect-gpu](https://github.com/pmndrs/detect-gpu) (MIT)

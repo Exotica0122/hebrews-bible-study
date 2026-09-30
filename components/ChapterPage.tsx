@@ -36,11 +36,12 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
   const isMobile = useIsMobile();
   const reduced = useReducedMotion(reduceMotion);
   const [word, setWord] = useState<OpenWord | null>(null);
-  const [chips, setChips] = useState<Record<string, string | null>>({ m1: "col" });
+  const [chips, setChips] = useState<Record<string, string | null>>(() => ({ [chapter.movements[0].id]: chapter.movements[0].chips[0]?.id ?? null }));
   const [alt, setAlt] = useState(false);
 
   const movements = chapter.movements;
   const summary = chapter.summary[lang];
+  const copy = chapter.copy[lang];
   const sectionIds = useMemo(() => ["hb-top", "hb-map", ...movements.map((m) => `hb-${m.id}`), "hb-summary"], [movements]);
   const progressRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -135,14 +136,15 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
       />
       <ResumePill chapter={chapter.number} movements={movements} onGo={go} />
       <main ref={mainRef}>
-        <Hero onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} reduceMotion={reduceMotion} />
-        <ChapterMap movements={movements} summary={summary} onGo={go} />
+        <Hero copy={copy} setting={chapter.setting} onBegin={() => go(movements[0].id)} onMap={() => go("map")} artNote={showArtNotes && !isMobile ? HERO_ART : undefined} reduceMotion={reduceMotion} />
+        <ChapterMap copy={copy} movements={movements} summary={summary} onGo={go} />
         {movements.map((m, i) => (
           <MovementLeaf
             key={m.id}
             movement={m}
             index={i}
             chapter={chapter.number}
+            version={copy.version}
             openKey={word?.mid === m.id ? word.key : null}
             showPopover={!isMobile}
             onToggleWord={toggleWord(m.id)}
@@ -156,10 +158,10 @@ export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, 
             reduceMotion={reduceMotion}
           />
         ))}
-        <Summary summary={summary} />
-        <BookIndex current={chapter.number} liveSubtitle={movements[0][lang].title} />
+        <Summary summary={summary} title={copy.summaryTitle} />
+        <BookIndex current={chapter.number} />
       </main>
-      <Footer />
+      <Footer quote={copy.footQuote} />
       <BackToTop visible={activeId !== "top" && !sheetOpen} onClick={() => scrollToTop(reduced)} />
       {sheetOpen && word && sheetMovement && sheetWord && sheetWords && (
         <WordSheet

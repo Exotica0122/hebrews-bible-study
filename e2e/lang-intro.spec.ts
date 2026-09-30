@@ -5,8 +5,8 @@ test.describe("server-rendered language", () => {
     const res = await request.get("/", { headers: { cookie: "hb-lang=ko; hb-intro=1" } });
     const html = await res.text();
     expect(html).toContain('lang="ko"');
-    expect(html).toContain("히브리서 1장");
-    expect(html).not.toContain("A verse-by-verse study · ESV");
+    expect(html).toMatch(/<h1[^>]*>히브리서 1장<\/h1>/);
+    expect(html).not.toMatch(/<h1[^>]*>Hebrews 1<\/h1>/);
   });
 
   test("choosing Korean sets the cookie so the next load has no English paint", async ({ page, context }) => {
