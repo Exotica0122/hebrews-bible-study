@@ -77,8 +77,8 @@ test("language toggle swaps every string and drops the English drop cap", async 
   await expect(page.locator("#hb-m1 [aria-hidden] >> text=L").first()).toBeVisible();
   await page.getByRole("button", { name: "한국어" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "히브리서 1장" })).toBeVisible();
-  await expect(page.locator("#hb-m1")).toContainText("개역한글");
-  await expect(page.locator("#hb-m1")).toContainText("옛적에 선지자들로");
+  await expect(page.locator("#hb-m1")).toContainText("새번역");
+  await expect(page.locator("#hb-m1")).toContainText("하나님께서 옛날에는 예언자들을 통하여");
   await expect(page.locator("html")).toHaveAttribute("lang", "ko");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1, name: "히브리서 1장" })).toBeVisible();

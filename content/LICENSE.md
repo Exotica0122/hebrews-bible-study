@@ -19,6 +19,5 @@ Scripture quotations keep their own terms:
   All rights reserved. See [Crossway's permissions](https://www.crossway.org/permissions/).
 - **English (brief quotation in a word study):** NIV® — Holy Bible, New International
   Version®, © 1973, 1978, 1984, 2011 by Biblica, Inc.™ Used by permission. All rights reserved worldwide.
-- **Korean (chapter 1):** 개역한글 (Korean Revised Version, 1961), public domain.
-- **Korean (chapter 2):** 성경전서 새번역 (New Korean Revised Version), © 1993, 2001 Korean Bible Society
+- **Korean:** 성경전서 새번역 (New Korean Revised Version), © 1993, 2001 Korean Bible Society
   (대한성서공회). All rights reserved.
