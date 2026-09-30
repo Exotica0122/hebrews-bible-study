@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { CHAPTER_COUNT, getChapter } from "@/content/hebrews";
+import { CHAPTER_COUNT, getChapter, isLive } from "@/content/hebrews";
 import { ChapterPage } from "@/components/ChapterPage";
 import { ComingSoon } from "@/components/soon/ComingSoon";
 
@@ -17,7 +17,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[chapter]">): Promise<Metadata> {
   const { chapter } = await params;
   const n = parseChapter(chapter);
-  return { title: n ? `Hebrews ${n} · Coming soon` : "Not found" };
+  if (!n) return { title: "Not found" };
+  if (!isLive(n)) return { title: `Hebrews ${n} · Coming soon` };
+  return {
+    title: `Hebrews ${n} · A verse-by-verse study`,
+    description: `A bilingual (English / 한국어) small-group study of Hebrews ${n}: word studies, commentary and cross-references.`,
+  };
 }
 
 export default async function Chapter({ params }: PageProps<"/[chapter]">) {

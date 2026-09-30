@@ -282,3 +282,155 @@
   inset: 0;
   box-shadow: 0 0 24px 8px rgba(243, 211, 138, 0.9), 0 0 90px 30px rgba(183, 137, 44, 0.5);
 }
+
+/* drift: a lantern post, a moored boat, a night sea */
+.dr_sky {
+  background: linear-gradient(#0e0c0a 0, #1c1611 46%, #2a2017 58%, #0b0e10 58.4%, #080b0d 100%);
+}
+.dr_sea {
+  top: 58%;
+  background: repeating-linear-gradient(176deg, rgba(58, 46, 34, 0) 0 14px, rgba(58, 46, 34, 0.35) 15px, rgba(58, 46, 34, 0) 17px);
+}
+.dr_post {
+  left: 22%;
+  top: 34%;
+  width: 8px;
+  height: 40%;
+  transform: translateX(-50%);
+  background: #2b2118;
+}
+.dr_lampHalo {
+  left: 22%;
+  top: 34%;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(243, 199, 122, 0.4) 0, rgba(183, 137, 44, 0.12) 20%, rgba(11, 9, 8, 0) 50%);
+}
+.dr_lamp {
+  left: 22%;
+  top: 34%;
+  width: 14px;
+  height: 14px;
+  background: #fff8e8;
+  box-shadow: 0 0 22px 8px rgba(243, 199, 122, 0.85);
+}
+.dr_glint {
+  left: 22%;
+  top: 60%;
+  width: 6%;
+  height: 30%;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(rgba(243, 199, 122, 0.45) 0 2px, rgba(243, 199, 122, 0) 3px 9px);
+  mask-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}
+.dr_rope {
+  left: 23%;
+  top: 38%;
+  width: 22%;
+  height: 22%;
+  border-bottom: 2px solid rgba(184, 154, 104, 0.7);
+  border-radius: 0 0 50% 50%;
+}
+.dr_hull {
+  left: 44%;
+  top: 58%;
+  width: min(220px, 24%);
+  height: 30px;
+  transform: translateY(-60%);
+  background: linear-gradient(#6b4e32, #3a2a1c);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+.dr_mast {
+  left: calc(44% + min(110px, 12%));
+  top: 42%;
+  width: 3px;
+  height: 15%;
+  background: #3a2a1c;
+}
+
+/* crowned: a gold laurel wreath */
+.cr_sky {
+  background: radial-gradient(ellipse at 50% 40%, #2a1f14 0, #0c0a08 60%);
+}
+.cr_halo {
+  left: 50%;
+  top: 40%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(243, 211, 138, 0.3) 0, rgba(183, 137, 44, 0.1) 22%, rgba(12, 10, 8, 0) 50%);
+}
+.cr_leaf {
+  width: 12px;
+  height: 30px;
+  border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+  background: linear-gradient(135deg, #f3d38a, #c9a24a 45%, #6e4a10);
+  box-shadow: 0 0 10px rgba(243, 211, 138, 0.25);
+}
+
+/* gather: shadow play on a lamplit wall */
+.ga_people {
+  left: 0;
+  width: 100%;
+  bottom: 28%;
+  height: 33%;
+}
+.ga_wall {
+  background:
+    linear-gradient(transparent 72%, rgba(13, 11, 9, 0.55) 72%),
+    radial-gradient(ellipse 50% 65% at 50% 55%, #b07a42 0, #5a3e22 45%, #0d0b09 100%);
+}
+
+/* freed: chains broken before a veil, light between its halves */
+.fr_back {
+  background: radial-gradient(ellipse at 50% 45%, rgba(243, 199, 122, 0.9) 0, rgba(243, 199, 122, 0.25) 10%, #0b0908 34%);
+}
+.fr_veil {
+  top: -4%;
+  bottom: -4%;
+  width: 48%;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.35) 0, rgba(255, 255, 255, 0.04) 22px, rgba(0, 0, 0, 0.35) 44px),
+    linear-gradient(90deg, #1c2340, #34203e 60%, #3a1e2e);
+}
+.fr_left {
+  left: 0;
+  box-shadow: inset -30px 0 40px -20px rgba(243, 199, 122, 0.55);
+}
+.fr_right {
+  right: 0;
+  transform: scaleX(-1);
+  box-shadow: inset -30px 0 40px -20px rgba(243, 199, 122, 0.55);
+}
+.fr_chain {
+  top: 18%;
+  width: 6px;
+  height: 46%;
+  background: repeating-linear-gradient(rgba(90, 82, 72, 0.9) 0 10px, rgba(0, 0, 0, 0) 10px 14px);
+  border-radius: 3px;
+}
+.fr_chainL {
+  left: 12%;
+}
+.fr_chainR {
+  right: 12%;
+}
+
+/* hero, earth: night hills under a warm afterglow */
+.he_sky {
+  background: linear-gradient(#0e0c0a 0, #16120e 40%, #3a2716 66%, #2a2017 72%);
+}
+.he_far {
+  top: 58%;
+  background: #2a2118;
+  clip-path: polygon(0 22%, 12% 12%, 24% 20%, 38% 6%, 52% 16%, 66% 4%, 80% 14%, 92% 8%, 100% 16%, 100% 100%, 0 100%);
+}
+.he_mid {
+  top: 68%;
+  background: #1d1812;
+  clip-path: polygon(0 16%, 10% 26%, 22% 10%, 34% 22%, 48% 8%, 60% 24%, 74% 12%, 88% 26%, 100% 14%, 100% 100%, 0 100%);
+}
+.he_near {
+  top: 80%;
+  background: #110e0a;
+  clip-path: polygon(0 30%, 16% 14%, 30% 28%, 46% 16%, 62% 30%, 78% 12%, 100% 26%, 100% 100%, 0 100%);
+}

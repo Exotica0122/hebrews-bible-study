@@ -4,18 +4,20 @@ import dynamic from "next/dynamic";
 import { useMove } from "@use-gesture/react";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { useSceneGate } from "./SceneFrame";
+import type { SceneId } from "./types";
 import s from "./scene.module.css";
 
 const SceneCanvas = dynamic(() => import("./three/SceneCanvas"), { ssr: false, loading: () => null });
 
 interface HeroStageProps {
+  scene: SceneId;
   hostRef: RefObject<HTMLElement | null>;
   captionRefs: RefObject<(HTMLElement | null)[]>;
   reduceMotion?: boolean;
   onReadyChange?: (ready: boolean) => void;
 }
 
-export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyChange }: HeroStageProps) {
+export function HeroStage({ scene, hostRef, captionRefs, reduceMotion = false, onReadyChange }: HeroStageProps) {
   const gate = useSceneGate("hero", hostRef, reduceMotion);
   const [idle, setIdle] = useState(false);
   const [ready, setReady] = useState(false);
@@ -54,7 +56,7 @@ export function HeroStage({ hostRef, captionRefs, reduceMotion = false, onReadyC
   return (
     <div className={`${s.canvasWrap} ${ready ? s.canvasReady : ""}`}>
       <SceneCanvas
-        scene="hero"
+        scene={scene}
         active={gate.visible}
         mobile={gate.mobile}
         effects={gate.effects}

@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { CHAPTER_COUNT, isLive } from "@/content/hebrews";
+import { CHAPTER_COUNT, chapterTitle, isLive } from "@/content/hebrews";
 import { chapterHref } from "@/components/chrome/Header";
 import { useLang } from "@/lib/lang";
 import s from "./book.module.css";
 
 interface BookIndexProps {
   current: number;
-  liveSubtitle?: string;
 }
 
-export function BookIndex({ current, liveSubtitle }: BookIndexProps) {
+export function BookIndex({ current }: BookIndexProps) {
   const { lang, t } = useLang();
   const bookName = (n: number) => (lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`);
   return (
@@ -31,6 +30,7 @@ export function BookIndex({ current, liveSubtitle }: BookIndexProps) {
         <div className={s.grid}>
           {Array.from({ length: CHAPTER_COUNT }, (_, i) => i + 1).map((n) => {
             const live = isLive(n);
+            const subtitle = chapterTitle(n, lang);
             const cls = live ? s.live : n === current ? s.viewing : s.soon;
             return (
               <Link
@@ -41,7 +41,7 @@ export function BookIndex({ current, liveSubtitle }: BookIndexProps) {
               >
                 <span className={s.num}>{n}</span>
                 <span className={s.status}>{live ? t.studying : t.comingSoon}</span>
-                {live && liveSubtitle && <span className={s.sub}>{liveSubtitle}</span>}
+                {subtitle && <span className={s.sub}>{subtitle}</span>}
               </Link>
             );
           })}

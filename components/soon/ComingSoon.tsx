@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CHAPTER_COUNT } from "@/content/hebrews";
+import { CHAPTER_COUNT, LATEST_LIVE } from "@/content/hebrews";
 import { Header, chapterHref } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
 import { BookIndex } from "@/components/book/BookIndex";
@@ -37,12 +37,12 @@ export function ComingSoon({ chapter }: { chapter: number }) {
               ))}
             </div>
             <div className={s.actions}>
-              {chapter > 2 && (
+              {chapter - 1 > LATEST_LIVE && (
                 <Link href={chapterHref(chapter - 1)} className={`hb-btn hb-btn-outline ${s.link} ${s.prevNext}`}>
                   ← {bookName(chapter - 1)}
                 </Link>
               )}
-              <Link href="/" className={`hb-btn hb-btn-gold ${s.link} ${s.back}`}>{t.backCh1}</Link>
+              <Link href={chapterHref(LATEST_LIVE)} className={`hb-btn hb-btn-gold ${s.link} ${s.back}`}>{t.backTo(bookName(LATEST_LIVE))}</Link>
               {chapter < CHAPTER_COUNT && (
                 <Link href={chapterHref(chapter + 1)} className={`hb-btn hb-btn-outline ${s.link} ${s.prevNext}`}>
                   {bookName(chapter + 1)} →

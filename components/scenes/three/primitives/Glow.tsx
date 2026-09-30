@@ -27,7 +27,7 @@ void main() {
   gl_FragColor = vec4(c * a, a);
 }`;
 
-export function makeGlowMaterial(color: string, inner: string, alpha: number, power: number) {
+export function makeGlowMaterial(color: string, inner: string, alpha: number, power: number, depthTest = false) {
   return new ShaderMaterial({
     vertexShader: VERT,
     fragmentShader: FRAG,
@@ -39,7 +39,7 @@ export function makeGlowMaterial(color: string, inner: string, alpha: number, po
     },
     transparent: true,
     depthWrite: false,
-    depthTest: false,
+    depthTest,
     blending: CustomBlending,
         blendEquation: AddEquation,
         blendSrc: OneFactor,
@@ -61,6 +61,8 @@ interface GlowProps {
   rotation?: number;
   renderOrder?: number;
   billboard?: boolean;
+  /** Let nearer opaque geometry hide the glow. */
+  depthTest?: boolean;
   onMaterial?: (m: ShaderMaterial) => void;
   onMesh?: (m: Mesh | null) => void;
 }
@@ -78,10 +80,11 @@ export function Glow({
   rotation = 0,
   renderOrder = 10,
   billboard = false,
+  depthTest = false,
   onMaterial,
   onMesh,
 }: GlowProps) {
-  const material = useMemo(() => makeGlowMaterial(color, inner, alpha, power), [color, inner, alpha, power]);
+  const material = useMemo(() => makeGlowMaterial(color, inner, alpha, power, depthTest), [color, inner, alpha, power, depthTest]);
   const localMesh = useRef<Mesh>(null);
   useEffect(() => () => material.dispose(), [material]);
   useEffect(() => {

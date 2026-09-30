@@ -57,7 +57,7 @@ export function IntroVeil() {
         </span>
         <span className={`${s.rule} ${s.ruleRight}`} />
       </div>
-      <div className={s.eyebrow}>{t.heroEyebrow}</div>
+      <div className={s.eyebrow}>{t.introEyebrow}</div>
     </div>
   );
 }

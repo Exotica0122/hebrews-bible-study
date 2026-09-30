@@ -16,6 +16,7 @@ export interface MovementLeafProps {
   movement: Movement;
   index: number;
   chapter: number;
+  version: string;
   openKey: string | null;
   showPopover: boolean;
   onToggleWord: (key: string) => void;
@@ -79,6 +80,7 @@ export function MovementLeaf(p: MovementLeafProps) {
             <Scripture
               movementId={m.id}
               copy={c}
+              version={p.version}
               words={words}
               openKey={p.openKey}
               showPopover={p.showPopover}

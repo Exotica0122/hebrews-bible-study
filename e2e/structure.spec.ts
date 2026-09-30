@@ -7,7 +7,19 @@ test("renders the Hebrews 1 study page skeleton", async ({ page }) => {
     await expect(page.locator(`#${id}`)).toBeAttached();
   }
   await expect(page.getByRole("heading", { level: 2, name: "Fourteen verses, five movements" })).toBeVisible();
-  await expect(page.locator("footer")).toContainText("Hebrews 1 group study");
+  await expect(page.locator("footer")).toContainText("Hebrews group study");
+});
+
+test("renders Hebrews 2 with four movements and 새번역 in Korean", async ({ page }) => {
+  await page.goto("/2");
+  await expect(page.getByRole("heading", { level: 1, name: "Hebrews 2" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Eighteen verses, four movements" })).toBeVisible();
+  for (const id of ["m1", "m2", "m3", "m4"]) await expect(page.locator(`#hb-${id}`)).toBeAttached();
+  await expect(page.locator("#hb-m5")).toHaveCount(0);
+  await expect(page.locator("footer")).toContainText("He is able to help those who are being tempted.");
+  await page.getByRole("button", { name: "한국어" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "히브리서 2장" })).toBeVisible();
+  await expect(page.locator("#hb-m1")).toContainText("새번역");
 });
 
 test("desktop header shows the section nav; mobile shows the active label", async ({ page }, testInfo) => {

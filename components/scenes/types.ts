@@ -1,1 +1,1 @@
-export type SceneId = "hero" | "radiance" | "seal" | "angels" | "throne" | "fold" | "exalted";
+export type SceneId = "hero" | "heroEarth" | "radiance" | "seal" | "angels" | "throne" | "fold" | "exalted" | "drift" | "crowned" | "gather" | "freed";

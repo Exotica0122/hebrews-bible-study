@@ -8,7 +8,7 @@ test.describe("chapter menu keyboard", () => {
     await page.keyboard.press("Enter");
     await expect(page.getByRole("menuitem", { name: "1", exact: true })).toBeFocused();
     await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("menuitem", { name: "Hebrews 2 · Coming soon" })).toBeFocused();
+    await expect(page.getByRole("menuitem", { name: "2", exact: true })).toBeFocused();
     await page.keyboard.press("End");
     await expect(page.getByRole("menuitem", { name: /13/ })).toBeFocused();
     await page.keyboard.press("Home");
