@@ -30,7 +30,7 @@ interface OpenWord {
 }
 
 const HERO_ART: Record<Setting, string> = {
-  heavens: "3D · R3F — fragments drift inward, trails dim as they merge into one light",
+  heavens: "3D · R3F — the burning bush, Sinai, the pillar of cloud and the tablets drift in from the heavens and gather into one light",
   earth: "3D · R3F — lamp-lit travellers on a road through the night hills toward a lit town",
   wilderness: "3D · R3F — the camp of Israel at dusk, tents around the tabernacle under the pillar of fire",
 };

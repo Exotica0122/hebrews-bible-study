@@ -1,29 +1,69 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Cloud, Clouds } from "@react-three/drei";
-import { damp } from "maath/easing";
-import { MeshBasicMaterial } from "three";
 import { useThree } from "@react-three/fiber";
-import { Group, type ShaderMaterial } from "three";
+import { damp } from "maath/easing";
+import { CanvasTexture, ConeGeometry, CylinderGeometry, ExtrudeGeometry, Group, MeshBasicMaterial, MeshStandardMaterial, Shape, type ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Sky } from "../primitives/Earth";
+import { Flames } from "../primitives/Flames";
 import { Glow, Light } from "../primitives/Glow";
 import { Starfield } from "../primitives/Starfield";
 import { easeInSine, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { setOpacity } from "../primitives/mutate";
 import { HERO_FRAGMENTS } from "@/components/hero/fragments";
 
 const CYCLE = 14;
 const HERO_SPREAD: [number, number] = [28, 16];
+/** Phase offset and trail colour per fragment, in HERO_FRAGMENTS order: the bush, Sinai, the pillar of cloud, the tablets. */
 const LOOKS = [
-  { phase: 0.0, color: "#C8553D", inner: "#F3D38A", size: 0.34, sx: 1, sy: 1 },
-  { phase: 0.28, color: "#F3D38A", inner: "#FFF8E8", size: 0.3, sx: 1, sy: 1 },
-  { phase: 0.55, color: "#EEE4CF", inner: "#EEE4CF", size: 0.5, sx: 2.2, sy: 1 },
-  { phase: 0.8, color: "#D8D1C2", inner: "#FFFFFF", size: 0.26, sx: 0.8, sy: 1.1 },
+  { phase: 0.0, trail: "#C8553D" },
+  { phase: 0.28, trail: "#B7892C" },
+  { phase: 0.55, trail: "#EEE4CF" },
+  { phase: 0.8, trail: "#D8D1C2" },
 ];
 const FRAGMENTS = HERO_FRAGMENTS.map((f, i) => ({ ...LOOKS[i], left: f.left / 100, top: f.top / 100, leftMobile: f.leftMobile / 100, topMobile: f.topMobile / 100 }));
+const BRANCHES = Array.from({ length: 7 }, (_, i) => ({ yaw: i * 2.4, tilt: 0.3 + (i % 3) * 0.24 }));
+const FIRE = "#F09A3E";
 
+/** A stone tablet with a rounded top, 0.4 wide and 0.56 tall, standing on y = 0. */
+function tabletGeometry() {
+  const w = 0.2;
+  const h = 0.56;
+  const s = new Shape();
+  s.moveTo(-w, 0);
+  s.lineTo(-w, h - w);
+  s.absarc(0, h - w, w, Math.PI, 0, true);
+  s.lineTo(w, 0);
+  s.closePath();
+  const g = new ExtrudeGeometry(s, { depth: 0.07, bevelEnabled: false });
+  g.translate(0, 0, -0.035);
+  return g;
+}
+
+/** Lines of script to lay over a tablet's face. */
+function drawScript(): CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = 128;
+  c.height = 180;
+  const ctx = c.getContext("2d")!;
+  ctx.strokeStyle = "rgba(58, 48, 38, 0.85)";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  for (let i = 0; i < 5; i++) {
+    const y = 78 + i * 20;
+    ctx.beginPath();
+    ctx.moveTo(30, y);
+    ctx.lineTo(i % 2 ? 92 : 100, y);
+    ctx.stroke();
+  }
+  return new CanvasTexture(c);
+}
+
+/** Hebrews 1 opening: the ways God once spoke (bush, Sinai, cloud, tablets) drift in from the heavens and gather into one light, the Son. */
 export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
   const { width, height } = useThree((s) => s.viewport);
   const size = useThree((s) => s.size);
@@ -31,13 +71,36 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
   useResetCameraOnUnmount();
 
   const groups = useRef<(Group | null)[]>([]);
-  const mats = useRef<(ShaderMaterial | null)[]>([]);
   const trailMats = useRef<(ShaderMaterial | null)[]>([]);
+  const fades = useRef(FRAGMENTS.map(() => 1));
+  const fadeRefs = useMemo(() => FRAGMENTS.map((_, i) => ({ get current() { return fades.current[i]; } })), []);
   const centreMat = useRef<ShaderMaterial>(null);
   const centre = useRef({ x: 0, y: 0.24 * height });
   const centreGroup = useRef<Group>(null);
-  const cloud = useRef<Group>(null);
+  const gust = useRef(0);
   const frame = useRef(0);
+  const base = mobile ? 0.5 : 0.85;
+
+  const kit = useMemo(
+    () => ({
+      branch: new CylinderGeometry(0.012, 0.035, 0.5, 5),
+      wood: new MeshStandardMaterial({ color: "#4A2E1E", roughness: 1, transparent: true }),
+      peak: new ConeGeometry(0.95, 0.9, 6, 1),
+      rock: new MeshStandardMaterial({ color: "#1C1612", roughness: 1, flatShading: true, transparent: true }),
+      tablet: tabletGeometry(),
+      stone: new MeshStandardMaterial({ color: "#B9AE98", roughness: 0.95, transparent: true }),
+      script: new MeshBasicMaterial({ map: drawScript(), transparent: true, depthWrite: false }),
+    }),
+    [],
+  );
+  const fading = useMemo(() => [[kit.wood], [kit.rock], [], [kit.stone, kit.script]], [kit]);
+  useEffect(
+    () => () => {
+      kit.script.map?.dispose();
+      Object.values(kit).forEach((o) => o.dispose());
+    },
+    [kit],
+  );
 
   useEffect(
     () => () => {
@@ -69,6 +132,7 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
     damp(camera.position, "y", Math.cos(t * 0.09) * 0.08 - p.y * 0.25, 0.8, dt);
     camera.position.z = 8;
     camera.lookAt(0, 0, 0);
+    gust.current = 0.15 + 0.15 * Math.sin(t * 0.8);
 
     let pulse = 0;
     FRAGMENTS.forEach((f, i) => {
@@ -77,20 +141,20 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
       const hy = (0.5 - (mobile ? f.topMobile : f.top)) * height;
       const k = easeInSine(p);
       const x = lerp(hx, centre.current.x, k);
-      const y = lerp(hy, centre.current.y, k);
+      const y = lerp(hy, centre.current.y, k) + Math.sin(t * 0.7 + i) * 0.03 * (1 - k);
       const alpha = smoothstep(0, 0.08, p) * (1 - smoothstep(0.9, 1, p));
       pulse = Math.max(pulse, smoothstep(0.92, 1, p));
+      fades.current[i] = alpha * (1 - 0.6 * k);
       const g = groups.current[i];
-      if (g) g.position.set(x, y, 0);
-      const m = mats.current[i];
-      if (m) m.uniforms.uAlpha.value = alpha;
-      const tm = trailMats.current[i];
-      if (tm) tm.uniforms.uAlpha.value = alpha * 0.35 * (1 - k);
-      const c = i === 2 ? cloud.current : null;
-      if (c) {
-        c.visible = alpha > 0.12;
-        c.scale.setScalar(0.35 + 0.65 * (1 - k));
+      if (g) {
+        g.position.set(x, y, 0);
+        g.scale.setScalar(base * (1 - 0.7 * k));
+        g.rotation.y = Math.sin(t * 0.25 + i * 1.7) * 0.25;
+        g.visible = alpha > 0.02;
       }
+      fading[i].forEach((m) => setOpacity(m, alpha));
+      const tm = trailMats.current[i];
+      if (tm) tm.uniforms.uAlpha.value = alpha * 0.2 * (1 - k);
       const el = captions?.current[i];
       if (el && size.width > 0) {
         const dx = ((x - hx) / width) * size.width;
@@ -105,23 +169,62 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
 
   return (
     <>
+      <Sky top="#0A0A12" horizon="#15110E" glow="#2E2114" horizonY={-9} glowStrength={0.3} />
       <Starfield count={mobile ? 500 : 1100} spread={HERO_SPREAD} />
+      <hemisphereLight args={["#2E3050", "#1B1413", 0.4]} />
       <group ref={centreGroup} position={[0, 0.24 * height, 0]}>
+        <pointLight intensity={10} distance={8} decay={1.4} color="#F3D38A" />
         <Glow size={mobile ? 10 : 16} color="#B7892C" alpha={0.24} power={2.4} renderOrder={2} />
         <Light size={mobile ? 0.4 : 0.5} coronaScale={6} intensity={1.2} renderOrder={10} />
         <Glow size={0.3} color="#FFF8E8" inner="#FFFFFF" alpha={1} power={1} renderOrder={14} onMaterial={(m) => { centreMat.current = m; }} />
       </group>
-      {FRAGMENTS.map((f, i) => (
-        <group key={i} ref={(g) => { groups.current[i] = g; }}>
-          <Glow size={f.size * (mobile ? 2.2 : 3)} scaleX={f.sx} scaleY={f.sy} color={f.color} alpha={0.22} power={2.2} renderOrder={6} onMaterial={(m) => { trailMats.current[i] = m; }} />
-          <Glow size={f.size * (mobile ? 0.8 : 1) * (i === 2 ? 0.5 : 1)} scaleX={f.sx} scaleY={f.sy} color={f.color} inner={f.inner} alpha={1} power={1.2} renderOrder={8} onMaterial={(m) => { mats.current[i] = m; }} />
-          {i === 2 && (
-            <Clouds material={MeshBasicMaterial} texture="/textures/cloud.png" limit={24} renderOrder={7}>
-              <Cloud ref={cloud} segments={mobile ? 6 : 10} bounds={[1.5, 0.45, 0.4]} volume={1.1} color="#EEE4CF" opacity={0.4} fade={40} speed={0.12} growth={1.5} seed={3} concentrate="inside" />
-            </Clouds>
-          )}
-        </group>
-      ))}
+      <Clouds material={MeshBasicMaterial} texture="/textures/cloud.png" limit={mobile ? 16 : 32} renderOrder={7}>
+        {FRAGMENTS.map((f, i) => (
+          <group key={i} ref={(g) => { groups.current[i] = g; }}>
+            <Glow position={[0, 0.45, 0]} size={mobile ? 2.6 : 3.6} color={f.trail} alpha={0.2} power={2.2} renderOrder={6} onMaterial={(m) => { trailMats.current[i] = m; }} />
+            {i === 0 && (
+              <>
+                {BRANCHES.map((b, j) => (
+                  <group key={j} rotation={[b.tilt * Math.sin(b.yaw), 0, b.tilt * Math.cos(b.yaw)]}>
+                    <mesh geometry={kit.branch} material={kit.wood} position={[0, 0.25, 0]} />
+                  </group>
+                ))}
+                <pointLight position={[0, 0.5, 0.3]} intensity={2.5} distance={2} decay={1.6} color={FIRE} />
+                <Glow position={[0, 0.4, 0]} size={1.5} color="#C8553D" alpha={0.3} power={2.2} renderOrder={8} />
+                <Flames emitters={[[0, 0.28, 0]]} count={mobile ? 30 : 60} rise={0.6} size={mobile ? 4 : 5} gust={gust} fade={fadeRefs[0]} />
+              </>
+            )}
+            {i === 1 && (
+              <>
+                <mesh geometry={kit.peak} material={kit.rock} position={[0, 0.45, 0]} rotation={[0, 0.4, 0]} />
+                <pointLight position={[0, 1, 0.25]} intensity={1.5} distance={2} decay={1.6} color={FIRE} />
+                <Glow position={[0, 0.95, 0]} size={1.1} color={FIRE} inner="#FFE3B0" alpha={0.5} power={1.8} renderOrder={8} />
+                <Flames emitters={[[0, 0.88, 0]]} count={mobile ? 30 : 60} rise={0.55} size={mobile ? 4 : 5} gust={gust} fade={fadeRefs[1]} />
+                <Cloud position={[0, 1.1, 0]} segments={mobile ? 4 : 6} bounds={[0.9, 0.3, 0.4]} volume={0.8} color="#8A7A68" opacity={0.4} fade={30} speed={0.1} growth={1.4} seed={5} />
+              </>
+            )}
+            {i === 2 && (
+              <>
+                <Glow position={[0, 0.55, 0]} size={1.2} scaleX={0.5} scaleY={1.4} color="#B7892C" inner="#F3D38A" alpha={0.3} power={1.8} renderOrder={6} />
+                <Cloud position={[0, 0.6, 0]} segments={mobile ? 6 : 10} bounds={[0.25, 1.1, 0.25]} volume={0.8} color="#E6DCC8" opacity={0.5} fade={40} speed={0.15} growth={1.2} seed={3} concentrate="inside" />
+              </>
+            )}
+            {i === 3 && (
+              <>
+                {[-0.22, 0.22].map((x) => (
+                  <group key={x} position={[x, 0, 0]} rotation={[0, x * 0.5, 0]}>
+                    <mesh geometry={kit.tablet} material={kit.stone} />
+                    <mesh material={kit.script} position={[0, 0.28, 0.037]}>
+                      <planeGeometry args={[0.4, 0.56]} />
+                    </mesh>
+                  </group>
+                ))}
+                <pointLight position={[0.3, 0.9, 0.8]} intensity={2} distance={2.5} decay={1.6} color="#EEE4CF" />
+              </>
+            )}
+          </group>
+        ))}
+      </Clouds>
       {effects && <SceneEffects bloom={0.35} />}
     </>
   );

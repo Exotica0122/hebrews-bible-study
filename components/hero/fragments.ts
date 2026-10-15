@@ -9,8 +9,8 @@ export interface HeroFragment {
 }
 
 export const HERO_FRAGMENTS: readonly HeroFragment[] = [
-  { cls: "bush", left: 16, top: 24, leftMobile: 16, topMobile: 9 },
-  { cls: "fire", left: 83, top: 20, leftMobile: 84, topMobile: 8 },
-  { cls: "cloud", left: 86, top: 58, leftMobile: 86, topMobile: 27 },
-  { cls: "tablet", left: 13, top: 60, leftMobile: 14, topMobile: 28 },
+  { cls: "bush", left: 16, top: 28, leftMobile: 16, topMobile: 16 },
+  { cls: "fire", left: 83, top: 26, leftMobile: 84, topMobile: 16 },
+  { cls: "cloud", left: 86, top: 60, leftMobile: 86, topMobile: 27 },
+  { cls: "tablet", left: 13, top: 62, leftMobile: 14, topMobile: 27 },
 ];

@@ -41,7 +41,7 @@ export function RadianceScene({ mobile, effects }: SceneProps) {
       <Glow position={sun} size={mobile ? 1.0 : 1.4} color="#FFF8E8" inner="#FFFFFF" alpha={1} power={0.9} renderOrder={14} onMaterial={(m) => { coreMat.current = m; }} />
       {effects && (
         <mesh ref={setSunMesh} position={[sun[0], sun[1], -0.2]} renderOrder={1}>
-          <circleGeometry args={[mobile ? 0.35 : 0.5, 32]} />
+          <circleGeometry args={[mobile ? 0.22 : 0.3, 32]} />
           <meshBasicMaterial color="#FFF3D0" depthWrite={false} />
         </mesh>
       )}

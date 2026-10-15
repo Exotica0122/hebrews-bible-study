@@ -32,11 +32,19 @@ function SceneLoop({ active, children }: { active: boolean; children: React.Reac
   return <>{children}</>;
 }
 
-function FirstFrame({ onReady }: { onReady: () => void }) {
-  const done = useRef(false);
+/** Reports ready on the first frame after each (re)mount; Suspense inside the canvas can hide and reveal the tree, which re-runs the effect. */
+function ReadyProbe({ onReady, onUnmount }: { onReady: () => void; onUnmount: () => void }) {
+  const armed = useRef(false);
+  useEffect(() => {
+    armed.current = true;
+    return () => {
+      armed.current = false;
+      onUnmount();
+    };
+  }, [onUnmount]);
   useFrame(() => {
-    if (done.current) return;
-    done.current = true;
+    if (!armed.current) return;
+    armed.current = false;
     onReady();
   });
   return null;
@@ -63,7 +71,6 @@ export default function SceneCanvas({ scene, active, mobile, effects, captions, 
   const maxDpr = mobile ? 1.5 : 2;
   const [dpr, setDpr] = useState(() => Math.min(maxDpr, typeof window === "undefined" ? 1 : window.devicePixelRatio || 1));
   const sceneElement = useMemo(() => <Scene mobile={mobile} effects={effects} captions={captions} drag={drag} pointer={pointer} />, [Scene, mobile, effects, captions, drag, pointer]);
-  useEffect(() => () => onUnmount(), [onUnmount]);
   return (
     <Canvas
       frameloop="demand"
@@ -81,7 +88,7 @@ export default function SceneCanvas({ scene, active, mobile, effects, captions, 
       />
       <ContextWatch onLost={onContextLost} />
       <SceneLoop active={active}>
-        <FirstFrame onReady={onReady} />
+        <ReadyProbe onReady={onReady} onUnmount={onUnmount} />
         {sceneElement}
       </SceneLoop>
     </Canvas>

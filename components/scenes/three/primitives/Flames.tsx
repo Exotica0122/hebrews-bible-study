@@ -13,6 +13,7 @@ uniform float uPixelRatio;
 uniform vec3 uEmitters[4];
 uniform float uRise;
 uniform float uSize;
+uniform float uFade;
 varying float vLife;
 float hash(float n) { return fract(sin(n) * 43758.5453); }
 void main() {
@@ -25,20 +26,21 @@ void main() {
   vec3 p = e + vec3(drift + wobble + uGust * life * 1.4, life * uRise, 0.0);
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   float size = uSize * (0.35 + hash(aSeed * 5.5) * 0.65) * (1.0 - life * 0.7);
-  gl_PointSize = size * uPixelRatio * (40.0 / -mv.z);
+  gl_PointSize = size * uFade * uPixelRatio * (40.0 / -mv.z);
   gl_Position = projectionMatrix * mv;
 }`;
 
 const FRAG = /* glsl */ `
 uniform vec3 uHot;
 uniform vec3 uEmber;
+uniform float uFade;
 varying float vLife;
 void main() {
   float d = length(gl_PointCoord - 0.5) * 2.0;
   float disc = smoothstep(1.0, 0.2, d);
   float fade = 1.0 - smoothstep(0.55, 1.0, vLife);
   vec3 c = mix(uHot, uEmber, smoothstep(0.0, 0.6, vLife));
-  float a = disc * fade * 0.55;
+  float a = disc * fade * 0.55 * uFade;
   gl_FragColor = vec4(c * a, a);
 }`;
 
@@ -48,10 +50,12 @@ interface FlamesProps {
   rise?: number;
   size?: number;
   gust: React.RefObject<number>;
+  /** 0–1 multiplier on size and brightness, for fire that belongs to something fading or shrinking. */
+  fade?: React.RefObject<number>;
 }
 
 /** GPU-driven ember particles rising from up to four emitters, bent sideways by `gust`. */
-export function Flames({ emitters, count, rise = 1.4, size = 4, gust }: FlamesProps) {
+export function Flames({ emitters, count, rise = 1.4, size = 4, gust, fade }: FlamesProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const canvasHeight = useThree((s) => s.size.height);
   const heightScale = Math.min(1, Math.max(0.5, canvasHeight / 520));
@@ -80,6 +84,7 @@ export function Flames({ emitters, count, rise = 1.4, size = 4, gust }: FlamesPr
       uniforms: {
         uTime: { value: 0 },
         uGust: { value: 0 },
+        uFade: { value: 1 },
         uPixelRatio: { value: pixelRatio * heightScale },
         uEmitters: { value: list },
         uRise: { value: rise },
@@ -110,6 +115,7 @@ export function Flames({ emitters, count, rise = 1.4, size = 4, gust }: FlamesPr
     if (!m) return;
     m.uniforms.uTime.value += Math.min(delta, 0.05);
     m.uniforms.uGust.value = gust.current;
+    m.uniforms.uFade.value = fade?.current ?? 1;
   });
 
   return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} renderOrder={8} />;
