@@ -5,6 +5,8 @@ const PORT = Number(process.env.PORT ?? 3000);
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
+  // Each worker renders WebGL in software; more than this delays hydration enough to flake the intro and canvas tests.
+  workers: 4,
   reporter: "list",
   use: {
     baseURL: `http://localhost:${PORT}`,

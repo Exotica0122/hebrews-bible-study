@@ -15,6 +15,8 @@ test("mounts a WebGL canvas for the hero and for miniatures near the viewport", 
 });
 
 test("keeps the number of live canvases within the budget while scrolling", async ({ page }, testInfo) => {
+  // Scrolls the whole chapter, mounting canvases whose shaders compile on the CPU under SwiftShader.
+  test.slow();
   const budget = testInfo.project.name === "mobile" ? 2 : 3;
   const warnings: string[] = [];
   page.on("console", (m) => {

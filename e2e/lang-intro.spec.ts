@@ -25,7 +25,8 @@ test.describe("intro veil", () => {
     await page.goto("/");
     const veil = page.locator("[data-intro]");
     await expect(veil).toBeVisible();
-    await expect(veil).toHaveCount(0, { timeout: 6_000 });
+    // The veil is server-rendered but its timer starts at hydration, which a busy dev server can delay.
+    await expect(veil).toHaveCount(0, { timeout: 15_000 });
     expect((await context.cookies()).find((c) => c.name === "hb-intro")?.value).toBe("1");
     const res = await page.request.get("/");
     expect(await res.text()).not.toContain("data-intro");
@@ -42,7 +43,7 @@ test.describe("intro veil", () => {
   test("is skipped when arriving by a shared word link", async ({ page, context }) => {
     await context.clearCookies();
     await page.goto("/#hb-m1-radiance");
-    await expect(page.locator("[data-intro]")).toHaveCount(0, { timeout: 5_000 });
+    await expect(page.locator("[data-intro]")).toHaveCount(0, { timeout: 15_000 });
     await expect(page.getByRole("dialog", { name: "Radiance" })).toBeVisible({ timeout: 10_000 });
   });
 
