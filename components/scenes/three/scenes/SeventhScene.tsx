@@ -10,6 +10,7 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import { figureGeometry, ridgeY } from "../primitives/Earth";
 import {
@@ -78,6 +79,7 @@ const dayIn = (p: number, k: number) =>
 /** “His works were finished from the foundation of the world”: the garden is made, day by day, and on the seventh it stands complete and still. */
 export function SeventhScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const land = useRef<Group>(null);
   const birds = useRef<Group>(null);
   const core = useRef<ShaderMaterial | null>(null);
@@ -117,6 +119,7 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.05) * 0.12, 0.1, mobile ? 9.5 : 8);
     camera.lookAt(0, -0.2, -8);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(UNDO, UNDO + 1.3, p);
     const keep = 1 - smoothstep(UNDO, UNDO + 1.3, p);
     const made = (k: number) => dayIn(p, k) * keep;
 
@@ -256,6 +259,7 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
           }}
         />
       ))}
+      <Squall opacity={fade} color={DAY.haze} />
       {effects && (
         <SceneEffects bloom={0.25} threshold={0.95} vignette={0.25} />
       )}

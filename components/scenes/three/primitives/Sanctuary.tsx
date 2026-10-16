@@ -18,6 +18,8 @@ import {
   SRGBColorSpace,
   TorusGeometry,
   Vector2,
+  type Group,
+  type Mesh,
   type PointLight,
   type Points,
 } from "three";
@@ -495,6 +497,8 @@ interface FigureProps {
   rotationY?: number;
   /** The priest’s white linen turban. */
   turban?: boolean;
+  /** 0 standing to 1 kneeling, read every frame; overrides `pose`. */
+  kneel?: RefObject<number>;
 }
 
 export function Figure({
@@ -504,8 +508,20 @@ export function Figure({
   scale = 1,
   rotationY = 0,
   turban = false,
+  kneel,
 }: FigureProps) {
-  const f = useFigure(pose);
+  const f = useFigure(kneel ? "standing" : pose, !!kneel);
+  const body = useRef<Mesh>(null);
+  const top = useRef<Group>(null);
+  useFrame(() => {
+    if (!kneel || !body.current || !top.current) return;
+    const k = kneel.current;
+    if (!body.current.morphTargetInfluences) body.current.updateMorphTargets();
+    body.current.morphTargetInfluences![0] = k;
+    const [sy, sz] = FIGURE_HEAD.standing;
+    const [ky, kz] = FIGURE_HEAD.kneeling;
+    top.current.position.set(0, (ky - sy) * k, (kz - sz) * k);
+  });
   const cloth = useMemo(
     () => new MeshStandardMaterial({ color: robe, roughness: 0.9 }),
     [robe],
@@ -532,19 +548,21 @@ export function Figure({
   );
   return (
     <group position={position} scale={scale} rotation={[0, rotationY, 0]}>
-      <mesh geometry={f.body} material={cloth} />
-      <mesh
-        geometry={f.head}
-        material={skin}
-        position={[0, f.headY, f.headZ]}
-      />
-      {turban && (
+      <mesh ref={body} geometry={f.body} material={cloth} />
+      <group ref={top}>
         <mesh
-          geometry={wrap}
-          material={linen}
-          position={[0, f.headY + 0.09, f.headZ]}
+          geometry={f.head}
+          material={skin}
+          position={[0, f.headY, f.headZ]}
         />
-      )}
+        {turban && (
+          <mesh
+            geometry={wrap}
+            material={linen}
+            position={[0, f.headY + 0.09, f.headZ]}
+          />
+        )}
+      </group>
     </group>
   );
 }

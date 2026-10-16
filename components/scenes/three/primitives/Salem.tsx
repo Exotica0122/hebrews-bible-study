@@ -375,7 +375,10 @@ export function Carved({
       const [sy, sz] = FIGURE_HEAD.standing;
       const [ky, kz] = FIGURE_HEAD.kneeling;
       top.current.position.set(0, (ky - sy) * k, (kz - sz) * k);
-      if (hands.current) hands.current.position.y = (ky - sy) * k;
+      if (hands.current) {
+        hands.current.position.y = 1.5 + (ky - sy) * k;
+        hands.current.scale.setScalar(Math.max(1 - k, 0.001));
+      }
     }
     if (!opacity) return;
     const o = opacity.current;
@@ -412,14 +415,14 @@ export function Carved({
           />
         )}
       </group>
-      <group ref={hands}>
+      <group ref={hands} position={[0, 1.5, 0]}>
         {arms &&
           [-1, 1].map((s) => (
             <mesh
               key={s}
               geometry={parts.arm}
               material={mats.robe}
-              position={[s * 0.3, 1.5, 0.05]}
+              position={[s * 0.3, 0, 0.05]}
               rotation={[0, 0, -s * 0.45]}
             />
           ))}

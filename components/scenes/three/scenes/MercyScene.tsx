@@ -11,6 +11,7 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import { figureGeometry, type HillLayer } from "../primitives/Earth";
 import {
@@ -54,15 +55,18 @@ const BANKS: [number, number, number][] = [
   [4, -13, 15],
 ];
 
-/** Height of the stair under a point at depth `z`. */
+/** Height of the stair under a point at depth `z`, lifting over the last part of each tread so a climber steps up rather than jumps. */
 function stairY(z: number) {
-  const n = Math.min(STEPS, Math.max(0, Math.floor((STEP_Z - z) / STEP_D) + 1));
+  const u = (STEP_Z - z) / STEP_D + 1;
+  const i = Math.floor(u);
+  const n = Math.min(STEPS, Math.max(0, i + smoothstep(0.65, 1, u - i)));
   return GROUND + n * STEP_H;
 }
 
 /** “A great high priest who has passed through the heavens … draw near to the throne of grace”: a light passes up through the clouds; the throne below grows warm, and one climbs the steps to it unafraid. */
 export function MercyScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const riser = useRef<Mesh | null>(null);
   const riserGlow = useRef<ShaderMaterial>(null);
   const banks = useRef<MeshBasicMaterial[]>([]);
@@ -104,6 +108,7 @@ export function MercyScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.05) * 0.15, 0.2, mobile ? 5.6 : 4.4);
     camera.lookAt(0, -0.55, -5);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(15.4, 16.8, p);
     const rise = easeInOutCubic((p - RISE) / (OPEN - RISE));
     const ry = lerp(TOP + 1.2, 6.2, rise);
     const open = smoothstep(OPEN - 0.6, OPEN + 1.8, p);
@@ -235,6 +240,7 @@ export function MercyScene({ mobile, effects }: SceneProps) {
       <group ref={walker}>
         <mesh geometry={figure} material={ink} scale={0.5} renderOrder={10} />
       </group>
+      <Squall opacity={fade} color={DAY.haze} />
       {effects && <SceneEffects bloom={0.3} threshold={0.94} vignette={0.25} />}
     </>
   );

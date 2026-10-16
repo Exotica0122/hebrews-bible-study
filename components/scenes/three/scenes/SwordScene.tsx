@@ -10,6 +10,7 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import { figureGeometry } from "../primitives/Earth";
 import {
@@ -75,6 +76,7 @@ function bladeGeometry() {
 /** “Sharper than any two-edged sword … all are naked and exposed”: a blade of cool light cuts down through the shade of the grove, the shade falls away, and the one standing there is in plain light. */
 export function SwordScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const blade = useRef<Group>(null);
   const left = useRef<Group>(null);
   const right = useRef<Group>(null);
@@ -109,6 +111,7 @@ export function SwordScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.06) * 0.1, 0, mobile ? 6.6 : 5.2);
     camera.lookAt(0, -0.2, -3);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.4, 15.8, p);
     const back = smoothstep(14.4, 16, p);
     const fall = easeInOutCubic((p - CUT) / 2.2);
     const shown =
@@ -229,6 +232,7 @@ export function SwordScene({ mobile, effects }: SceneProps) {
         />
         <mesh geometry={shape} material={steel} renderOrder={9} />
       </group>
+      <Squall opacity={fade} color={DAY.haze} />
       {effects && <SceneEffects bloom={0.4} threshold={0.92} vignette={0.25} />}
     </>
   );

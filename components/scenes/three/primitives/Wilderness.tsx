@@ -630,6 +630,7 @@ export function Tabernacle({
       caps.instanceMatrix.needsUpdate = true;
     }
     const hung = Math.max(0.001, linen?.current ?? 1);
+    if (hangings.current) hangings.current.visible = hung > 0.01;
     hangings.current?.children.forEach((panel) => {
       panel.scale.y = COURT.h * hung;
       panel.position.y = COURT.h * (1 - hung / 2);

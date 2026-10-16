@@ -13,6 +13,7 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import { Cloth, Flame, FLOOR, HOLY, useGold } from "../primitives/Sanctuary";
 import {
@@ -34,6 +35,7 @@ const POINTS = 8;
 /** “You are my Son … You are a priest forever, after the order of Melchizedek”: a king’s crown comes down and settles over the priest’s linen turban. */
 export function DiademScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const level = useRef(0);
   const crown = useRef<Group>(null);
   const halo = useRef<ShaderMaterial | null>(null);
@@ -81,6 +83,7 @@ export function DiademScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.07) * 0.2, 0.75, mobile ? 3.8 : 3.1);
     camera.lookAt(0, 0.35, -1);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.6, 15.9, p);
     level.current = smoothstep(0, 1.2, p) * (1 - smoothstep(14.6, 16, p));
     const fall = easeInOutCubic((p - DOWN) / (REST - DOWN));
     crown.current?.position.set(0, lerp(HEAD + 2.4, HEAD, fall), 0);
@@ -174,6 +177,7 @@ export function DiademScene({ mobile, effects }: SceneProps) {
           );
         })}
       </group>
+      <Squall opacity={fade} color={HOLY.dark} />
       {effects && <SceneEffects bloom={0.7} threshold={0.6} vignette={0.5} />}
     </>
   );

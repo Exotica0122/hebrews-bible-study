@@ -11,6 +11,7 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import type { HillLayer } from "../primitives/Earth";
 import {
@@ -80,6 +81,7 @@ const STONES = Array.from({ length: 12 }, (_, i) => {
 /** “If Joshua had given them rest, God would not have spoken of another day”: the years turn the shadow of Joshua’s stones and weather them; then “Today” runs a path of light past them. */
 export function JordanScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const sun = useRef<Group>(null);
   const shadow = useRef<Group>(null);
   const cairn = useRef<Group>(null);
@@ -112,6 +114,7 @@ export function JordanScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.05) * 0.15, 0.3, mobile ? 5.4 : 4);
     camera.lookAt(0, -0.6, -8);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(15.4, 16.8, p);
     const years = easeInOutCubic((p - YEARS[0]) / (YEARS[1] - YEARS[0]));
     const renew = smoothstep(15.6, 17, p);
     const age = years * (1 - renew);
@@ -169,6 +172,7 @@ export function JordanScene({ mobile, effects }: SceneProps) {
         alpha={0.6}
         power={1.2}
         renderOrder={3}
+        depthTest
       />
       {TRAIL.map((z, i) => (
         <group
@@ -235,6 +239,7 @@ export function JordanScene({ mobile, effects }: SceneProps) {
           />
         ))}
       </group>
+      <Squall opacity={fade} color={DAY.haze} />
       {effects && (
         <SceneEffects bloom={0.25} threshold={0.95} vignette={0.25} />
       )}

@@ -48,8 +48,8 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
     [p1, p2, p3, p4].forEach((r, i) => {
       const at = FIRST + i * TURN;
       r.current =
-        smoothstep(at, at + 0.5, p) *
-        (1 - smoothstep(at + TURN - 0.5, at + TURN, p));
+        smoothstep(at - 0.3, at + 0.5, p) *
+        (1 - smoothstep(at + TURN - 0.5, at + TURN + 0.3, p));
     });
     one.current = smoothstep(LAST, LAST + 0.8, p) * (1 - out);
     const light = smoothstep(LAST + 0.3, LAST + 3, p) * (1 - out);
@@ -84,28 +84,28 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
         renderOrder={6}
       />
       <Carved
-        position={SPOT}
+        position={[SPOT[0] + -0.45, SPOT[1], SPOT[2]]}
         robe={SALEM.linen}
         rotationY={-0.5}
         turban
         opacity={p1}
       />
       <Carved
-        position={SPOT}
+        position={[SPOT[0] + -0.15, SPOT[1], SPOT[2]]}
         robe={SALEM.linen}
         rotationY={-0.5}
         turban
         opacity={p2}
       />
       <Carved
-        position={SPOT}
+        position={[SPOT[0] + 0.15, SPOT[1], SPOT[2]]}
         robe={SALEM.linen}
         rotationY={-0.5}
         turban
         opacity={p3}
       />
       <Carved
-        position={SPOT}
+        position={[SPOT[0] + 0.45, SPOT[1], SPOT[2]]}
         robe={SALEM.linen}
         rotationY={-0.5}
         turban

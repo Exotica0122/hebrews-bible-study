@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import type { Group, Mesh, PointLight, ShaderMaterial } from "three";
+import type { Mesh, PointLight, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import {
   Cloth,
@@ -20,6 +21,7 @@ import { setUniform } from "../primitives/mutate";
 const PERIOD = 17;
 const HEARD = 7.8;
 const RISE = 9.6;
+const RISE_TIME = 1.2;
 const SPREAD = 10.6;
 /** Each tear’s start time. */
 const TEARS = [2, 3.1, 4.3, 5.2, 6.3];
@@ -29,9 +31,9 @@ const FACE: [number, number, number] = [X, FLOOR + 1.0, 0.2];
 /** “Prayers and supplications, with loud cries and tears … and he was heard”: tears fall in the lamplight, light answers from above, he stands, and the light spreads out from where he is. */
 export function CriesScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const level = useRef(0);
-  const kneel = useRef<Group>(null);
-  const stand = useRef<Group>(null);
+  const kneel = useRef(1);
   const tears = useRef<(Mesh | null)[]>([]);
   const tearGlow = useRef<(ShaderMaterial | null)[]>([]);
   const shaft = useRef<ShaderMaterial | null>(null);
@@ -47,6 +49,7 @@ export function CriesScene({ mobile, effects }: SceneProps) {
     );
     camera.lookAt(mobile ? X : 0.5, -0.6, -0.4);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(15.4, 16.9, p);
     const out = 1 - smoothstep(15.4, 17, p);
     level.current = smoothstep(0, 1.2, p) * out;
     TEARS.forEach((start, i) => {
@@ -57,7 +60,12 @@ export function CriesScene({ mobile, effects }: SceneProps) {
         FACE[2],
       );
       const m = tearGlow.current[i];
-      if (m) setUniform(m, "uAlpha", k > 0 && k < 1 ? 0.9 : 0);
+      if (m)
+        setUniform(
+          m,
+          "uAlpha",
+          0.9 * smoothstep(0, 0.12, k) * (1 - smoothstep(0.88, 1, k)),
+        );
     });
     const heard = smoothstep(HEARD, HEARD + 1.4, p) * out;
     if (shaft.current)
@@ -67,9 +75,7 @@ export function CriesScene({ mobile, effects }: SceneProps) {
         0.55 * heard * (1 - 0.5 * smoothstep(SPREAD + 1, SPREAD + 3, p)),
       );
     if (above.current) above.current.intensity = 9 * heard;
-    const up = p > RISE;
-    if (kneel.current) kneel.current.visible = !up;
-    if (stand.current) stand.current.visible = up;
+    kneel.current = 1 - smoothstep(RISE, RISE + RISE_TIME, p);
     const spread = smoothstep(SPREAD, SPREAD + 3.4, p);
     poolMesh.current?.scale.set(lerp(0.6, 9, spread), lerp(0.6, 9, spread), 1);
     if (pool.current) setUniform(pool.current, "uAlpha", 0.5 * spread * out);
@@ -96,12 +102,7 @@ export function CriesScene({ mobile, effects }: SceneProps) {
         light={8}
         distance={6}
       />
-      <group ref={kneel}>
-        <Figure position={[X, FLOOR, 0]} robe="#8C7B66" pose="kneeling" />
-      </group>
-      <group ref={stand} visible={false}>
-        <Figure position={[X, FLOOR, 0]} robe="#8C7B66" />
-      </group>
+      <Figure position={[X, FLOOR, 0]} robe="#8C7B66" kneel={kneel} />
       {TEARS.map((_, i) => (
         <Glow
           key={i}
@@ -160,6 +161,7 @@ export function CriesScene({ mobile, effects }: SceneProps) {
           }}
         />
       </group>
+      <Squall opacity={fade} color={HOLY.dark} />
       {effects && <SceneEffects bloom={0.8} threshold={0.55} vignette={0.55} />}
     </>
   );

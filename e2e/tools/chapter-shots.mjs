@@ -70,7 +70,7 @@ const n = await shoot(
 await shoot(
   "css",
   { viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" },
-  [1000],
+  [2500],
 );
 await shoot(
   "mobile",

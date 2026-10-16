@@ -591,10 +591,14 @@ export function Angel({
     },
     [wing, feather],
   );
+  const root = useRef<Group>(null);
   const torso = useRef<Group>(null);
   const wings = useRef<(Mesh | null)[]>([]);
   useFrame(() => {
-    if (opacity) setOpacity(feather, opacity.current);
+    if (opacity) {
+      setOpacity(feather, opacity.current);
+      if (root.current) root.current.visible = opacity.current > 0.005;
+    }
     if (!kneel || !torso.current) return;
     const k = kneel.current;
     torso.current.rotation.x = bow + (kneelBow - bow) * k;
@@ -611,7 +615,12 @@ export function Angel({
   const z = pose === "standing" ? -0.12 : -0.05;
   const lift = 0.35 + spread * 0.6;
   return (
-    <group position={position} rotation={[0, rotationY, 0]} scale={scale}>
+    <group
+      ref={root}
+      position={position}
+      rotation={[0, rotationY, 0]}
+      scale={scale}
+    >
       <group ref={torso} rotation={[bow, 0, 0]}>
         <Carved
           position={[0, 0, 0]}

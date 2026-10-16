@@ -12,11 +12,13 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import {
   Cloth,
   Flame,
   Floor,
   FLOOR,
+  HOLY,
   Table,
   TABLE_TOP,
 } from "../primitives/Sanctuary";
@@ -53,6 +55,7 @@ const look = new Vector3();
 /** “You need milk, not solid food … solid food is for the mature”: the lamplight rests on a small cup of milk, then moves across the table to the bread. */
 export function BreadScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const level = useRef(0);
   const lamp = useRef<Group>(null);
   const parts = useMemo(
@@ -97,6 +100,7 @@ export function BreadScene({ mobile, effects }: SceneProps) {
 
   useSceneTime((t, _dt, { camera }) => {
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.6, 15.9, p);
     level.current = smoothstep(0, 1.2, p) * (1 - smoothstep(14.6, 16, p));
     const across = easeInOutCubic((p - MOVE) / 3.6);
     const x = lerp(CUP_X, BREAD_X, across);
@@ -173,6 +177,7 @@ export function BreadScene({ mobile, effects }: SceneProps) {
           distance={4}
         />
       </group>
+      <Squall opacity={fade} color={HOLY.dark} />
       {effects && <SceneEffects bloom={0.7} threshold={0.6} vignette={0.5} />}
     </>
   );

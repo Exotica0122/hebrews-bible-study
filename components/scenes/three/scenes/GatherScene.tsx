@@ -128,13 +128,11 @@ export function GatherScene({ mobile, effects }: SceneProps) {
       g.position.z = lerp(z + 0.8, z, k);
       const walking = k > 0 && k < 1 ? 1 : 0;
       g.position.y = walking * Math.abs(Math.sin((p - start) * 5.5)) * 0.02;
-      g.rotation.y = walking
-        ? -Math.sign(x) * Math.PI * 0.45
-        : lerp(
-            -Math.sign(x) * Math.PI * 0.45,
-            -Math.sign(x) * 0.25,
-            smoothstep(start + WALK - 0.4, start + WALK + 0.6, p),
-          );
+      g.rotation.y = lerp(
+        -Math.sign(x) * Math.PI * 0.45,
+        -Math.sign(x) * 0.25,
+        smoothstep(start + WALK - 0.4, start + WALK + 0.6, p),
+      );
     });
   });
 
@@ -154,10 +152,11 @@ export function GatherScene({ mobile, effects }: SceneProps) {
         frustumCulled={false}
       />
       <mesh material={stone} position={[0, 2.25, WALL_Z + 0.05]}>
-        <boxGeometry args={[DOOR + 0.5, 0.18, 0.5]} />
+        <boxGeometry args={[DOOR + 1.1, 0.18, 0.5]} />
       </mesh>
       <mesh position={[0, 1.05, WALL_Z - 0.3]}>
-        <planeGeometry args={[DOOR, 2.1]} />
+        {/* wide enough to fill the ragged gap the coursing leaves either side of the door */}
+        <planeGeometry args={[DOOR + 1, 2.1]} />
         <meshBasicMaterial color="#C98A40" />
       </mesh>
       <Glow

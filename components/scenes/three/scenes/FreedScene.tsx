@@ -37,6 +37,7 @@ const DESCEND = 1.4;
 const LAND = 5;
 const BREAK = 5.3;
 const RISE = 6.2;
+const RISE_TIME = 1.2;
 const LINKS = 11;
 const CAPTIVES: [number, string][] = [
   [-2.2, "#6B5442"],
@@ -100,8 +101,8 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   const deliverer = useRef<Group>(null);
   const links = useRef<InstancedMesh>(null);
   const wall = useRef<InstancedMesh>(null);
-  const kneeling = useRef<Group>(null);
-  const standing = useRef<Group>(null);
+  const kneel = useRef(1);
+  const captives = useRef<(Group | null)[]>([]);
   const key = useRef<PointLight>(null);
   const shaft = useRef<ShaderMaterial | null>(null);
   const halo = useRef<ShaderMaterial | null>(null);
@@ -179,12 +180,16 @@ export function FreedScene({ mobile, effects }: SceneProps) {
       (1 - smoothstep(BREAK, BREAK + 1, p));
 
     if (deliverer.current) {
-      deliverer.current.position.y = lerp(3.6, 0, down);
+      deliverer.current.position.y = lerp(mobile ? 5.4 : 3.6, 0, down);
       deliverer.current.visible = p > DESCEND - 0.2;
     }
-    const rose = p > RISE;
-    if (kneeling.current) kneeling.current.visible = !rose;
-    if (standing.current) standing.current.visible = rose;
+    const rise = smoothstep(RISE, RISE + RISE_TIME, p);
+    kneel.current = 1 - rise;
+    captives.current.forEach((g, i) => {
+      if (!g) return;
+      g.position.z = lerp(0.2, 0.3, rise);
+      g.rotation.y = -Math.sign(CAPTIVES[i][0]) * lerp(0.2, 0.35, rise);
+    });
 
     const m = links.current;
     if (m) {
@@ -218,7 +223,11 @@ export function FreedScene({ mobile, effects }: SceneProps) {
     }
 
     if (key.current)
-      key.current.intensity = 1 + 5 * lit + 7 * freed + 10 * burst;
+      key.current.intensity =
+        smoothstep(DESCEND - 0.2, DESCEND + 0.8, p) +
+        5 * lit +
+        7 * freed +
+        10 * burst;
     if (shaft.current)
       setUniform(shaft.current, "uAlpha", 0.35 * lit + 0.25 * freed);
     if (halo.current) setUniform(halo.current, "uAlpha", 0.45 * lit);
@@ -274,30 +283,23 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         args={[geo.link, mats.iron, LINK_REST.length]}
         frustumCulled={false}
       />
-      <group ref={kneeling}>
-        {CAPTIVES.map(([x, robe]) => (
+      {CAPTIVES.map(([x, robe], i) => (
+        <group
+          key={x}
+          ref={(g) => {
+            captives.current[i] = g;
+          }}
+          position={[x * spread, 0, 0.2]}
+        >
           <Carved
-            key={x}
-            position={[x * spread, 0, 0.2]}
+            position={[0, 0, 0]}
             robe={robe}
-            pose="kneeling"
-            rotationY={-Math.sign(x) * 0.2}
-            scale={0.85}
-          />
-        ))}
-      </group>
-      <group ref={standing} visible={false}>
-        {CAPTIVES.map(([x, robe]) => (
-          <Carved
-            key={x}
-            position={[x * spread, 0, 0.3]}
-            robe={robe}
-            rotationY={-Math.sign(x) * 0.35}
             scale={0.85}
             arms
+            kneel={kneel}
           />
-        ))}
-      </group>
+        </group>
+      ))}
       <group ref={deliverer} position={[0, 3.6, 0.4]} visible={false}>
         <Carved position={[0, 0, 0]} robe="#E2D6BE" />
         <Glow

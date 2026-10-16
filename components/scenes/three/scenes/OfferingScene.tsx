@@ -4,6 +4,7 @@ import { useRef } from "react";
 import type { Group, PointLight } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
+import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
 import {
   Altar,
@@ -38,6 +39,7 @@ const CROWD: [number, number, number, string][] = [
 /** “He is obligated to offer sacrifice for his own sins just as he does for those of the people”: smoke rises first for the high priest himself, then wider for the people behind him. */
 export function OfferingScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const fade = useRef(1);
   const level = useRef(0);
   const self = useRef(0);
   const people = useRef(0);
@@ -48,6 +50,7 @@ export function OfferingScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.05) * 0.12, 0.6, mobile ? 4.4 : 3.4);
     camera.lookAt(0, -0.3, -5);
     const p = t % PERIOD;
+    fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.6, 15.9, p);
     level.current = smoothstep(0, 1.2, p) * (1 - smoothstep(14.6, 16, p));
     self.current =
       smoothstep(SELF, SELF + 1, p) *
@@ -111,6 +114,7 @@ export function OfferingScene({ mobile, effects }: SceneProps) {
         distance={6}
         decay={1.6}
       />
+      <Squall opacity={fade} color={HOLY.dark} />
       {effects && <SceneEffects bloom={0.7} threshold={0.6} vignette={0.5} />}
     </>
   );
