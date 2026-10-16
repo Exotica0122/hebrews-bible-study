@@ -27,6 +27,12 @@ import { OfferingScene } from "./scenes/OfferingScene";
 import { DiademScene } from "./scenes/DiademScene";
 import { CriesScene } from "./scenes/CriesScene";
 import { BreadScene } from "./scenes/BreadScene";
+import { HeroCoastScene } from "./scenes/HeroCoastScene";
+import { FoundationScene } from "./scenes/FoundationScene";
+import { RainScene } from "./scenes/RainScene";
+import { FootstepsScene } from "./scenes/FootstepsScene";
+import { OathScene } from "./scenes/OathScene";
+import { AnchorScene } from "./scenes/AnchorScene";
 
 export interface DragState {
   dx: number;
@@ -74,4 +80,10 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   diadem: DiademScene,
   cries: CriesScene,
   bread: BreadScene,
+  heroCoast: HeroCoastScene,
+  foundation: FoundationScene,
+  rain: RainScene,
+  footsteps: FootstepsScene,
+  oath: OathScene,
+  anchor: AnchorScene,
 };
