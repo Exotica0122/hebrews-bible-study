@@ -12,12 +12,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "test": "vitest run",
-    "typecheck": "next typegen && tsc --noEmit",
+    "lint": "eslint --fix",
+    "lint:check": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint:fix": "eslint --fix"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",
