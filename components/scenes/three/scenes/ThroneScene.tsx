@@ -37,6 +37,13 @@ const FLOOR = -1.4;
 const THRONE: [number, number, number] = [1.7, FLOOR - 0.1, -0.4];
 const WIND_ANGEL: [number, number, number] = [-2.6, FLOOR + 0.05, 0.2];
 const FIRE_ANGEL: [number, number, number] = [-1.15, FLOOR + 0.05, -0.3];
+/** Round the fire angel's robe, low and at the waist, so the flame climbs its whole figure. */
+const FIRE_EMITTERS: [number, number, number][] = [
+  [-0.28, 0.1, 0.15],
+  [0.28, 0.1, 0.15],
+  [-0.34, 0.55, 0.05],
+  [0.34, 0.55, 0.05],
+].map(([x, y, z]) => [FIRE_ANGEL[0] + x, FIRE_ANGEL[1] + y, FIRE_ANGEL[2] + z]);
 
 const WIND_VERT = /* glsl */ `
 varying vec2 vUv;
@@ -83,7 +90,7 @@ function windCurves() {
 export function ThroneScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
-  const gust = useRef(0);
+  const flicker = useRef(0);
   const fireGlow = useRef<ShaderMaterial | null>(null);
   const gold = useHeavenGold();
   const curves = useMemo(() => windCurves(), []);
@@ -130,7 +137,7 @@ export function ThroneScene({ mobile, effects }: SceneProps) {
     camera.lookAt(-0.2, -0.3, -0.2);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 1, p) + smoothstep(13.6, 15, p);
-    gust.current = 0.25 + 0.35 * Math.sin(t * 1.3) + 0.15 * Math.sin(t * 3.1);
+    flicker.current = 0.06 * Math.sin(t * 2.3) + 0.03 * Math.sin(t * 5.1);
     ribbons.forEach((m, i) => {
       setUniform(m, "uTime", t * (1 + i * 0.15));
       setUniform(m, "uAlpha", 0.45 + 0.25 * Math.sin(t * 1.1 + i));
@@ -189,15 +196,11 @@ export function ThroneScene({ mobile, effects }: SceneProps) {
         robe="#F0CFA0"
       />
       <Flames
-        emitters={[
-          [FIRE_ANGEL[0] - 0.3, FIRE_ANGEL[1] + 0.05, FIRE_ANGEL[2] + 0.2],
-          [FIRE_ANGEL[0] + 0.3, FIRE_ANGEL[1] + 0.05, FIRE_ANGEL[2] + 0.2],
-          [FIRE_ANGEL[0], FIRE_ANGEL[1] + 0.1, FIRE_ANGEL[2] + 0.35],
-        ]}
-        count={mobile ? 90 : 170}
-        rise={1.4}
-        size={mobile ? 6 : 8}
-        gust={gust}
+        emitters={FIRE_EMITTERS}
+        count={mobile ? 110 : 200}
+        rise={1}
+        size={mobile ? 5 : 7}
+        gust={flicker}
       />
       <pointLight
         position={[FIRE_ANGEL[0], FIRE_ANGEL[1] + 0.8, FIRE_ANGEL[2] + 0.8]}

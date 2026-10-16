@@ -38,13 +38,14 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
   const one = useRef(0);
   const halo = useRef<ShaderMaterial | null>(null);
   const lamp = useRef<PointLight>(null);
+  const ray = useRef<ShaderMaterial | null>(null);
 
   useSceneTime((t, _dt, { camera }) => {
     const p = t % PERIOD;
     const out = smoothstep(16.4, 18, p);
     haze.current = 1 - smoothstep(0, 1.4, p) + out;
-    camera.position.set(Math.sin(t * 0.05) * 0.2, 1.6, mobile ? 9 : 6.5);
-    camera.lookAt(0, 1.1, -0.4);
+    camera.position.set(Math.sin(t * 0.05) * 0.2, 1.6, mobile ? 7.5 : 6.5);
+    camera.lookAt(0, mobile ? -0.4 : 1.1, -0.4);
     [p1, p2, p3, p4].forEach((r, i) => {
       const at = FIRST + i * TURN;
       r.current =
@@ -54,6 +55,7 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
     one.current = smoothstep(LAST, LAST + 0.8, p) * (1 - out);
     const light = smoothstep(LAST + 0.3, LAST + 3, p) * (1 - out);
     if (halo.current) setUniform(halo.current, "uAlpha", 0.5 * light);
+    if (ray.current) setUniform(ray.current, "uAlpha", 0.2 * light);
     if (lamp.current) lamp.current.intensity = 3.5 * light;
   });
 
@@ -125,7 +127,10 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
         radiusStart={0.25}
         radiusEnd={1.2}
         color="#FFE6BE"
-        alpha={0.2}
+        alpha={0}
+        onMaterial={(m) => {
+          ray.current = m;
+        }}
       />
       <Glow
         position={[SPOT[0], 2.4, SPOT[2] - 0.3]}

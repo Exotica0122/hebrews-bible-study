@@ -106,7 +106,7 @@ export function MercyScene({ mobile, effects }: SceneProps) {
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(Math.sin(t * 0.05) * 0.15, 0.2, mobile ? 5.6 : 4.4);
-    camera.lookAt(0, -0.55, -5);
+    camera.lookAt(0, mobile ? -1.35 : -0.55, -5);
     const p = t % PERIOD;
     fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(15.4, 16.8, p);
     const rise = easeInOutCubic((p - RISE) / (OPEN - RISE));
@@ -129,9 +129,13 @@ export function MercyScene({ mobile, effects }: SceneProps) {
           0.55 + 0.35 * Math.exp(-Math.abs(ry - y) * 1.6) * (1 - open),
         );
     });
-    setEmissive(seat, 0.35 * open * (1 - away));
+    setEmissive(seat, (mobile ? 0.12 : 0.35) * open * (1 - away));
     if (halo.current)
-      setUniform(halo.current, "uAlpha", 0.55 * open * (1 - away));
+      setUniform(
+        halo.current,
+        "uAlpha",
+        (mobile ? 0.28 : 0.55) * open * (1 - away),
+      );
 
     const walk = easeInOutCubic((p - WALK) / 5.6);
     const z = lerp(-0.6, THRONE_Z + 0.75, walk);

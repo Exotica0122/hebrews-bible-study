@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import {
   MeshBasicMaterial,
+  MeshStandardMaterial,
+  PlaneGeometry,
   Shape,
   ShapeGeometry,
   type Group,
@@ -12,7 +14,8 @@ import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
-import { figureGeometry, ridgeY } from "../primitives/Earth";
+import { ridgeY } from "../primitives/Earth";
+import { Figure } from "../primitives/Sanctuary";
 import {
   Clouds,
   DAY,
@@ -57,10 +60,12 @@ const BIRDS: [number, number, number][] = [
   [-5.6, 1.9, 0.85],
   [-8.2, 2.4, 0.95],
 ];
-const PEOPLE: [number, number][] = [
-  [-0.5, 1],
-  [0.1, 0.95],
+/** People: x, scale, robe. */
+const PEOPLE: [number, number, string][] = [
+  [-0.45, 0.62, "#EDE3CF"],
+  [0.15, 0.58, "#B5694A"],
 ];
+const WATER_Y = -1.95;
 
 function birdGeometry() {
   const s = new Shape();
@@ -90,10 +95,20 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
   const warmth = useRef<ShaderMaterial>(null);
   const marks = useRef<(ShaderMaterial | null)[]>([]);
   const bird = useMemo(() => birdGeometry(), []);
-  const figure = useMemo(() => figureGeometry(), []);
-  const ink = useMemo(
+  const people = useRef<Group>(null);
+  const pool = useMemo(() => new PlaneGeometry(40, 2.6), []);
+  const lake = useMemo(
     () =>
-      new MeshBasicMaterial({ color: DAY.ink, transparent: true, opacity: 0 }),
+      new MeshStandardMaterial({
+        color: DAY.water,
+        emissive: "#B4D0D6",
+        emissiveIntensity: 0.6,
+        roughness: 0.2,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      }),
     [],
   );
   const birdInk = useMemo(
@@ -108,16 +123,16 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
   useEffect(
     () => () => {
       bird.dispose();
-      figure.dispose();
-      ink.dispose();
+      pool.dispose();
+      lake.dispose();
       birdInk.dispose();
     },
-    [bird, figure, ink, birdInk],
+    [bird, pool, lake, birdInk],
   );
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(Math.sin(t * 0.05) * 0.12, 0.1, mobile ? 9.5 : 8);
-    camera.lookAt(0, -0.2, -8);
+    camera.lookAt(0, mobile ? -1.3 : -0.2, -8);
     const p = t % PERIOD;
     fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(UNDO, UNDO + 1.3, p);
     const keep = 1 - smoothstep(UNDO, UNDO + 1.3, p);
@@ -125,7 +140,8 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
 
     if (core.current) setUniform(core.current, "uAlpha", made(0));
     if (halo.current) setUniform(halo.current, "uAlpha", 0.45 * made(0));
-    if (water.current) setUniform(water.current, "uAlpha", 0.6 * made(1));
+    if (water.current) setUniform(water.current, "uAlpha", 0.7 * made(1));
+    setOpacity(lake, 0.92 * made(1));
     clouds.current.forEach((m) => setOpacity(m, 0.8 * made(1)));
     land.current?.position.setY(lerp(-1.6, 0, made(2)));
     if (moon.current) setOpacity(moon.current, 0.7 * made(3));
@@ -143,7 +159,7 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
         1,
       );
     });
-    setOpacity(ink, made(5));
+    people.current?.position.setY(lerp(-1.6, 0, made(5)));
 
     if (warmth.current)
       setUniform(warmth.current, "uAlpha", 0.22 * rest * keep);
@@ -206,30 +222,38 @@ export function SeventhScene({ mobile, effects }: SceneProps) {
         ))}
       </group>
       <GardenHills layers={[near]} />
+      <mesh
+        geometry={pool}
+        material={lake}
+        position={[0, WATER_Y, -3.75]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        renderOrder={-4}
+      />
       <Glow
-        position={[0, -1.66, -4.6]}
+        position={[0, WATER_Y + 0.02, -4.9]}
         size={1}
         scaleX={40}
-        scaleY={0.32}
+        scaleY={0.12}
         color="#7FA0AA"
         inner={DAY.water}
         alpha={0}
         power={1.1}
-        renderOrder={-5}
+        renderOrder={-3}
         onMaterial={(m) => {
           water.current = m;
         }}
       />
-      {PEOPLE.map(([x, s]) => (
-        <mesh
-          key={x}
-          geometry={figure}
-          material={ink}
-          position={[x, ridgeY(near, x) - 0.02, near.z + 0.4]}
-          scale={0.34 * s}
-          renderOrder={4}
-        />
-      ))}
+      <group ref={people} position={[0, -1.6, 0]}>
+        {PEOPLE.map(([x, s, robe]) => (
+          <Figure
+            key={x}
+            position={[x, ridgeY(near, x) - 0.03, near.z - 0.3]}
+            scale={mobile ? s * 1.3 : s}
+            robe={robe}
+            rotationY={x < 0 ? 0.5 : -0.5}
+          />
+        ))}
+      </group>
       <Glow
         position={[0, -0.6, -6]}
         size={1}

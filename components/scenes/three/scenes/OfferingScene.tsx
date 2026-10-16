@@ -47,8 +47,14 @@ export function OfferingScene({ mobile, effects }: SceneProps) {
   const crowdLight = useRef<PointLight>(null);
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(Math.sin(t * 0.05) * 0.12, 0.6, mobile ? 4.4 : 3.4);
-    camera.lookAt(0, -0.3, -5);
+    const sway = Math.sin(t * 0.05) * 0.12;
+    if (mobile) {
+      camera.position.set(sway, 0.7, 2.2);
+      camera.lookAt(-0.2, -1.2, -5);
+    } else {
+      camera.position.set(sway, 0.6, 3.4);
+      camera.lookAt(0, -0.3, -5);
+    }
     const p = t % PERIOD;
     fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.6, 15.9, p);
     level.current = smoothstep(0, 1.2, p) * (1 - smoothstep(14.6, 16, p));

@@ -294,137 +294,6 @@
   );
 }
 
-/* fold */
-.f_cloth {
-  left: -40px;
-  right: -40px;
-  top: -60px;
-  bottom: -60px;
-  display: flex;
-}
-.f_panel {
-  flex: 1;
-  background-size:
-    100% 100%,
-    131px 197px,
-    131px 197px;
-}
-.f_panel:nth-child(odd) {
-  transform: skewY(7deg);
-  background-color: var(--night);
-  background-image:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 70%),
-    radial-gradient(
-      1.4px 1.4px at 23px 41px,
-      rgba(238, 228, 207, 0.8),
-      transparent
-    ),
-    radial-gradient(
-      1.8px 1.8px at 77px 160px,
-      rgba(243, 211, 138, 0.7),
-      transparent
-    );
-}
-.f_panel:nth-child(even) {
-  transform: skewY(-7deg);
-  background-color: var(--night-2);
-  background-image:
-    linear-gradient(90deg, rgba(238, 228, 207, 0.06), rgba(0, 0, 0, 0.45)),
-    radial-gradient(
-      1.4px 1.4px at 23px 41px,
-      rgba(238, 228, 207, 0.8),
-      transparent
-    ),
-    radial-gradient(
-      1.8px 1.8px at 77px 160px,
-      rgba(243, 211, 138, 0.7),
-      transparent
-    );
-}
-.f_vignette {
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    rgba(10, 8, 6, 0) 20%,
-    rgba(10, 8, 6, 0.75) 75%
-  );
-}
-.f_halo {
-  left: 50%;
-  top: 40%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(243, 211, 138, 0.4),
-    rgba(183, 137, 44, 0.1) 25%,
-    rgba(10, 8, 6, 0) 55%
-  );
-}
-.f_core {
-  left: 50%;
-  top: 40%;
-  width: 16px;
-  height: 16px;
-  box-shadow:
-    0 0 22px 8px rgba(243, 211, 138, 0.9),
-    0 0 80px 28px rgba(183, 137, 44, 0.45);
-}
-
-/* exalted */
-.e_halo {
-  left: 50%;
-  top: 26%;
-  width: 1200px;
-  height: 1200px;
-  background: radial-gradient(
-    circle,
-    rgba(243, 211, 138, 0.55) 0,
-    rgba(183, 137, 44, 0.16) 16%,
-    rgba(20, 17, 13, 0) 48%
-  );
-}
-.e_core {
-  left: 50%;
-  top: 26%;
-  width: 26px;
-  height: 26px;
-  box-shadow:
-    0 0 34px 12px rgba(243, 211, 138, 0.9),
-    0 0 120px 44px rgba(183, 137, 44, 0.45);
-}
-.e_beam {
-  left: 50%;
-  top: 26%;
-  width: 1px;
-  height: 30%;
-  transform: translateX(-50%);
-  background: linear-gradient(rgba(243, 211, 138, 0.5), rgba(243, 211, 138, 0));
-}
-.e_horizon {
-  left: 22%;
-  right: 22%;
-  top: 58%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(243, 211, 138, 0),
-    rgba(243, 211, 138, 0.8),
-    rgba(243, 211, 138, 0)
-  );
-}
-.e_haze {
-  left: 34%;
-  right: 34%;
-  top: 58%;
-  height: 14px;
-  background: linear-gradient(rgba(183, 137, 44, 0.25), rgba(183, 137, 44, 0));
-}
-.e_dust {
-  width: 5px;
-  height: 5px;
-  background: var(--dust);
-}
-
 /* hero */
 .h_halo {
   left: 50%;
@@ -572,51 +441,52 @@
     );
 }
 
-/* freed: a prison wall, light in the middle and the chains broken */
+/* freed: light breaks into a prison; the captives stand, their chains broken */
 .fr_back {
-  background: radial-gradient(
-    ellipse at 50% 45%,
-    rgba(243, 199, 122, 0.9) 0,
-    rgba(243, 199, 122, 0.25) 10%,
-    #0b0908 34%
-  );
-}
-.fr_veil {
-  top: 0;
-  bottom: 22%;
-  width: 50%;
   background:
+    radial-gradient(
+      ellipse 16% 70% at 50% 40%,
+      rgba(255, 241, 208, 0.75) 0,
+      rgba(243, 199, 122, 0.3) 40%,
+      rgba(243, 199, 122, 0) 100%
+    ),
+    radial-gradient(
+      ellipse 55% 60% at 50% 70%,
+      rgba(243, 199, 122, 0.28) 0,
+      rgba(0, 0, 0, 0) 70%
+    ),
+    linear-gradient(transparent 68%, rgba(10, 9, 8, 0.65) 68%),
     repeating-linear-gradient(
       0deg,
-      rgba(0, 0, 0, 0.55) 0 2px,
-      rgba(0, 0, 0, 0) 2px 26px
+      rgba(0, 0, 0, 0.5) 0 2px,
+      rgba(0, 0, 0, 0) 2px 24px
     ),
-    linear-gradient(90deg, #1e1a16, #3a332c);
+    linear-gradient(#141210, #3a332c 60%, #1a1612);
 }
-.fr_left {
-  left: 0;
-  box-shadow: inset -40px 0 50px -20px rgba(243, 199, 122, 0.45);
+.fr_iron {
+  fill: none;
+  stroke: #8a7e6e;
+  stroke-width: 0.35;
 }
-.fr_right {
-  right: 0;
-  transform: scaleX(-1);
-  box-shadow: inset -40px 0 50px -20px rgba(243, 199, 122, 0.45);
+.fr_captive {
+  fill: #2a211a;
+  stroke: rgba(243, 199, 122, 0.5);
+  stroke-width: 0.3;
+  stroke-linecap: round;
 }
-.fr_chain {
-  top: 18%;
-  width: 6px;
-  height: 46%;
-  background: repeating-linear-gradient(
-    rgba(90, 82, 72, 0.9) 0 10px,
-    rgba(0, 0, 0, 0) 10px 14px
-  );
-  border-radius: 3px;
+.fr_captive path:first-child {
+  fill: none;
+  stroke: #2a211a;
+  stroke-width: 1.4;
 }
-.fr_chainL {
-  left: 12%;
+.fr_shackle {
+  fill: none;
+  stroke: #9a8c78;
+  stroke-width: 0.5;
 }
-.fr_chainR {
-  right: 12%;
+.fr_deliverer {
+  fill: #f6e7c6;
+  filter: drop-shadow(0 0 1.5px rgba(255, 233, 192, 0.9));
 }
 
 /* wilderness: the dusk sky, dunes and pillar of fire shared by Hebrews 3 */
@@ -649,10 +519,10 @@
     radial-gradient(1px 1px at 93% 30%, rgba(232, 223, 203, 0.5), transparent);
 }
 .wi_pillar {
-  left: 55%;
-  top: 18%;
+  left: 76%;
+  top: 28%;
   width: 3.4%;
-  height: 46%;
+  height: 36%;
   transform: translateX(-50%);
   background: linear-gradient(
     rgba(240, 154, 62, 0),
@@ -662,6 +532,12 @@
   filter: blur(6px);
   box-shadow: 0 0 80px 30px rgba(138, 75, 46, 0.45);
   border-radius: 40%;
+}
+@media (max-width: 640px) {
+  .wi_pillar {
+    left: 91%;
+    box-shadow: 0 0 40px 12px rgba(138, 75, 46, 0.45);
+  }
 }
 .wi_far {
   top: 62%;
@@ -751,80 +627,28 @@
 }
 
 /* rock: water from the rock in the wilderness at dusk */
-.ro_rock {
-  left: 50%;
-  top: 40%;
-  width: min(300px, 36%);
-  height: 36%;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at 38% 30%,
-    #8a6a52,
-    #6b4e3c 55%,
-    #2e211b
-  );
-  border-radius: 46% 54% 40% 44% / 58% 52% 30% 28%;
-}
-.ro_cleft {
-  left: 51%;
-  top: 44%;
-  width: 6px;
-  height: 17%;
-  transform: translateX(-50%);
-  background: linear-gradient(#fff8e8, #f3d38a);
-  box-shadow: 0 0 26px 8px rgba(243, 211, 138, 0.55);
-  border-radius: 3px;
-}
-.ro_water {
-  left: 51%;
-  top: 61%;
-  width: 3%;
-  height: 16%;
-  transform: translateX(-50%);
-  background: linear-gradient(
-    rgba(220, 232, 230, 0.8),
-    rgba(220, 232, 230, 0.15)
-  );
-  filter: blur(2px);
-}
-.ro_pool {
-  left: 50%;
-  top: 76%;
-  width: 44%;
-  height: 7%;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse,
-    rgba(220, 232, 230, 0.55),
-    rgba(111, 140, 146, 0.25) 45%,
-    rgba(0, 0, 0, 0) 70%
-  );
+.ro_scene {
+  left: 0;
+  width: 100%;
+  top: 18%;
+  height: 50%;
 }
 
-/* coals: a bed of glowing coals, one coal apart and grey */
+/* coals: a fire in the camp at nightfall, people kneeling round it, one coal apart and grey */
 .co_ground {
   background:
     radial-gradient(
-      ellipse 40% 26% at 44% 64%,
-      rgba(194, 83, 26, 0.55),
+      ellipse 34% 22% at 50% 60%,
+      rgba(194, 83, 26, 0.45),
       rgba(23, 18, 14, 0) 70%
     ),
-    #120e0b;
+    linear-gradient(#1c1830 0, #3a2a3c 22%, #4a2e2a 27%, #2a1e1a 30%, #120e0b);
 }
-.co_coal {
-  width: 24px;
-  height: 16px;
-  transform: translate(-50%, -50%);
-  border-radius: 45% 55% 50% 40%;
-  background: radial-gradient(circle at 40% 40%, #ffd08a, #e2621b 45%, #5a2410);
-  box-shadow: 0 0 14px 4px rgba(226, 98, 27, 0.45);
-}
-.co_lone {
-  left: 76%;
-  top: 70%;
-  opacity: 1;
-  background: radial-gradient(circle at 40% 40%, #6a625b, #4a4541 60%, #2a2622);
-  box-shadow: none;
+.co_scene {
+  left: 0;
+  width: 100%;
+  top: 20%;
+  height: 48%;
 }
 
 /* threshold: the wilderness, the river, the lit land beyond */
@@ -969,6 +793,14 @@
 }
 
 /* seventh: six days counted, the seventh golden */
+.ga_thing {
+  transform: translate(-50%, -100%);
+  overflow: visible;
+}
+.ga_bird {
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+}
 .ga_days {
   left: 50%;
   top: 66%;
@@ -1205,18 +1037,27 @@
   );
   filter: blur(6px);
 }
+.sa_low,
+.sa_lowSmoke {
+  left: max(20%, calc(50% - 310px));
+}
+.sa_low {
+  top: 82%;
+  width: 44px;
+  height: 50px;
+}
+.sa_lowSmoke {
+  top: calc(82% - 90px);
+  width: 50px;
+  height: 90px;
+}
 .sa_lampstand {
-  left: 24%;
-  top: 38%;
-  width: 70px;
-  height: 120px;
+  left: 18%;
+  top: calc(77% - 160px);
+  width: 93px;
+  height: 160px;
   transform: translateX(-50%);
-  border: 3px solid #c9a24a;
-  border-top: 0;
-  border-radius: 0 0 50% 50%;
-  box-shadow:
-    inset 0 0 0 14px rgba(0, 0, 0, 0),
-    0 -4px 0 -1px #f3b45a;
+  overflow: visible;
 }
 .sa_glow {
   width: 260px;
@@ -1230,17 +1071,10 @@
 }
 .sa_table {
   left: 76%;
-  top: 60%;
-  width: 90px;
-  height: 46px;
+  top: calc(77% - 72px);
+  width: 108px;
+  height: 72px;
   transform: translateX(-50%);
-  border-top: 8px solid #b98552;
-  background: linear-gradient(
-    90deg,
-    #c9a24a 0 6px,
-    transparent 6px calc(100% - 6px),
-    #c9a24a calc(100% - 6px)
-  );
 }
 .sa_shade {
   background: radial-gradient(
@@ -1352,9 +1186,26 @@
 .br_table {
   left: 10%;
   right: 10%;
-  top: 58%;
-  height: 10%;
-  background: linear-gradient(#e0be6a, #8a6a2c);
+  top: 53%;
+  height: 15%;
+  background: linear-gradient(#3e3020, #6e5634 33%, #e0be6a 33.5%, #8a6a2c);
+  clip-path: polygon(3% 0, 97% 0, 100% 33%, 100% 100%, 0 100%, 0 33%);
+}
+.br_chain {
+  left: 62%;
+  top: 0;
+  width: 1px;
+  height: calc(30% - 4px);
+  background: #8a6a2c;
+}
+.br_lamp {
+  left: 62%;
+  top: calc(30% + 4px);
+  width: 24px;
+  height: 9px;
+  transform: translateX(-50%);
+  border-radius: 0 0 50% 50%;
+  background: linear-gradient(90deg, #8a6a2c, #e0be6a 45%, #8a6a2c);
 }
 .br_cup {
   left: 30%;
@@ -1545,69 +1396,106 @@
   width: calc(6 * clamp(30px, 5.4vw, 64px) + 15px);
   height: 29.6%;
   transform: translateX(-50%);
+  /* running bond: each course's joints sit halfway along the stones below */
   background:
-    repeating-linear-gradient(
-      90deg,
-      rgba(60, 56, 48, 0.5) 0 2px,
-      rgba(0, 0, 0, 0) 2px 54px
-    ),
-    repeating-linear-gradient(
-      rgba(0, 0, 0, 0) 0 22px,
-      rgba(60, 56, 48, 0.5) 22px 24px
-    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='54' height='48'%3E%3Cg fill='%233C3830' fill-opacity='0.5'%3E%3Crect y='22' width='54' height='2'/%3E%3Crect y='46' width='54' height='2'/%3E%3Crect width='2' height='22'/%3E%3Crect x='27' y='24' width='2' height='22'/%3E%3C/g%3E%3C/svg%3E")
+      0 100% / 54px 48px,
     linear-gradient(#cfc9b8, #bdb7a6);
 }
+.cs_ground.rn_ground {
+  top: 42%;
+}
 .rn_plot {
-  top: 50%;
-  width: 30%;
-  height: 22%;
+  top: 47%;
+  width: 34%;
+  height: 13%;
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0)),
+    repeating-linear-gradient(90deg, #4a3c30 0 9px, #7a5c44 9px 16px);
+}
+.rn_left {
+  left: 10%;
+}
+.rn_right {
+  right: 6%;
 }
 .rn_crop {
-  left: 34%;
+  left: calc(10% + 2.4%);
+  top: 33%;
+  width: 29%;
+  height: 22%;
   background:
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0 6px, #d9b65a 6px 8px) 0
-      0 / 100% 70% no-repeat,
-    repeating-linear-gradient(90deg, #4a3c30 0 14px, #6e5240 14px 26px);
+    radial-gradient(ellipse 2px 6px at 50% 7px, #e0bc62 90%, transparent) 0 0 /
+      10px 100% repeat-x,
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0) 0 4px,
+      #c9a54e 4px 5.5px,
+      rgba(0, 0, 0, 0) 5.5px 10px
+    );
+  mask-image: linear-gradient(#000 0 70%, rgba(0, 0, 0, 0.6));
 }
 .rn_thorns {
-  right: 3%;
+  right: calc(6% + 2.4%);
+  top: 40%;
+  width: 29%;
+  height: 14%;
   background:
-    linear-gradient(#3b2e26, #3b2e26) 0 0 / 100% 64% no-repeat,
-    repeating-linear-gradient(90deg, #4a3c30 0 14px, #6e5240 14px 26px);
+    radial-gradient(circle 4px at 50% 4px, #6e4a6a 90%, transparent) 6px 0 /
+      26px 100% repeat-x,
+    #2e2a1c;
   clip-path: polygon(
     0 100%,
-    0 30%,
-    5% 8%,
-    9% 32%,
-    15% 2%,
-    20% 28%,
-    27% 10%,
-    32% 30%,
-    40% 0,
-    45% 26%,
-    52% 6%,
-    58% 30%,
-    64% 4%,
-    70% 24%,
-    78% 8%,
-    84% 30%,
-    90% 2%,
-    95% 26%,
-    100% 12%,
+    2% 40%,
+    5% 70%,
+    9% 20%,
+    13% 66%,
+    18% 10%,
+    22% 60%,
+    27% 26%,
+    31% 72%,
+    36% 6%,
+    41% 58%,
+    46% 22%,
+    50% 70%,
+    55% 8%,
+    60% 62%,
+    65% 24%,
+    70% 68%,
+    75% 4%,
+    80% 56%,
+    85% 20%,
+    90% 64%,
+    95% 14%,
+    100% 50%,
     100% 100%
   );
 }
 .rn_fire {
-  right: 3%;
-  top: 36%;
-  width: 30%;
-  height: 30%;
-  background: radial-gradient(
-    ellipse at 50% 80%,
-    rgba(243, 180, 90, 0.6),
-    rgba(200, 85, 61, 0.28) 40%,
-    rgba(0, 0, 0, 0) 70%
-  );
+  right: 6%;
+  top: 22%;
+  width: 34%;
+  height: 38%;
+  background:
+    radial-gradient(
+      ellipse 18% 60% at 22% 100%,
+      rgba(243, 180, 90, 0.75),
+      rgba(200, 85, 61, 0.3) 55%,
+      rgba(0, 0, 0, 0) 75%
+    ),
+    radial-gradient(
+      ellipse 16% 75% at 55% 100%,
+      rgba(250, 200, 110, 0.8),
+      rgba(200, 85, 61, 0.3) 55%,
+      rgba(0, 0, 0, 0) 75%
+    ),
+    radial-gradient(
+      ellipse 15% 55% at 82% 100%,
+      rgba(243, 180, 90, 0.7),
+      rgba(200, 85, 61, 0.28) 55%,
+      rgba(0, 0, 0, 0) 75%
+    );
 }
 .fs_sand {
   left: 0;
@@ -1626,17 +1514,24 @@
 }
 .oa_stars {
   filter: brightness(1.4);
+  /* coprime tile sizes, so the layers never line up into a visible grid */
   background:
-    radial-gradient(1px 1px at 12% 18%, #fff, transparent),
-    radial-gradient(1px 1px at 28% 8%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 41% 24%, #fff, transparent),
-    radial-gradient(1px 1px at 63% 12%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 77% 30%, #fff, transparent),
-    radial-gradient(1px 1px at 88% 16%, #fff, transparent),
-    radial-gradient(1px 1px at 55% 40%, #fff, transparent),
-    radial-gradient(1px 1px at 20% 44%, #fff, transparent);
-  background-size: 180px 140px;
-  opacity: 0.85;
+    radial-gradient(1px 1px at 12% 18%, #fff, transparent) 0 0 / 97px 89px,
+    radial-gradient(1px 1px at 28% 68%, #fff, transparent) 0 0 / 131px 107px,
+    radial-gradient(1.5px 1.5px at 41% 24%, #fff, transparent) 0 0 / 157px 113px,
+    radial-gradient(1px 1px at 63% 52%, #fff, transparent) 0 0 / 173px 139px,
+    radial-gradient(1.5px 1.5px at 77% 30%, #fff, transparent) 0 0 / 199px 151px,
+    radial-gradient(1px 1px at 88% 86%, #fff, transparent) 0 0 / 211px 163px,
+    radial-gradient(1px 1px at 55% 40%, #fff, transparent) 0 0 / 229px 181px,
+    radial-gradient(1px 1px at 20% 74%, #fff, transparent) 0 0 / 241px 127px,
+    radial-gradient(1.5px 1.5px at 6% 46%, #fff, transparent) 0 0 / 263px 149px,
+    radial-gradient(1px 1px at 93% 12%, #fff, transparent) 0 0 / 283px 193px,
+    radial-gradient(2px 2px at 47% 82%, #fff, transparent) 0 0 / 307px 173px,
+    radial-gradient(1px 1px at 71% 6%, #fff, transparent) 0 0 / 113px 101px,
+    radial-gradient(1px 1px at 35% 36%, #fff, transparent) 0 0 / 139px 97px,
+    radial-gradient(1px 1px at 82% 60%, #fff, transparent) 0 0 / 167px 123px;
+  mask-image: linear-gradient(#000 0 38%, rgba(0, 0, 0, 0.35) 56%);
+  opacity: 0.9;
 }
 .oa_sea {
   left: 0;
@@ -1660,22 +1555,22 @@
 }
 .an_water {
   background: linear-gradient(
-    #8fb2ae 0 3%,
-    #e6ece8 3% 3.6%,
-    #3c6670 4%,
+    #8fb2ae 0 9%,
+    #e6ece8 9% 9.6%,
+    #3c6670 10%,
     #1f4650 45%,
     #0b1d24
   );
 }
 .an_light {
-  left: 46%;
-  top: 18%;
-  width: 36%;
-  height: 52%;
+  left: 50%;
+  top: 16%;
+  width: 30%;
+  height: 64%;
   background: radial-gradient(
     ellipse,
-    rgba(255, 244, 214, 0.55),
-    rgba(243, 180, 90, 0.22) 40%,
+    rgba(255, 244, 214, 0.7),
+    rgba(243, 180, 90, 0.3) 40%,
     rgba(0, 0, 0, 0) 70%
   );
 }
@@ -1697,19 +1592,20 @@
       #a3302c 60% 72%,
       #5e3b6e 72%
     );
+  box-shadow: -8px 0 22px rgba(255, 214, 150, 0.5);
   filter: brightness(0.75);
 }
 .an_hull {
   left: 18%;
-  top: 0;
+  top: 4%;
   width: 22%;
-  height: 6%;
+  height: 7%;
   border-radius: 0 0 50% 50%;
   background: #241c17;
 }
 .an_rope {
   left: 30%;
-  top: 5%;
+  top: 10%;
   width: 2px;
   height: 78%;
   background: #8a7a5e;
@@ -1837,8 +1733,8 @@
 .sl_svg {
   left: 0;
   width: 100%;
-  bottom: 0;
-  height: 72%;
+  bottom: 26%;
+  height: 64%;
 }
 .sl_ray {
   left: 46%;
@@ -1881,7 +1777,7 @@
     linear-gradient(#d6a878, #b98a5e);
 }
 .sw_seal {
-  left: 77%;
+  left: 71%;
   top: 46%;
   width: 4%;
   height: 22%;

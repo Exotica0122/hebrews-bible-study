@@ -314,7 +314,7 @@ export function DriftScene({ mobile, effects }: SceneProps) {
         .add(b.position);
     }
 
-    const sag = lerp(0.35, 0.02, smoothstep(0.2, 1, d));
+    const sag = lerp(0.25, 0.02, smoothstep(0.2, 1, d));
     const sx = postX + 0.13;
     const sy = -0.55;
     const sz = 0.4;
@@ -323,12 +323,16 @@ export function DriftScene({ mobile, effects }: SceneProps) {
       for (let i = 0; i < ROPE_SEGMENTS; i++) {
         const k0 = i / ROPE_SEGMENTS;
         const k1 = (i + 1) / ROPE_SEGMENTS;
-        const at = (k: number, out: Vector3) =>
-          out.set(
-            lerp(sx, scratch.bow.x, k),
-            lerp(sy, scratch.bow.y, k) - sag * Math.sin(k * Math.PI),
-            lerp(sz, scratch.bow.z, k),
+        const at = (k: number, out: Vector3) => {
+          const x = lerp(sx, scratch.bow.x, k);
+          const z = lerp(sz, scratch.bow.z, k);
+          const y = lerp(sy, scratch.bow.y, k) - sag * Math.sin(k * Math.PI);
+          return out.set(
+            x,
+            Math.max(y, WATER_Y + waveHeight(x, z, t) + 0.03),
+            z,
           );
+        };
         at(k0, scratch.a);
         at(k1, scratch.b);
         scratch.d.subVectors(scratch.b, scratch.a);

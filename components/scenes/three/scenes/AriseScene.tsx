@@ -24,9 +24,9 @@ import { setUniform } from "../primitives/mutate";
 const PERIOD = 16;
 const RISE_X = 0.9;
 const PRIESTS: [number, number][] = [
-  [-3.2, -0.2],
-  [-2.6, -1.2],
-  [-3.6, -1.4],
+  [-2.5, 0.1],
+  [-3.4, -0.7],
+  [-4.2, 0.3],
 ];
 
 /** “Another priest arises in the likeness of Melchizedek … by the power of an indestructible life”: Aaron’s priests stand by Levi’s altar, Judah’s sceptre stands where no one has served at the altar, and out of Judah’s ground another priest rises, lit. */
@@ -36,17 +36,24 @@ export function AriseScene({ mobile, effects }: SceneProps) {
   const priest = useRef<Group>(null);
   const halo = useRef<ShaderMaterial | null>(null);
   const lamp = useRef<PointLight>(null);
+  const ray = useRef<ShaderMaterial | null>(null);
 
   useSceneTime((t, _dt, { camera }) => {
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 1.4, p) + smoothstep(14.4, 16, p);
-    camera.position.set(Math.sin(t * 0.05) * 0.25, 1.7, mobile ? 10 : 7.5);
-    camera.lookAt(-0.3, 1, -0.5);
+    const cx = mobile ? -1 : -0.3;
+    camera.position.set(
+      cx + Math.sin(t * 0.05) * 0.25,
+      1.7,
+      mobile ? 9.2 : 7.5,
+    );
+    camera.lookAt(cx, mobile ? -0.3 : 1, -0.5);
     const rise = easeOutCubic((p - 2.5) / 6);
     if (priest.current) priest.current.position.y = -1.9 + rise * 1.9;
     const light = smoothstep(3, 9, p) * (1 - smoothstep(14, 15.6, p));
-    if (halo.current) setUniform(halo.current, "uAlpha", 0.45 * light);
-    if (lamp.current) lamp.current.intensity = 3 * light;
+    if (halo.current) setUniform(halo.current, "uAlpha", 0.22 * light);
+    if (ray.current) setUniform(ray.current, "uAlpha", 0.16 * light);
+    if (lamp.current) lamp.current.intensity = 1.1 * light;
   });
 
   return (
@@ -86,11 +93,14 @@ export function AriseScene({ mobile, effects }: SceneProps) {
         radiusStart={0.2}
         radiusEnd={1.1}
         color="#FFE6BE"
-        alpha={0.18}
+        alpha={0}
+        onMaterial={(m) => {
+          ray.current = m;
+        }}
       />
       <Glow
-        position={[RISE_X, 1.1, -0.2]}
-        size={3.2}
+        position={[RISE_X, 1.2, -0.8]}
+        size={2.2}
         scaleY={1.5}
         color={SALEM.blush}
         inner="#FFF6E6"
@@ -103,7 +113,7 @@ export function AriseScene({ mobile, effects }: SceneProps) {
       />
       <pointLight
         ref={lamp}
-        position={[RISE_X, 1.4, 1]}
+        position={[RISE_X, 1.6, 2.2]}
         color="#FFE0B4"
         intensity={0}
         distance={5}

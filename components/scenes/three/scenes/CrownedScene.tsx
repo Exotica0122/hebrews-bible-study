@@ -49,7 +49,7 @@ const THORNS = 70;
 const TERRACE_Y = 0.85;
 const ANGELS = [-2.6, -1.3, 0, 1.3, 2.6];
 const THORN = new Color("#3A2A1C");
-const GOLD = new Color("#C9A24A");
+const GOLD = new Color("#9A7838");
 const EMBER_BOX: [number, number, number] = [4, 3, 2];
 
 function hash(n: number) {
@@ -111,7 +111,7 @@ function laurel() {
         const x = new Vector3().crossVectors(y, up).normalize();
         const z = new Vector3().crossVectors(x, y);
         const m = new Matrix4().makeBasis(x, y, z).setPosition(p);
-        m.scale(new Vector3(1, 1, 1).multiplyScalar(lerp(1.15, 0.8, k)));
+        m.scale(new Vector3(1, 1, 1).multiplyScalar(lerp(1.8, 1.3, k)));
         out.push({ at: k, m });
       }
     }
@@ -136,7 +136,7 @@ function wingGeometry() {
 }
 
 /** A carved angel standing on the terrace, wings folded up behind. */
-function Angel({ x }: { x: number }) {
+function Angel({ x, scale }: { x: number; scale: number }) {
   const wing = useMemo(() => wingGeometry(), []);
   const stone = useMemo(
     () =>
@@ -156,8 +156,8 @@ function Angel({ x }: { x: number }) {
     [wing, stone],
   );
   return (
-    <group position={[x, TERRACE_Y, -2]} scale={0.95}>
-      <Carved position={[0, 0, 0]} robe="#D8D2C6" />
+    <group position={[x, TERRACE_Y, -2]} scale={scale}>
+      <Carved position={[0, 0, 0]} robe="#D8D2C6" skin="#CFC8BA" />
       {[1, -1].map((s) => (
         <mesh
           key={s}
@@ -172,7 +172,7 @@ function Angel({ x }: { x: number }) {
   );
 }
 
-/** “We see him who for a little while was made lower than the angels, namely Jesus, crowned with glory and honour because of the suffering of death”: a crown of thorns lies on a stone below a row of angels; it rises above them as gold laurel grows through the thorns. */
+/** “We see him who for a little while was made lower than the angels, namely Jesus, crowned with glory and honour because of the suffering of death”: a crown of thorns lies on a stone below a row of angels; it rises above them as laurel grows through the gilded thorns. */
 export function CrownedScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
@@ -229,11 +229,11 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
         emissiveIntensity: 0,
       }),
       leaf: new MeshStandardMaterial({
-        color: GOLD,
-        roughness: 0.35,
-        metalness: 0.8,
-        emissive: "#C9A24A",
-        emissiveIntensity: 0.15,
+        color: "#6A8A2C",
+        roughness: 0.5,
+        metalness: 0.2,
+        emissive: "#3E6A18",
+        emissiveIntensity: 0.8,
         side: DoubleSide,
       }),
       stone: new MeshStandardMaterial({
@@ -270,7 +270,7 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
       c.rotation.y = t * 0.12;
     }
     lerpColor(mats.crown, THORN, GOLD, gild);
-    setEmissive(mats.crown, 0.25 * gild);
+    setEmissive(mats.crown, 0.08 * gild);
     const mesh = leavesMesh.current;
     if (mesh) {
       leaves.forEach((l, i) => {
@@ -281,9 +281,9 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
       });
       mesh.instanceMatrix.needsUpdate = true;
     }
-    if (key.current) key.current.intensity = lerp(2, 18, gild);
+    if (key.current) key.current.intensity = lerp(2, 12, gild);
     if (shaft.current) setUniform(shaft.current, "uAlpha", 0.08 + 0.32 * gild);
-    if (halo.current) setUniform(halo.current, "uAlpha", 0.55 * gild);
+    if (halo.current) setUniform(halo.current, "uAlpha", 0.3 * gild);
   });
 
   return (
@@ -320,7 +320,7 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
         <boxGeometry args={[1.5, LOW_Y + 0.5, 1.2]} />
       </mesh>
       {ANGELS.map((x) => (
-        <Angel key={x} x={mobile ? x * 0.7 : x} />
+        <Angel key={x} x={mobile ? x * 0.78 : x} scale={mobile ? 0.72 : 0.95} />
       ))}
       <pointLight
         ref={key}
@@ -330,7 +330,7 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
         decay={1.5}
         color="#FFD9A0"
       />
-      <group ref={crown} position={[0, LOW_Y, 0.4]} scale={mobile ? 1.2 : 1.35}>
+      <group ref={crown} position={[0, LOW_Y, 0.4]} scale={1.35}>
         {geo.strands.map((g, i) => (
           <mesh key={i} geometry={g} material={mats.crown} />
         ))}

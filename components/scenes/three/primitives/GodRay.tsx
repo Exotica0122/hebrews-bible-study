@@ -31,6 +31,7 @@ const FRAG = /* glsl */ `
 uniform vec3 uColor;
 uniform float uAlpha;
 uniform float uTime;
+uniform float uTipFade;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vView;
@@ -39,7 +40,8 @@ void main() {
   float body = pow(facing, 0.55);
   float along = pow(vUv.y, 1.1);
   float streak = 0.85 + 0.15 * sin(vUv.y * 40.0 - uTime * 0.6 + vUv.x * 6.2831);
-  float a = body * along * streak * uAlpha;
+  float tip = uTipFade > 0.0 ? smoothstep(0.0, 1.0, (1.0 - vUv.y) / uTipFade) : 1.0;
+  float a = body * along * streak * tip * uAlpha;
   gl_FragColor = vec4(uColor * a, a);
 }`;
 
@@ -51,6 +53,9 @@ interface GodRayProps {
   color?: string;
   alpha?: number;
   renderOrder?: number;
+  onMaterial?: (m: ShaderMaterial) => void;
+  /** Fraction of the beam's length, from the tip, over which it fades in; 0 keeps a hard tip. */
+  tipFade?: number;
 }
 
 const UP = new Vector3(0, 1, 0);
@@ -64,6 +69,8 @@ export function GodRay({
   color = "#F3D38A",
   alpha = 0.5,
   renderOrder = 5,
+  onMaterial,
+  tipFade = 0,
 }: GodRayProps) {
   const mesh = useRef<Mesh>(null);
   const a = useMemo(() => new Vector3(...from), [from]);
@@ -83,6 +90,7 @@ export function GodRay({
           uColor: { value: new Color(color) },
           uAlpha: { value: alpha },
           uTime: { value: 0 },
+          uTipFade: { value: tipFade },
         },
         transparent: true,
         depthWrite: false,
@@ -93,7 +101,7 @@ export function GodRay({
         blendSrc: OneFactor,
         blendDst: OneFactor,
       }),
-    [color, alpha],
+    [color, alpha, tipFade],
   );
   useEffect(
     () => () => {
@@ -102,6 +110,9 @@ export function GodRay({
     },
     [geometry, material],
   );
+  useEffect(() => {
+    onMaterial?.(material);
+  }, [material, onMaterial]);
 
   const placement = useMemo(() => {
     const dir = b.clone().sub(a).normalize();

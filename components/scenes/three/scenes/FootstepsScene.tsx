@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import {
+  BufferAttribute,
+  Color,
+  IcosahedronGeometry,
   MeshStandardMaterial,
+  PlaneGeometry,
   type Group,
   type MeshBasicMaterial,
 } from "three";
@@ -12,7 +16,6 @@ import { Glow } from "../primitives/Glow";
 import { Soft } from "../primitives/Garden";
 import { Figure } from "../primitives/Sanctuary";
 import {
-  Cliff,
   COAST,
   CoastLights,
   Headlands,
@@ -35,12 +38,61 @@ const PRINTS = Array.from({ length: 30 }, (_, i) => ({
   z: 2 - i * STRIDE,
 }));
 const NEW = PRINTS.slice(0, 16);
-/** Those walking on ahead: x, z, robe. */
-const AHEAD: [number, number, string][] = [
-  [1.7, -13.5, "#4C4038"],
-  [2.9, -15.5, "#3E4A52"],
-  [1.1, -17.5, "#5A4A3A"],
-];
+const AHEAD_Z = -14.5;
+
+/** The waterline's x along the beach, wandering in and out. */
+const shore = (z: number) =>
+  0.2 + Math.sin(z * 0.35) * 0.3 + Math.sin(z * 0.9 + 1) * 0.1;
+
+/** Sand that shelves down under the sea at a wandering waterline: wet and dark near the water, dry further up. */
+function beach() {
+  const g = new PlaneGeometry(16, 48, 80, 120);
+  g.rotateX(-Math.PI / 2);
+  g.translate(4, 0, -16);
+  const p = g.attributes.position;
+  const colors = new Float32Array(p.count * 3);
+  const wet = new Color("#6F6450");
+  const damp = new Color("#A8987A");
+  const dry = new Color(COAST.sand);
+  const foam = new Color("#C9CCC4");
+  const c = new Color();
+  for (let i = 0; i < p.count; i++) {
+    const d = p.getX(i) - shore(p.getZ(i));
+    const k = Math.min(Math.max((d + 1.2) / 2.2, 0), 1);
+    p.setY(i, GROUND - 0.45 * (1 - k * k * (3 - 2 * k)));
+    c.lerpColors(wet, damp, Math.min(Math.max(d / 1.5, 0), 1));
+    c.lerp(dry, Math.min(Math.max((d - 2.5) / 2.5, 0), 1));
+    c.lerp(foam, 0.5 * Math.max(0, 1 - Math.abs(d + 0.45) / 0.25));
+    c.toArray(colors, i * 3);
+  }
+  g.setAttribute("color", new BufferAttribute(colors, 3));
+  g.computeVertexNormals();
+  return g;
+}
+
+/** A weathered headland of rock with turf on its crown, flat-bottomed where it meets the sand. */
+function outcrop() {
+  const g = new IcosahedronGeometry(1, 4);
+  const p = g.attributes.position;
+  const colors = new Float32Array(p.count * 3);
+  const rock = new Color("#5E5A50");
+  const turf = new Color(COAST.turf);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i);
+    const y = p.getY(i);
+    const z = p.getZ(i);
+    const r =
+      1 +
+      0.16 * Math.sin(x * 3.1 + 1) * Math.sin(y * 2.3) * Math.sin(z * 2.7 + 2) +
+      0.07 * Math.sin(x * 7.3 + z * 5.1) +
+      0.04 * Math.sin(y * 11 + x * 4);
+    p.setXYZ(i, x * r, Math.max(y * r, -0.15), z * r);
+    (y > 0.62 ? turf : rock).toArray(colors, i * 3);
+  }
+  g.setAttribute("color", new BufferAttribute(colors, 3));
+  g.computeVertexNormals();
+  return g;
+}
 
 /** “Imitators of those who through faith and patience inherit the promises”: prints run up the wet sand toward those walking on ahead, and one by one new steps are pressed into the old. */
 export function FootstepsScene({ mobile, effects }: SceneProps) {
@@ -48,20 +100,28 @@ export function FootstepsScene({ mobile, effects }: SceneProps) {
   const squall = useRef(1);
   const fresh = useRef<(MeshBasicMaterial | null)[]>([]);
   const ahead = useRef<Group>(null);
+  const shape = useMemo(() => ({ beach: beach(), rock: outcrop() }), []);
   const sand = useMemo(
-    () => new MeshStandardMaterial({ color: "#A8987A", roughness: 0.55 }),
+    () => new MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }),
     [],
   );
-  const dry = useMemo(
-    () => new MeshStandardMaterial({ color: COAST.sand, roughness: 1 }),
+  const stone = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 1,
+        flatShading: true,
+      }),
     [],
   );
   useEffect(
     () => () => {
+      shape.beach.dispose();
+      shape.rock.dispose();
       sand.dispose();
-      dry.dispose();
+      stone.dispose();
     },
-    [sand, dry],
+    [shape, sand, stone],
   );
 
   useSceneTime((t, _dt, { camera }) => {
@@ -70,11 +130,19 @@ export function FootstepsScene({ mobile, effects }: SceneProps) {
     const walked = smoothstep(FIRST, FIRST + NEW.length * PACE + 1, p);
     camera.position.set(
       1.2 + Math.sin(t * 0.05) * 0.1,
-      GROUND + 1.25,
-      lerp(mobile ? 6.5 : 5, mobile ? 3.5 : 2, walked),
+      GROUND + (mobile ? 2.4 : 1.25),
+      lerp(mobile ? 7 : 5, mobile ? 4 : 2, walked),
     );
-    camera.lookAt(1.5, GROUND + 0.25, -8);
-    ahead.current?.position.setZ(-p * 0.18);
+    camera.lookAt(1.5, GROUND + (mobile ? -0.7 : 0.25), -8);
+    if (ahead.current) {
+      const step = p * Math.PI * 1.7;
+      ahead.current.position.set(
+        1.9 + Math.sin(step) * 0.03,
+        Math.abs(Math.sin(step)) * 0.035,
+        AHEAD_Z - p * 0.22,
+      );
+      ahead.current.rotation.z = Math.sin(step) * 0.035;
+    }
     fresh.current.forEach(
       (m, i) =>
         m &&
@@ -108,31 +176,14 @@ export function FootstepsScene({ mobile, effects }: SceneProps) {
         amp={0.5}
       />
       <CoastLights sun={[-3, 3, -10]} intensity={1.4} />
+      <mesh geometry={shape.beach} material={sand} />
       <mesh
-        position={[4, GROUND, -16]}
-        rotation={[-Math.PI / 2, 0, 0.05]}
-        material={sand}
-      >
-        <planeGeometry args={[8, 48]} />
-      </mesh>
-      <mesh
-        position={[9, GROUND + 0.01, -16]}
-        rotation={[-Math.PI / 2, 0, 0.05]}
-        material={dry}
-      >
-        <planeGeometry args={[4, 48]} />
-      </mesh>
-      <Soft
-        position={[0.05, GROUND + 0.01, -16]}
-        rotation={[-Math.PI / 2, 0, 0.05]}
-        size={1}
-        scaleX={0.5}
-        scaleY={48}
-        color={COAST.foam}
-        opacity={0.7}
-        renderOrder={2}
+        geometry={shape.rock}
+        material={stone}
+        position={[12.5, GROUND - 0.1, -25]}
+        scale={[5.5, 2.8, 3.6]}
+        rotation={[0, 0.5, 0]}
       />
-      <Cliff position={[13, GROUND, -22]} width={9} height={2.6} flip />
       {PRINTS.map(({ x, z }, i) => (
         <Soft
           key={i}
@@ -161,15 +212,12 @@ export function FootstepsScene({ mobile, effects }: SceneProps) {
         />
       ))}
       <group ref={ahead}>
-        {AHEAD.map(([x, z, robe]) => (
-          <Figure
-            key={z}
-            position={[x, GROUND, z]}
-            robe={robe}
-            rotationY={Math.PI}
-            scale={0.95}
-          />
-        ))}
+        <Figure
+          position={[0, GROUND, 0]}
+          robe="#4C4038"
+          rotationY={Math.PI}
+          scale={0.95}
+        />
       </group>
       <Squall opacity={squall} />
       {effects && <SceneEffects bloom={0.3} threshold={0.9} vignette={0.3} />}

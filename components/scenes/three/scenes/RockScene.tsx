@@ -62,7 +62,7 @@ function hash(n: number) {
 
 /** The rock at Horeb: a sandstone crag laid down in courses, each a slightly different shelf, split by a cleft on its face. Base at the origin. */
 function cragGeometry() {
-  const g = new CylinderGeometry(0.85, 1.5, CRAG_H, 30, 22);
+  const g = new CylinderGeometry(1, 1, CRAG_H, 30, 22);
   g.translate(0, CRAG_H / 2, 0);
   const pos = g.getAttribute("position");
   const colors: number[] = [];
@@ -73,13 +73,18 @@ function cragGeometry() {
     const z = pos.getZ(i);
     const r = Math.hypot(x, z);
     const a = Math.atan2(z, x);
+    const h = y / CRAG_H;
+    const cell =
+      Math.round(((a + Math.PI * 2) % (Math.PI * 2)) * 50) * 7 +
+      Math.round(y * 50);
     const band = Math.floor(y * 4.2);
-    const shelf = 1 + (hash(band) - 0.5) * 0.12;
+    const shelf = 1 + (hash(band) - 0.5) * 0.22;
+    const profile = 1.55 * (1 - 0.38 * h) - 0.7 * smoothstep(0.6, 1, h);
     const n =
-      1 +
-      Math.sin(a * 3 + y * 1.3) * 0.1 +
-      Math.sin(a * 7 + y * 2.9 + 1) * 0.05 +
-      (hash(i) - 0.5) * 0.07;
+      profile +
+      Math.sin(a * 2 + 0.7 + h * 1.8) * 0.2 +
+      Math.sin(a * 5 + y * 2.3 + 1) * 0.08 +
+      (hash(cell) - 0.5) * 0.07;
     const da = Math.atan2(Math.sin(a - CLEFT_A), Math.cos(a - CLEFT_A));
     const cleft =
       1 -
@@ -88,13 +93,15 @@ function cragGeometry() {
         smoothstep(0.05, 0.35, y / CRAG_H) *
         (1 - smoothstep(0.85, 1, y / CRAG_H));
     const k = r > 0.001 ? shelf * n * cleft : 1;
-    const top = y > CRAG_H - 0.01 ? 0.9 : 1;
-    pos.setXYZ(
-      i,
-      x * k * 1.15,
-      y + (top < 1 ? (hash(i + 3) - 0.5) * 0.2 : (hash(i + 5) - 0.5) * 0.06),
-      z * k * 0.85,
-    );
+    const top = y > CRAG_H - 0.01;
+    const crown = top
+      ? -0.35 * r -
+        0.25 * (0.5 + 0.5 * Math.sin(a * 3 + 0.4)) +
+        (hash(cell + 3) - 0.5) * 0.15
+      : (hash(cell + 5) - 0.5) * 0.06;
+    const tilt =
+      r > 0.001 ? 0.62 + 0.5 * (0.5 + 0.5 * Math.cos(a + 2.4)) : 0.87;
+    pos.setXYZ(i, x * k * 1.15 - h * h * 0.3, (y + crown) * tilt, z * k * 0.85);
     c.set(STRATA[((band % STRATA.length) + STRATA.length) % STRATA.length]);
     colors.push(c.r, c.g, c.b);
   }
@@ -186,7 +193,7 @@ export function RockScene({ mobile, effects }: SceneProps) {
     [],
   );
   const water = useMemo(
-    () => makeDuskWater({ source: [FOOT[0], FOOT[1]], rings: 1 }),
+    () => makeDuskWater({ source: [FOOT[0], FOOT[1]], rings: 1, wet: true }),
     [],
   );
   const stream = useMemo(
@@ -252,7 +259,13 @@ export function RockScene({ mobile, effects }: SceneProps) {
     const flow = smoothstep(FLOW, FLOW + 0.8, p);
     const spread = smoothstep(FLOW + 0.3, FLOW + 4.5, p);
 
-    if (staff.current) staff.current.rotation.z = 0.35 - lift * 0.9;
+    const hit =
+      smoothstep(STRIKE, STRIKE + 0.15, p) *
+      (1 - smoothstep(STRIKE + 0.6, STRIKE + 1.8, p));
+    if (staff.current) {
+      staff.current.rotation.x = 0.06 - lift * 0.55 + hit * 0.45;
+      staff.current.position.y = 0.95 + lift * 0.25;
+    }
     setUniform(drops.m, "uTime", t);
     setUniform(drops.m, "uPixelRatio", pixelRatio);
     setUniform(drops.m, "uFlow", flow);
@@ -261,8 +274,8 @@ export function RockScene({ mobile, effects }: SceneProps) {
     setUniform(water, "uTime", t);
     setUniform(water, "uAlpha", 0.9 * smoothstep(0, 0.15, spread));
     if (pool.current) {
-      const s = 0.2 + spread * (mobile ? 2.6 : 3.2);
-      pool.current.scale.set(s * 1.6, s * 0.8, 1);
+      const s = 0.3 + spread * 2.4;
+      pool.current.scale.set(s * 1.5, s * 0.75, 1);
     }
     if (key.current) key.current.intensity = open * 4;
     if (seam.current)
@@ -296,7 +309,7 @@ export function RockScene({ mobile, effects }: SceneProps) {
         <mesh
           ref={pool}
           material={water}
-          position={[FOOT[0] + 1.1, GROUND + 0.012, FOOT[1] + 0.45]}
+          position={[FOOT[0] + 0.55, GROUND + 0.012, FOOT[1] + 0.3]}
           rotation={[-Math.PI / 2, 0, 0]}
           renderOrder={3}
         >
@@ -336,8 +349,8 @@ export function RockScene({ mobile, effects }: SceneProps) {
           scale={0.62}
         >
           <Carved position={[0, 0, 0]} robe="#8C7A62" />
-          <mesh ref={staff} position={[0.28, 1, 0.15]} rotation={[0, 0, 0.35]}>
-            <cylinderGeometry args={[0.022, 0.022, 2.1, 5]} />
+          <mesh ref={staff} position={[0.2, 0.95, 0.3]} rotation={[0.06, 0, 0]}>
+            <cylinderGeometry args={[0.022, 0.022, 1.9, 5]} />
             <meshStandardMaterial color="#5A4636" roughness={0.9} />
           </mesh>
         </group>

@@ -12,7 +12,7 @@ import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
-import { figureGeometry } from "../primitives/Earth";
+import { Figure } from "../primitives/Sanctuary";
 import {
   DAY,
   DayLights,
@@ -40,10 +40,12 @@ const BLADE_TOP = 3.4;
 const BLADE_LOW = -3.6;
 /** Patches of shade per side: x offset from the cut, y, size. */
 const SHADE: [number, number, number][] = [
-  [0.9, -0.2, 4.2],
-  [1.6, 0.9, 3.4],
-  [1.2, -1.2, 3.6],
-  [2.6, 0.1, 3.4],
+  [0.5, -0.9, 3],
+  [1.3, -0.5, 3],
+  [2.1, -0.9, 3],
+  [2.9, -0.4, 3],
+  [0.9, -1.4, 2.6],
+  [1.9, -1.5, 2.6],
 ];
 const GROVE: [number, number, number][] = [
   [-3.4, -4.2, 1.9],
@@ -94,16 +96,12 @@ export function SwordScene({ mobile, effects }: SceneProps) {
       }),
     [],
   );
-  const figure = useMemo(() => figureGeometry(), []);
-  const robe = useMemo(() => new MeshBasicMaterial({ color: "#B9A88C" }), []);
   useEffect(
     () => () => {
       shape.dispose();
       steel.dispose();
-      figure.dispose();
-      robe.dispose();
     },
-    [shape, steel, figure, robe],
+    [shape, steel],
   );
   const reach = mobile ? 3 : 4.4;
 
@@ -131,12 +129,12 @@ export function SwordScene({ mobile, effects }: SceneProps) {
       );
     left.current?.position.setX(-part * reach);
     right.current?.position.setX(part * reach);
-    shade.current.forEach((m) => setOpacity(m, 0.9 * (1 - 0.85 * part)));
+    shade.current.forEach((m) => setOpacity(m, 0.8 * (1 - 0.9 * part)));
     if (clear.current)
       setUniform(
         clear.current,
         "uAlpha",
-        0.45 *
+        0.3 *
           smoothstep(PART, PART + 1, p) *
           (1 - smoothstep(PART + 1.5, PART + 4, p)),
       );
@@ -148,9 +146,9 @@ export function SwordScene({ mobile, effects }: SceneProps) {
         key={j}
         position={[side * x, y, 0]}
         size={s}
-        scaleY={1.1}
+        scaleY={0.7}
         color={DAY.shade}
-        opacity={0.9}
+        opacity={0.8}
         renderOrder={6}
         onMaterial={(m) => {
           if (!shade.current.includes(m)) shade.current.push(m);
@@ -177,15 +175,10 @@ export function SwordScene({ mobile, effects }: SceneProps) {
         opacity={0.35}
         renderOrder={2}
       />
-      <mesh
-        geometry={figure}
-        material={robe}
-        position={[0, GROUND, -3]}
-        scale={0.85}
-        renderOrder={4}
-      />
+      <Figure position={[0, GROUND, -3]} scale={0.85} robe="#EFE6D2" />
       <Glow
-        position={[0, GROUND + 0.9, -2.8]}
+        depthTest
+        position={[0, GROUND + 0.9, -3.4]}
         size={3.4}
         scaleY={1.3}
         color="#9EC3E8"

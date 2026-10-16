@@ -1,7 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { damp } from "maath/easing";
+import {
+  BufferGeometry,
+  CatmullRomCurve3,
+  Float32BufferAttribute,
+  MeshStandardMaterial,
+  Vector3,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
@@ -13,7 +20,6 @@ import {
   SalemLights,
   SalemSky,
   Terraces,
-  useStone,
 } from "../primitives/Salem";
 import { useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
@@ -27,20 +33,67 @@ const TELL: [number, number][] = [
 const TELL_TOP = TELL.reduce((y, [, h]) => y + h, 0);
 const HILL_X = 4;
 const HILL_Z = -22;
-/** The road down from the gate: x, z, rotation, length. */
-const ROAD: [number, number, number, number][] = [
-  [3.2, -15, 0.5, 4],
-  [1, -11, -0.35, 6],
-  [2.2, -5.5, 0.25, 6],
-  [0.6, 0.5, -0.15, 8],
+/** The road down from the foot of the tell: x, z. */
+const ROAD: [number, number][] = [
+  [3.6, -14.6],
+  [1.7, -11.5],
+  [1.5, -8],
+  [2.2, -5],
+  [1.5, -1.5],
+  [0.4, 2],
+  [0, 6],
 ];
+const ROAD_WIDTH = 0.9;
+
+/** One flat ribbon along a smooth curve through the road's points. */
+function roadGeometry(dx: number) {
+  const curve = new CatmullRomCurve3(
+    ROAD.map(([x, z]) => new Vector3(x + dx, 0.01, z)),
+  );
+  const pos: number[] = [];
+  const index: number[] = [];
+  const n = 80;
+  for (let i = 0; i <= n; i++) {
+    const p = curve.getPointAt(i / n);
+    const d = curve.getTangentAt(i / n);
+    const sx = -d.z * (ROAD_WIDTH / 2);
+    const sz = d.x * (ROAD_WIDTH / 2);
+    pos.push(p.x - sx, p.y, p.z - sz, p.x + sx, p.y, p.z + sz);
+    if (i < n) {
+      const a = i * 2;
+      index.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+  }
+  const g = new BufferGeometry();
+  g.setAttribute("position", new Float32BufferAttribute(pos, 3));
+  g.setIndex(index);
+  g.computeVertexNormals();
+  return g;
+}
 
 /** Hebrews 7 opening: Salem on its terraced hill at first light, the walled city and its gate, the road down into the King’s Valley, all cut in stone and lit low from the east. */
 export function HeroSalemScene({ mobile, effects, pointer }: SceneProps) {
   useResetCameraOnUnmount();
   const placed = useRef(false);
-  const road = useStone(SALEM.road);
   const hillX = mobile ? 1.5 : HILL_X;
+  const road = useMemo(() => roadGeometry(hillX - HILL_X), [hillX]);
+  const roadMat = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: SALEM.road,
+        roughness: 1,
+        emissive: SALEM.road,
+        emissiveIntensity: 0.35,
+      }),
+    [],
+  );
+  useEffect(
+    () => () => {
+      road.dispose();
+      roadMat.dispose();
+    },
+    [road, roadMat],
+  );
 
   useSceneTime((t, dt, { camera }) => {
     const p = pointer?.current ?? { x: 0, y: 0 };
@@ -53,7 +106,7 @@ export function HeroSalemScene({ mobile, effects, pointer }: SceneProps) {
     damp(camera.position, "x", x, 0.9, dt);
     damp(camera.position, "y", y, 0.9, dt);
     camera.position.z = mobile ? 12 : 9;
-    camera.lookAt(0, 1.4, -20);
+    camera.lookAt(0, mobile ? -3 : 1.4, -20);
   });
 
   return (
@@ -75,16 +128,7 @@ export function HeroSalemScene({ mobile, effects, pointer }: SceneProps) {
       <Ground />
       <Terraces position={[hillX, 0, HILL_Z]} levels={TELL} />
       <City position={[hillX, TELL_TOP, HILL_Z]} radius={2.6} />
-      {ROAD.map(([x, z, r, len], i) => (
-        <mesh
-          key={i}
-          position={[x + hillX - HILL_X, 0.01, z]}
-          rotation={[-Math.PI / 2, 0, r]}
-          material={road}
-        >
-          <planeGeometry args={[0.9, len]} />
-        </mesh>
-      ))}
+      <mesh geometry={road} material={roadMat} />
       <Terraces
         position={[-11, 0, -30]}
         levels={[

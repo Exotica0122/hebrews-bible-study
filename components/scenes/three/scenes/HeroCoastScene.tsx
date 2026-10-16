@@ -15,7 +15,6 @@ import {
   Headlands,
   Plot,
   Rain,
-  Rope,
   Sea,
   StormSky,
   swell,
@@ -25,7 +24,8 @@ import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const SEA_Y = -1;
 const BOAT: [number, number] = [-5.2, -8];
-const BOAT_MOBILE: [number, number] = [-1.5, -17];
+/** On mobile the boat rides far out, in the band of sea above the title. */
+const BOAT_MOBILE: [number, number] = [-1.2, -34];
 /** Low cloud over the upper sky: x, y, z, width. */
 const CLOUD: [number, number, number, number][] = [
   [-14, 6.5, -40, 26],
@@ -44,7 +44,7 @@ export function HeroCoastScene({ mobile, effects, pointer }: SceneProps) {
   useSceneTime((t, dt, { camera }) => {
     const p = pointer?.current ?? { x: 0, y: 0 };
     const x = Math.sin(t * 0.05) * 0.15 + p.x * 0.35;
-    const y = 1.3 - p.y * 0.15;
+    const y = (mobile ? 2.2 : 1.3) - p.y * 0.15;
     // The default camera sits at y = 0, inside the field; start on the pose instead of easing up out of the ground.
     if (!placed.current) {
       camera.position.set(x, y, camera.position.z);
@@ -52,8 +52,8 @@ export function HeroCoastScene({ mobile, effects, pointer }: SceneProps) {
     }
     damp(camera.position, "x", x, 0.9, dt);
     damp(camera.position, "y", y, 0.9, dt);
-    camera.position.z = mobile ? 10 : 8.5;
-    camera.lookAt(0, -0.4, -20);
+    camera.position.z = mobile ? 7 : 8.5;
+    camera.lookAt(0, mobile ? -3.5 : -0.4, -20);
     if (boat.current) {
       const x = boatX;
       const z = boatZ;
@@ -122,8 +122,11 @@ export function HeroCoastScene({ mobile, effects, pointer }: SceneProps) {
         position={[boatX, SEA_Y, boatZ]}
         rotation={[0, -0.4, 0]}
       >
-        <Boat scale={0.9} />
-        <Rope from={[0.8, 0.15, 0]} to={[1.3, -1.2, 0.3]} />
+        <Boat scale={mobile ? 1.3 : 0.9} />
+        <mesh position={[0.76, -0.3, 0]} rotation={[0, 0, 0.08]}>
+          <cylinderGeometry args={[0.012, 0.012, 0.9, 6]} />
+          <meshStandardMaterial color="#7A6A52" roughness={1} />
+        </mesh>
       </group>
       <mesh position={[0, -0.005, 3.4]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[16, 0.8]} />

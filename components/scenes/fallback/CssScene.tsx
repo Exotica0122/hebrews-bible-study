@@ -1,5 +1,6 @@
 import type { SceneId } from "../types";
 import { CssStarfield } from "./CssStarfield";
+import { ExaltedTwin, FoldTwin } from "./HeavensTwins";
 import s from "./css.module.css";
 
 const A = `${s.abs}`;
@@ -21,15 +22,26 @@ const EMBERS: [number, number, number, number][] = [
   [13, 57, 10, 15],
   [34, 32, 9, 13],
 ];
-const DUST: [number, number, number][] = [
-  [36, 66, 0.4],
-  [46, 68, 0.35],
-  [56, 67, 0.4],
-  [64, 69, 0.3],
-];
 /** Robed figure, feet at 0, 18 units tall; the SVG twin of GatherScene's figure. */
 const FIGURE =
   "M-3 0Q-2.7-6-2.2-9.5Q-2.5-12-2.7-13Q-2.5-14-0.7-14.4L-0.55-15Q-1.3-15.4-1.2-16.2Q-1.1-17.5 0-17.5Q1.1-17.5 1.2-16.2Q1.3-15.4 0.55-15L0.7-14.4Q2.5-14 2.7-13Q2.5-12 2.2-9.5Q2.7-6 3 0Z";
+/** Seventh-day garden twin, placed on the CSS ridges: left %, foot top %, height px. */
+const GARDEN_TREES: [number, number, number][] = [
+  [12, 66.6, 54],
+  [27, 66.4, 40],
+  [71, 66.2, 48],
+  [87, 68.4, 36],
+];
+const GARDEN_BIRDS: [number, number, number][] = [
+  [55, 24, 18],
+  [59, 20, 13],
+  [62.5, 26, 15],
+  [52, 29, 12],
+];
+const GARDEN_PEOPLE: [number, number, string][] = [
+  [35.5, 67.4, "#EDE3CF"],
+  [38.5, 67.8, "#B5694A"],
+];
 const GATHERED: [number, number][] = [
   [50, 1],
   [44, 0.66],
@@ -39,6 +51,8 @@ const GATHERED: [number, number][] = [
   [34, 0.6],
   [66.2, 0.76],
 ];
+/** Hebrews 2 freed twin: where each captive stands, in the svg's units. */
+const FREED = [26, 38, 62, 74];
 const LEAVES = Array.from({ length: 22 }, (_, i) => {
   const side = i < 11 ? 1 : -1;
   const k = (i % 11) / 10;
@@ -49,14 +63,34 @@ const LEAVES = Array.from({ length: 22 }, (_, i) => {
     side * (k * 180 - 90) + (i % 2 ? 30 : -30),
   ] as const;
 });
-const BED: [number, number, number][] = Array.from({ length: 16 }, (_, i) => {
+/** Rock twin: the crag's outline and its sandstone courses, top y and colour. */
+const CRAG =
+  "M33 46.6L33.6 41L32.4 37L34.6 31.5L36 26L39.5 21L41 16.5L44.5 13L48 12.4L50.6 14.6L53 15L55.4 19L57 24.5L59.6 28.4L60.4 33L62.6 37.5L63.4 42L65 46.6Z";
+const CRAG_STRATA: [number, string][] = [
+  [8, "#A8744E"],
+  [13, "#B5805A"],
+  [18, "#9E6A48"],
+  [23, "#C29068"],
+  [28, "#A8744E"],
+  [33, "#8E5E40"],
+  [38, "#B5805A"],
+  [43, "#9E6A48"],
+];
+/** Coals twin: those kneeling round the far side of the fire (x, foot y, scale), the hearth stones and the glints in the bed. */
+const KNEELER =
+  "M-3 0Q-2.7-4.5-1.6-7.4Q-1.2-8.4 0-8.4Q1.2-8.4 1.6-7.4Q2.7-4.5 3 0Z";
+const KNEELERS = [200, 236, 270, 304, 340].map((d) => {
+  const a = (d * Math.PI) / 180;
+  return [50 + Math.cos(a) * 21, 36.5 + Math.sin(a) * 7, 0.95] as const;
+});
+const HEARTH = Array.from({ length: 15 }, (_, i) => {
+  const a = 0.55 + (i / 14) * (Math.PI * 2 - 1.1);
+  return [50 + Math.cos(a) * 12.6, 37 + Math.sin(a) * 4.4] as const;
+});
+const COAL_GLINTS = Array.from({ length: 18 }, (_, i) => {
   const a = i * 2.39996;
-  const r = Math.sqrt((i + 0.5) / 16) * 12;
-  return [
-    44 + Math.cos(a) * r,
-    62 + Math.sin(a) * r * 0.45,
-    0.6 + ((i * 7) % 5) * 0.1,
-  ];
+  const r = Math.sqrt((i + 0.5) / 18);
+  return [50 + Math.cos(a) * r * 9.5, 37 + Math.sin(a) * r * 3] as const;
 });
 const EARTH_SCENES: SceneId[] = [
   "drift",
@@ -203,35 +237,9 @@ function Scene({ scene }: { scene: SceneId }) {
         </>
       );
     case "fold":
-      return (
-        <>
-          <div className={`${A} ${s.f_cloth}`}>
-            {Array.from({ length: 6 }, (_, i) => (
-              <div key={i} className={s.f_panel} />
-            ))}
-          </div>
-          <div className={`${s.layer} ${s.f_vignette}`} />
-          <div className={`${C} ${s.f_halo}`} />
-          <div className={`${CR} ${s.core} ${s.f_core}`} />
-        </>
-      );
+      return <FoldTwin />;
     case "exalted":
-      return (
-        <>
-          <div className={`${C} ${s.e_halo}`} />
-          <div className={`${CR} ${s.core} ${s.e_core}`} />
-          <div className={`${A} ${s.e_beam}`} />
-          <div className={`${A} ${s.e_horizon}`} />
-          <div className={`${A} ${s.e_haze}`} />
-          {DUST.map(([l, t, o]) => (
-            <span
-              key={l}
-              className={`${A} ${s.round} ${s.e_dust}`}
-              style={{ left: `${l}%`, top: `${t}%`, opacity: o }}
-            />
-          ))}
-        </>
-      );
+      return <ExaltedTwin />;
     case "drift":
       return (
         <>
@@ -288,10 +296,40 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <div className={`${s.layer} ${s.fr_back}`} />
-          <div className={`${A} ${s.fr_veil} ${s.fr_left}`} />
-          <div className={`${A} ${s.fr_veil} ${s.fr_right}`} />
-          <div className={`${A} ${s.fr_chain} ${s.fr_chainL}`} />
-          <div className={`${A} ${s.fr_chain} ${s.fr_chainR}`} />
+          <svg
+            className={s.layer}
+            viewBox="0 0 100 56"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            {FREED.map((x) => (
+              <g key={x} className={s.fr_iron}>
+                <circle cx={x} cy={14} r={0.9} />
+                <ellipse cx={x} cy={15.9} rx={0.4} ry={0.75} />
+                <ellipse cx={x + 0.2} cy={17.3} rx={0.75} ry={0.4} />
+                <ellipse cx={x + 2.6} cy={38.5} rx={0.75} ry={0.4} />
+                <ellipse cx={x - 2.2} cy={39} rx={0.4} ry={0.75} />
+              </g>
+            ))}
+            {FREED.map((x) => (
+              <g
+                key={x}
+                transform={`translate(${x} 38) scale(0.8)`}
+                className={s.fr_captive}
+              >
+                <path d="M-2.3-13L-4.2-19.2M2.3-13L4.2-19.2" />
+                <path d={FIGURE} />
+                <path
+                  className={s.fr_shackle}
+                  d="M-4.9-18.4h1.6M3.3-18.4h1.6M-4.7-17.6l-0.8 1.4M4.7-17.6l0.6 1.2"
+                />
+              </g>
+            ))}
+            <path
+              d={FIGURE}
+              className={s.fr_deliverer}
+              transform="translate(50 38.4) scale(0.95)"
+            />
+          </svg>
         </>
       );
     case "tabernacle":
@@ -310,24 +348,136 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <CssWildernessBackdrop pillar={false} />
-          <div className={`${A} ${s.ro_pool}`} />
-          <div className={`${A} ${s.ro_rock}`} />
-          <div className={`${A} ${s.ro_cleft}`} />
-          <div className={`${A} ${s.ro_water}`} />
+          <svg
+            className={`${A} ${s.ro_scene}`}
+            viewBox="26 6 58 42"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <defs>
+              <radialGradient id="ro-pool">
+                <stop offset="0" stopColor="#C9B8CF" stopOpacity="0.75" />
+                <stop offset="0.55" stopColor="#6E5A6A" stopOpacity="0.5" />
+                <stop offset="0.8" stopColor="#2A1A14" stopOpacity="0.45" />
+                <stop offset="1" stopColor="#2A1A14" stopOpacity="0" />
+              </radialGradient>
+              <linearGradient id="ro-lit" x1="0" x2="1">
+                <stop offset="0" stopColor="#D29A6C" stopOpacity="0.5" />
+                <stop offset="0.6" stopColor="#D29A6C" stopOpacity="0" />
+                <stop offset="1" stopColor="#1A100C" stopOpacity="0.5" />
+              </linearGradient>
+              <clipPath id="ro-clip">
+                <path d={CRAG} />
+              </clipPath>
+            </defs>
+            <ellipse cx="53" cy="46.2" rx="13" ry="2.6" fill="url(#ro-pool)" />
+            <g clipPath="url(#ro-clip)">
+              {CRAG_STRATA.map(([y, c], i) => (
+                <rect key={i} x="30" y={y} width="40" height="5" fill={c} />
+              ))}
+              <rect x="30" y="8" width="40" height="40" fill="url(#ro-lit)" />
+            </g>
+            <path
+              d="M49.6 21 L50.4 30 L49.8 37 L50.6 45"
+              fill="none"
+              stroke="rgba(243,211,138,0.35)"
+              strokeWidth="3"
+            />
+            <path
+              d="M49.6 21 L50.4 30 L49.8 37 L50.6 45"
+              fill="none"
+              stroke="#FFF2D0"
+              strokeWidth="0.6"
+            />
+            <path
+              d="M50.6 41 Q51.4 44 52 46.4"
+              fill="none"
+              stroke="rgba(220,232,230,0.8)"
+              strokeWidth="0.9"
+            />
+            <path
+              d={FIGURE}
+              fill="#2E211B"
+              transform="translate(60 46.4) scale(0.42)"
+            />
+            <path
+              d="M58.3 46.4 L58.7 37.6"
+              stroke="#2A1C14"
+              strokeWidth="0.4"
+            />
+            {[
+              [70, 0.4],
+              [73.6, 0.42],
+              [76.4, 0.38],
+              [80, 0.41],
+              [83.4, 0.39],
+            ].map(([x, h]) => (
+              <path
+                key={x}
+                d={FIGURE}
+                fill="#24191A"
+                transform={`translate(${x} 46.6) scale(${h})`}
+              />
+            ))}
+          </svg>
         </>
       );
     case "coals":
       return (
         <>
           <div className={`${s.layer} ${s.co_ground}`} />
-          {BED.map(([l, t, o], i) => (
-            <span
-              key={i}
-              className={`${A} ${s.co_coal}`}
-              style={{ left: `${l}%`, top: `${t}%`, opacity: o }}
-            />
-          ))}
-          <span className={`${A} ${s.co_coal} ${s.co_lone}`} />
+          <svg
+            className={`${A} ${s.co_scene}`}
+            viewBox="22 12 56 32"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <defs>
+              <radialGradient id="co-glow">
+                <stop offset="0" stopColor="#F3B35A" stopOpacity="0.8" />
+                <stop offset="1" stopColor="#C2531A" stopOpacity="0" />
+              </radialGradient>
+              <radialGradient id="co-bed">
+                <stop offset="0" stopColor="#FFD08A" />
+                <stop offset="0.5" stopColor="#E2621B" />
+                <stop offset="1" stopColor="#5A2410" />
+              </radialGradient>
+            </defs>
+            {[18, 37, 63, 83].map((x, i) => (
+              <g key={x} transform={`translate(${x} ${17 + (i % 2)})`}>
+                <path d="M-4 0 L0 -3.4 L4 0Z" fill="#2C2230" />
+                {i % 2 === 0 && (
+                  <rect
+                    x="-0.6"
+                    y="-1.2"
+                    width="1.2"
+                    height="1.2"
+                    fill="#C98A3E"
+                  />
+                )}
+              </g>
+            ))}
+            <ellipse cx="50" cy="37" rx="30" ry="11" fill="url(#co-glow)" />
+            {KNEELERS.map(([x, y, k], i) => (
+              <g key={i} transform={`translate(${x} ${y}) scale(${k})`}>
+                <path d={KNEELER} fill="#7A4A32" />
+                <circle cy="-9.4" r="1.4" fill="#D08A58" />
+              </g>
+            ))}
+            <ellipse cx="50" cy="37" rx="11" ry="3.6" fill="url(#co-bed)" />
+            {COAL_GLINTS.map(([x, y], i) => (
+              <ellipse
+                key={i}
+                cx={x}
+                cy={y}
+                rx="0.9"
+                ry="0.45"
+                fill="#FFE2A8"
+              />
+            ))}
+            {HEARTH.map(([x, y], i) => (
+              <ellipse key={i} cx={x} cy={y} rx="1.7" ry="1.1" fill="#2E2622" />
+            ))}
+            <ellipse cx="68" cy="40.2" rx="1.3" ry="0.9" fill="#6A625B" />
+          </svg>
         </>
       );
     case "threshold":
@@ -359,6 +509,43 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <CssGardenBackdrop />
+          {GARDEN_TREES.map(([l, t, h]) => (
+            <svg
+              key={l}
+              className={`${A} ${s.ga_thing}`}
+              style={{ left: `${l}%`, top: `${t}%`, height: h }}
+              viewBox="-10 -22 20 22"
+            >
+              <path d="M-0.8 0L0.9 0L1.4-10L-0.2-10Z" fill="#6B5640" />
+              <ellipse cx="-3" cy="-12" rx="6" ry="4.4" fill="#56693F" />
+              <ellipse cx="3.2" cy="-12.6" rx="6.2" ry="4.6" fill="#6E8550" />
+              <ellipse cx="0" cy="-16.4" rx="5.4" ry="4" fill="#7E9660" />
+              <ellipse cx="-1.4" cy="-17.6" rx="3" ry="1.8" fill="#97AD76" />
+            </svg>
+          ))}
+          {GARDEN_BIRDS.map(([l, t, w]) => (
+            <svg
+              key={l}
+              className={`${A} ${s.ga_bird}`}
+              style={{ left: `${l}%`, top: `${t}%`, width: w }}
+              viewBox="-11 -4 22 8"
+            >
+              <path
+                d="M-11 2Q-5 2.5 0-1Q5 2.5 11 2Q5-0.5 0-3Q-5-0.5-11 2Z"
+                fill="#3A4250"
+              />
+            </svg>
+          ))}
+          {GARDEN_PEOPLE.map(([l, t, fill]) => (
+            <svg
+              key={l}
+              className={`${A} ${s.ga_thing}`}
+              style={{ left: `${l}%`, top: `${t}%`, height: 34 }}
+              viewBox="-3.5 -18 7 18"
+            >
+              <path d={FIGURE} fill={fill} />
+            </svg>
+          ))}
           <div className={`${A} ${s.ga_days}`}>
             {Array.from({ length: 7 }, (_, i) => (
               <span
@@ -500,11 +687,13 @@ function Scene({ scene }: { scene: SceneId }) {
           <CssSanctuaryBackdrop lampstand={false} table={false} altar={false} />
           <div className={`${A} ${s.br_table}`} />
           <div className={`${A} ${s.br_cup}`} />
-          <div className={`${A} ${s.br_loaf}`} style={{ top: "54%" }} />
+          <div className={`${A} ${s.br_loaf}`} style={{ top: "53%" }} />
           <div
             className={`${A} ${s.br_loaf}`}
-            style={{ top: "51%", transform: "scale(0.94)" }}
+            style={{ top: "50.5%", transform: "scale(0.94)" }}
           />
+          <div className={`${A} ${s.br_chain}`} />
+          <div className={`${A} ${s.br_lamp}`} />
           <span
             className={`${A} ${s.round} ${s.sa_flame}`}
             style={{ left: "62%", top: "30%" }}
@@ -528,9 +717,11 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <CssCoastBackdrop field={false} boat={false} />
-          <div className={`${A} ${s.cs_ground}`} />
-          <div className={`${A} ${s.rn_plot} ${s.rn_crop}`} />
-          <div className={`${A} ${s.rn_plot} ${s.rn_thorns}`} />
+          <div className={`${A} ${s.cs_ground} ${s.rn_ground}`} />
+          <div className={`${A} ${s.rn_plot} ${s.rn_left}`} />
+          <div className={`${A} ${s.rn_plot} ${s.rn_right}`} />
+          <div className={`${A} ${s.rn_crop}`} />
+          <div className={`${A} ${s.rn_thorns}`} />
           <div className={`${A} ${s.rn_fire}`} />
           <div className={`${s.layer} ${s.cs_rain}`} />
         </>
@@ -629,8 +820,8 @@ function Scene({ scene }: { scene: SceneId }) {
             <Fig x={47} y={44} s={1.1} fill={MANTLE} />
             {[
               [40, 43.4],
-              [36, 44.6],
-              [32, 43.8],
+              [34, 44.4],
+              [28, 43.6],
             ].map(([x, y]) => (
               <g key={x}>
                 <Fig x={x} y={y} s={1.05} fill="#A58E70" />
@@ -657,9 +848,9 @@ function Scene({ scene }: { scene: SceneId }) {
             preserveAspectRatio="xMidYMax meet"
           >
             {[
-              [34, 40],
-              [29, 37],
-              [24, 34],
+              [34, 41.5],
+              [26, 40.5],
+              [18, 39.5],
             ].map(([x, y], i) => (
               <Fig key={x} x={x} y={y} s={1 - i * 0.08} fill={STONE} o={0.5} />
             ))}
@@ -693,9 +884,9 @@ function Scene({ scene }: { scene: SceneId }) {
             <rect x={36} y={34} width={9} height={8} fill="#B39A78" />
             <ellipse cx={40.5} cy={32.6} rx={1.4} ry={2} fill="#F0A060" />
             {[
-              [26, 43],
-              [31, 41.6],
-              [22, 41.2],
+              [31, 43],
+              [25, 41.6],
+              [19, 42.4],
             ].map(([x, y]) => (
               <g key={x}>
                 <Fig x={x} y={y} s={1.05} fill={STONE} />
@@ -858,22 +1049,54 @@ export function CssSanctuaryBackdrop({
   altar?: boolean;
   table?: boolean;
 }) {
+  // Only the hero shows all three; its altar moves off the text column.
+  const hero = lampstand && table;
   return (
     <div aria-hidden="true" className={s.layer}>
       <div className={`${s.layer} ${s.sa_veil}`} />
       <div className={`${A} ${s.sa_side} ${s.sa_left}`} />
       <div className={`${A} ${s.sa_side} ${s.sa_right}`} />
       <div className={`${A} ${s.sa_floor}`} />
-      {altar && <div className={`${A} ${s.sa_altar}`} />}
-      {altar && <div className={`${A} ${s.sa_smoke}`} />}
-      {lampstand && <div className={`${A} ${s.sa_lampstand}`} />}
+      {altar && (
+        <div className={`${A} ${s.sa_altar} ${hero ? s.sa_low : ""}`} />
+      )}
+      {altar && (
+        <div className={`${A} ${s.sa_smoke} ${hero ? s.sa_lowSmoke : ""}`} />
+      )}
+      {lampstand && (
+        <svg className={`${A} ${s.sa_lampstand}`} viewBox="0 0 70 120">
+          <g fill="none" stroke="#c9a24a" strokeWidth="3">
+            <path d="M35 30V112" />
+            {[10, 20, 30].map((r) => (
+              <path key={r} d={`M${35 - r} 30A${r} ${r} 0 0 0 ${35 + r} 30`} />
+            ))}
+          </g>
+          <path d="M27 110h16l6 10H21z" fill="#c9a24a" />
+          {[5, 15, 25, 35, 45, 55, 65].map((x) => (
+            <ellipse key={x} cx={x} cy={25} rx={2.2} ry={4} fill="#fff4d6" />
+          ))}
+        </svg>
+      )}
       {lampstand && (
         <div
           className={`${C} ${s.sa_glow}`}
-          style={{ left: "24%", top: "40%" }}
+          style={{ left: "18%", top: "calc(77% - 127px)" }}
         />
       )}
-      {table && <div className={`${A} ${s.sa_table}`} />}
+      {table && (
+        <svg className={`${A} ${s.sa_table}`} viewBox="0 0 90 60">
+          {[18, 64].map((x) => (
+            <g key={x} fill="#d9a56a">
+              <ellipse cx={x} cy={19} rx={13} ry={3.5} />
+              <ellipse cx={x} cy={14} rx={12} ry={3.5} />
+            </g>
+          ))}
+          <rect y="22" width="90" height="7" fill="#c9a24a" />
+          <rect x="5" y="29" width="5" height="31" fill="#a07c34" />
+          <rect x="80" y="29" width="5" height="31" fill="#a07c34" />
+          <rect x="10" y="38" width="70" height="3" fill="#8a6a2c" />
+        </svg>
+      )}
       <div className={`${s.layer} ${s.sa_shade}`} />
     </div>
   );

@@ -77,6 +77,15 @@
   padding: 48px 40px 120px;
   text-align: center;
 }
+/* a soft dark halo keeps the text readable over the pale daylight skies */
+.eyebrow,
+.title,
+.tagline,
+.ref {
+  text-shadow:
+    0 0 2px rgba(14, 10, 8, 0.55),
+    0 1px 14px rgba(14, 10, 8, 0.7);
+}
 .eyebrow {
   letter-spacing: 0.24em;
   color: var(--gold-bright);

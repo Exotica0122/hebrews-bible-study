@@ -1,7 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { Group, Mesh, PointLight, ShaderMaterial } from "three";
+import type {
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  PointLight,
+  ShaderMaterial,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
@@ -15,7 +21,7 @@ import {
 } from "../primitives/Heavens";
 import { easeOutCubic, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setUniform } from "../primitives/mutate";
+import { setOpacity, setUniform } from "../primitives/mutate";
 
 const PERIOD = 15;
 const FLOOR = -1.6;
@@ -66,6 +72,13 @@ export function RadianceScene({ mobile, effects }: SceneProps) {
     const out = smoothstep(2.5, 7, p);
     if (sun.current) sun.current.position.y = LOW + (HIGH - LOW) * rise;
     if (key.current) key.current.intensity = 2 + out * 10;
+    // god rays ignore the clouds in front, so their source shows only once the sun has cleared them
+    const y = LOW + (HIGH - LOW) * rise;
+    if (sunMesh)
+      setOpacity(
+        sunMesh.material as MeshBasicMaterial,
+        smoothstep(LOW + 1.4, HIGH - 0.1, y) * (1 - haze.current),
+      );
     if (halo.current) setUniform(halo.current, "uAlpha", 0.35 + out * 0.45);
     if (corona.current) setUniform(corona.current, "uAlpha", 0.12 + out * 0.2);
     shafts.current.forEach((m, i) =>
@@ -86,15 +99,19 @@ export function RadianceScene({ mobile, effects }: SceneProps) {
       <group ref={sun} position={[0.3, LOW, SUN_Z]}>
         <pointLight
           ref={key}
-          position={[0, 0, 4]}
+          position={[0, 2, 7]}
           intensity={2}
           distance={18}
           decay={1.2}
           color="#FFE2B0"
         />
-        <mesh ref={setSunMesh}>
+        <mesh>
           <circleGeometry args={[mobile ? 0.9 : 1.1, 40]} />
           <meshBasicMaterial color="#FFF3D0" fog={false} />
+        </mesh>
+        <mesh ref={setSunMesh} position={[0, 0, 0.02]}>
+          <circleGeometry args={[mobile ? 0.9 : 1.1, 40]} />
+          <meshBasicMaterial color="#FFF3D0" fog={false} transparent />
         </mesh>
         <Glow
           size={mobile ? 7 : 9}

@@ -27,6 +27,7 @@ const SPREAD = 10.6;
 const TEARS = [2, 3.1, 4.3, 5.2, 6.3];
 const X = 0.9;
 const FACE: [number, number, number] = [X, FLOOR + 1.0, 0.2];
+const LAMP: [number, number, number] = [X + 0.7, FLOOR + 0.05, 0.25];
 
 /** “Prayers and supplications, with loud cries and tears … and he was heard”: tears fall in the lamplight, light answers from above, he stands, and the light spreads out from where he is. */
 export function CriesScene({ mobile, effects }: SceneProps) {
@@ -40,6 +41,7 @@ export function CriesScene({ mobile, effects }: SceneProps) {
   const pool = useRef<ShaderMaterial | null>(null);
   const poolMesh = useRef<Mesh | null>(null);
   const above = useRef<PointLight>(null);
+  const lamp = useRef<PointLight>(null);
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(
@@ -47,11 +49,12 @@ export function CriesScene({ mobile, effects }: SceneProps) {
       -0.2,
       mobile ? 4.2 : 3.4,
     );
-    camera.lookAt(mobile ? X : 0.5, -0.6, -0.4);
+    camera.lookAt(mobile ? X : 0.5, mobile ? -1.35 : -1.15, -0.4);
     const p = t % PERIOD;
     fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(15.4, 16.9, p);
     const out = 1 - smoothstep(15.4, 17, p);
     level.current = smoothstep(0, 1.2, p) * out;
+    if (lamp.current) lamp.current.intensity = 8 * level.current;
     TEARS.forEach((start, i) => {
       const k = (p - start) / 0.9;
       tears.current[i]?.position.set(
@@ -94,13 +97,30 @@ export function CriesScene({ mobile, effects }: SceneProps) {
       />
       <Floor color="#2E231C" />
       <hemisphereLight args={["#2A2030", "#0E0A08", 0.6]} />
+      <group position={LAMP}>
+        <mesh scale={[1, 0.45, 0.7]}>
+          <sphereGeometry args={[0.11, 16, 10]} />
+          <meshStandardMaterial color="#9A6A44" roughness={0.85} />
+        </mesh>
+        <mesh position={[-0.11, 0.03, 0]} rotation={[0, 0, Math.PI / 2.4]}>
+          <cylinderGeometry args={[0.018, 0.03, 0.08, 8]} />
+          <meshStandardMaterial color="#9A6A44" roughness={0.85} />
+        </mesh>
+      </group>
       <Flame
-        position={[X + 0.75, FLOOR + 0.12, 0.55]}
-        size={0.07}
+        position={[LAMP[0] - 0.14, LAMP[1] + 0.08, LAMP[2]]}
+        size={0.11}
         seed={2}
         level={level}
-        light={8}
+      />
+      {/* Lifted off the clay so the light doesn't blow out the spout. */}
+      <pointLight
+        ref={lamp}
+        position={[LAMP[0] - 0.14, LAMP[1] + 0.35, LAMP[2]]}
+        color="#FFC27A"
+        intensity={0}
         distance={6}
+        decay={1.6}
       />
       <Figure position={[X, FLOOR, 0]} robe="#8C7B66" kneel={kneel} />
       {TEARS.map((_, i) => (

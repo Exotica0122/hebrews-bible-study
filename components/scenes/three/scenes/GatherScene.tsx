@@ -87,13 +87,18 @@ export function GatherScene({ mobile, effects }: SceneProps) {
       }),
     [],
   );
+  const clay = useMemo(
+    () => new MeshStandardMaterial({ color: "#9A6440", roughness: 0.8 }),
+    [],
+  );
   useEffect(
     () => () => {
       block.dispose();
       stone.dispose();
       paving.dispose();
+      clay.dispose();
     },
-    [block, stone, paving],
+    [block, stone, paving, clay],
   );
   useEffect(() => {
     const m = wall.current;
@@ -184,18 +189,26 @@ export function GatherScene({ mobile, effects }: SceneProps) {
         decay={1.5}
         color="#FFC27A"
       />
-      <group position={[0.55, 0, 0.05]}>
-        <mesh material={stone} position={[0, 0.45, 0]}>
-          <cylinderGeometry args={[0.06, 0.12, 0.9, 8]} />
+      <group position={[1.05, 1.42, WALL_Z + 0.36]}>
+        <mesh material={stone} position={[0, -0.04, 0]}>
+          <boxGeometry args={[0.4, 0.07, 0.3]} />
         </mesh>
-        <mesh material={stone} position={[0, 0.93, 0]}>
-          <cylinderGeometry args={[0.13, 0.07, 0.06, 10]} />
+        <mesh material={clay} position={[0, 0.03, 0]} scale={[1.3, 0.5, 0.85]}>
+          <sphereGeometry args={[0.08, 12, 8]} />
         </mesh>
-        <Flame position={[0, 1.0, 0]} size={0.07} light={7} distance={7} />
+        <mesh material={clay} position={[0.1, 0.04, 0]} rotation={[0, 0, -1.2]}>
+          <coneGeometry args={[0.03, 0.09, 6]} />
+        </mesh>
+        <Flame
+          position={[0.13, 0.07, 0]}
+          size={0.06}
+          light={3.5}
+          distance={5}
+        />
         <Embers
           count={mobile ? 6 : 10}
           box={EMBER_BOX}
-          position={[0, 1, 0]}
+          position={[0.13, 0.1, 0]}
           rise={0.08}
           size={1.2}
           alpha={0.5}

@@ -309,6 +309,8 @@ interface CarvedProps {
   turban?: boolean;
   /** Both hands raised, as in prayer or blessing. */
   arms?: boolean;
+  /** Head colour; skin by default, stone for a carved angel. */
+  skin?: string;
   /** 0–1, read every frame; omit for a solid figure. */
   opacity?: RefObject<number>;
   /** 0 standing to 1 kneeling, read every frame; overrides `pose`. */
@@ -325,6 +327,7 @@ export function Carved({
   crown = false,
   turban = false,
   arms = false,
+  skin = "#C9A07C",
   opacity,
   kneel,
 }: CarvedProps) {
@@ -342,11 +345,11 @@ export function Carved({
       });
     return {
       robe: make(robe),
-      head: make("#C9A07C"),
+      head: make(skin),
       gold: make(SALEM.gold, 0.7, 0.35),
       linen: make(SALEM.linen),
     };
-  }, [robe, fading]);
+  }, [robe, skin, fading]);
   const parts = useMemo(
     () => ({
       ring: new CylinderGeometry(0.115, 0.11, 0.07, 9, 1, true),

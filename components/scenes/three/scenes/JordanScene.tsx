@@ -5,6 +5,7 @@ import {
   Color,
   DodecahedronGeometry,
   MeshStandardMaterial,
+  PlaneGeometry,
   type Group,
   type Mesh,
   type ShaderMaterial,
@@ -102,13 +103,28 @@ export function JordanScene({ mobile, effects }: SceneProps) {
       }),
     [],
   );
+  const bed = useMemo(() => new PlaneGeometry(40, 1.4), []);
+  const water = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: DAY.water,
+        emissive: "#B4D0D6",
+        emissiveIntensity: 0.6,
+        roughness: 0.2,
+        metalness: 0.1,
+      }),
+    [],
+  );
   useEffect(
     () => () => {
       geometry.dispose();
       stone.dispose();
+      bed.dispose();
+      water.dispose();
     },
-    [geometry, stone],
+    [geometry, stone, bed, water],
   );
+  const arc = mobile ? 5 : 9;
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(Math.sin(t * 0.05) * 0.15, 0.3, mobile ? 5.4 : 4);
@@ -121,7 +137,7 @@ export function JordanScene({ mobile, effects }: SceneProps) {
     const run = easeInOutCubic((p - TODAY) / 3.4) * (1 - renew);
 
     sun.current?.position.set(
-      lerp(-9, 9, years),
+      lerp(-arc, arc, years),
       3.6 + Math.sin(years * Math.PI) * 1.4,
       -17.6,
     );
@@ -162,17 +178,11 @@ export function JordanScene({ mobile, effects }: SceneProps) {
       <GardenHills layers={HILLS} />
       <Sand y={GROUND} far={RIVER_Z} color="#7E9460" />
       <Sand y={GROUND} far={-13} near={RIVER_Z} color="#93A673" />
-      <Glow
-        position={[0, GROUND + 0.01, RIVER_Z]}
-        size={1}
-        scaleX={34}
-        scaleY={0.4}
-        color="#6F98A8"
-        inner="#D6E6EA"
-        alpha={0.6}
-        power={1.2}
-        renderOrder={3}
-        depthTest
+      <mesh
+        geometry={bed}
+        material={water}
+        position={[0, GROUND + 0.02, RIVER_Z]}
+        rotation={[-Math.PI / 2, 0, 0]}
       />
       {TRAIL.map((z, i) => (
         <group

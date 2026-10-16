@@ -33,9 +33,9 @@ const KNEELS = 7.6;
 const KNEEL_TIME = 0.9;
 /** Abraham’s men behind him: offset from Abraham along x, z. */
 const MEN: [number, number][] = [
-  [-1.1, -0.5],
-  [-1.7, 0.3],
-  [-2.3, -0.3],
+  [-1.2, -0.4],
+  [-2, -0.3],
+  [-3, 0.4],
 ];
 
 /** “Melchizedek, king of Salem, priest of the Most High God, met Abraham returning from the slaughter of the kings and blessed him”: below the gate the priest-king holds out bread and wine; Abraham climbs the road with his men and kneels to be blessed. */
@@ -49,8 +49,8 @@ export function MeetingScene({ mobile, effects }: SceneProps) {
   useSceneTime((t, _dt, { camera }) => {
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 1.4, p) + smoothstep(14.4, 16, p);
-    camera.position.set(Math.sin(t * 0.06) * 0.2, 1.5, mobile ? 9 : 6.5);
-    camera.lookAt(0, 1, 0);
+    camera.position.set(Math.sin(t * 0.06) * 0.2, 1.5, mobile ? 8 : 6.5);
+    camera.lookAt(0, mobile ? -0.3 : 1, 0);
     const walk = easeInOutCubic((p - 1) / 6);
     if (party.current) {
       party.current.position.x = lerp(-5.5, STOP, walk);
@@ -85,8 +85,9 @@ export function MeetingScene({ mobile, effects }: SceneProps) {
       <Loaf position={[0.72, 1.02, 0.18]} />
       <Cup position={[0.82, 0.98, -0.18]} scale={0.9} />
       <Glow
-        position={[0.4, 1.3, 0]}
-        size={2.6}
+        position={[STOP + 0.15, 0.95, 0.2]}
+        size={1.6}
+        scaleY={1.3}
         color={SALEM.blush}
         inner="#FFF4E0"
         alpha={0}

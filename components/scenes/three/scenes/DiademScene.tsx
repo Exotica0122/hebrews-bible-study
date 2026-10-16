@@ -23,7 +23,7 @@ import {
   useSceneTime,
 } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setUniform } from "../primitives/mutate";
+import { setEmissive, setUniform } from "../primitives/mutate";
 
 const PERIOD = 16;
 const DOWN = 2.4;
@@ -46,13 +46,31 @@ export function DiademScene({ mobile, effects }: SceneProps) {
       point: new ConeGeometry(0.045, 0.16, 8),
       wrap: new TorusGeometry(0.27, 0.07, 10, 32),
       dome: new CylinderGeometry(0.25, 0.3, 0.3, 24),
-      plate: new BoxGeometry(0.22, 0.08, 0.01),
+      plate: new BoxGeometry(0.22, 0.08, 0.02),
       stand: new CylinderGeometry(0.08, 0.16, 1, 16),
     }),
     [],
   );
+  // Self-lit a little so the warm lamps don't dye the white linen tan.
   const linen = useMemo(
-    () => new MeshStandardMaterial({ color: HOLY.linen, roughness: 0.95 }),
+    () =>
+      new MeshStandardMaterial({
+        color: "#F4F1EA",
+        roughness: 0.95,
+        emissive: "#E4E2DC",
+        emissiveIntensity: 0.3,
+      }),
+    [],
+  );
+  const plate = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: HOLY.gold,
+        roughness: 0.4,
+        metalness: 0.3,
+        emissive: "#B8862A",
+        emissiveIntensity: 0.6,
+      }),
     [],
   );
   const wood = useMemo(
@@ -75,8 +93,9 @@ export function DiademScene({ mobile, effects }: SceneProps) {
       linen.dispose();
       wood.dispose();
       ring.dispose();
+      plate.dispose();
     },
-    [parts, linen, wood, ring],
+    [parts, linen, wood, ring, plate],
   );
 
   useSceneTime((t, _dt, { camera }) => {
@@ -85,6 +104,8 @@ export function DiademScene({ mobile, effects }: SceneProps) {
     const p = t % PERIOD;
     fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.6, 15.9, p);
     level.current = smoothstep(0, 1.2, p) * (1 - smoothstep(14.6, 16, p));
+    setEmissive(linen, 0.3 * level.current);
+    setEmissive(plate, 0.6 * level.current);
     const fall = easeInOutCubic((p - DOWN) / (REST - DOWN));
     crown.current?.position.set(0, lerp(HEAD + 2.4, HEAD, fall), 0);
     if (crown.current) crown.current.rotation.y = t * 0.12;
@@ -124,7 +145,7 @@ export function DiademScene({ mobile, effects }: SceneProps) {
       />
       <pointLight
         position={[0.7, 1.3, 1.6]}
-        color="#FFC27A"
+        color="#FFE2BC"
         intensity={2.6}
         distance={6}
         decay={1.4}
@@ -159,8 +180,8 @@ export function DiademScene({ mobile, effects }: SceneProps) {
         />
         <mesh
           geometry={parts.plate}
-          material={gold}
-          position={[0, 0.12, 0.34]}
+          material={plate}
+          position={[0, 0.12, 0.355]}
         />
       </group>
       <group ref={crown} position={[0, HEAD + 2.4, 0]}>

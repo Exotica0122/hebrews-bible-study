@@ -8,7 +8,6 @@ import {
   COAST,
   CoastLights,
   Headlands,
-  hash,
   Sea,
   Squall,
   StormSky,
@@ -26,7 +25,7 @@ const PERIOD = 16;
 const GROUND = -1.2;
 const W = 0.62;
 const H = 0.3;
-const GAP = 0.03;
+const GAP = 0.01;
 const COURSES = 5;
 const BUILD = 2.4;
 const STEP = 0.2;
@@ -48,6 +47,14 @@ export function FoundationScene({ mobile, effects }: SceneProps) {
   const stones = useRef<(Mesh | null)[]>([]);
   const box = useMemo(() => new BoxGeometry(W, H, 0.42), []);
   const base = useMemo(() => new BoxGeometry(W, H * 1.4, 0.62), []);
+  const core = useMemo(
+    () => new BoxGeometry(W + GAP * 2, H + GAP * 2, 0.3),
+    [],
+  );
+  const mortar = useMemo(
+    () => new MeshStandardMaterial({ color: "#4A463E", roughness: 1 }),
+    [],
+  );
   const tones = useMemo(
     () =>
       ["#C9C3B2", "#BDB7A6", "#D2CCBB"].map(
@@ -67,11 +74,13 @@ export function FoundationScene({ mobile, effects }: SceneProps) {
     () => () => {
       box.dispose();
       base.dispose();
+      core.dispose();
+      mortar.dispose();
       tones.forEach((m) => m.dispose());
       old.dispose();
       turf.dispose();
     },
-    [box, base, tones, old, turf],
+    [box, base, core, mortar, tones, old, turf],
   );
 
   useSceneTime((t, _dt, { camera }) => {
@@ -114,7 +123,6 @@ export function FoundationScene({ mobile, effects }: SceneProps) {
           geometry={base}
           material={old}
           position={[x, GROUND + H * 0.3, 0]}
-          rotation={[0, (hash(i) - 0.5) * 0.04, 0]}
         />
       ))}
       {WALL.map((s, i) => (
@@ -127,7 +135,9 @@ export function FoundationScene({ mobile, effects }: SceneProps) {
           material={tones[(i + 1) % 3]}
           position={[s.x, GROUND + 3, 0]}
           visible={false}
-        />
+        >
+          <mesh geometry={core} material={mortar} />
+        </mesh>
       ))}
       <Squall opacity={squall} />
       {effects && <SceneEffects bloom={0.25} threshold={0.95} vignette={0.3} />}

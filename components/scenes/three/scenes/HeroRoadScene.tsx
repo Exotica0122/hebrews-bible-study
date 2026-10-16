@@ -92,23 +92,24 @@ export function HeroRoadScene({ mobile, effects, pointer }: SceneProps) {
     () => ({
       amp: 1,
       rises: [
-        [town[0], town[1], 5, 3.2],
+        [town[0], town[1], 5, mobile ? 5.5 : 3.2],
         [-12, -34, 7, 3],
         [16, -38, 6, 2.4],
       ],
     }),
-    [town],
+    [town, mobile],
   );
   const curve = useMemo(
     () =>
       roadCurve(
         mobile
           ? [
-              [-1.6, 6],
-              [0.8, 1],
-              [-0.6, -6],
-              [1.6, -13],
-              [0, -20],
+              [0.4, 6],
+              [1.5, 1.5],
+              [2.5, -4],
+              [3.5, -11],
+              [4.3, -18],
+              [4, -24],
               [town[0], town[1] + 2.6],
             ]
           : [

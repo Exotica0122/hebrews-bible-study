@@ -462,8 +462,8 @@ const lathe = (profile: [number, number][]) =>
 
 /** Head height and forward offset for each pose. */
 export const FIGURE_HEAD = {
-  standing: [1.6, 0],
-  kneeling: [1.03, 0.08],
+  standing: [1.56, 0],
+  kneeling: [1.01, 0.08],
 } as const;
 
 /** A robed figure turned on a lathe, about 1.75 tall standing or 1.1 kneeling, feet at the origin; `morph` gives a standing body with the kneeling one as morph target 0. */

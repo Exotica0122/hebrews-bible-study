@@ -49,14 +49,14 @@ const KIN: [number, string][] = [
   [-1.95, "#5E4A3A"],
   [-1.35, "#8A6A50"],
   [-0.8, "#6B5442"],
-  [2.75, "#7E6650"],
+  [3.05, "#7E6650"],
 ];
 const CAMP: TentSpot[] = [
-  { x: -4.6, z: -7.5, s: 0.8, r: 0.3, lit: true },
-  { x: -1.8, z: -9, s: 0.9, r: -0.1 },
-  { x: 2.6, z: -8.2, s: 0.8, r: 0.2, lit: true },
-  { x: 5.4, z: -6.8, s: 0.75, r: -0.4 },
-  { x: 0.6, z: -11.5, s: 0.9, r: 0.1, lit: true },
+  { x: -4.4, z: -5.2, s: 0.8, r: 0.3, lit: true },
+  { x: -1.7, z: -6.6, s: 0.9, r: -0.1 },
+  { x: 2.3, z: -6, s: 0.8, r: 0.2, lit: true },
+  { x: 5, z: -4.8, s: 0.75, r: -0.4 },
+  { x: 0.4, z: -8.4, s: 0.9, r: 0.1, lit: true },
 ];
 
 function hash(n: number) {
@@ -198,10 +198,10 @@ export function CoalsScene({ mobile, effects }: SceneProps) {
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(
       -0.2 + Math.sin(t * 0.08) * 0.15,
-      1.75,
-      mobile ? 5.4 : 4,
+      mobile ? 1.7 : 1.3,
+      mobile ? 7.6 : 5.2,
     );
-    camera.lookAt(0.45, GROUND + 0.1, -0.2);
+    camera.lookAt(0.35, GROUND + (mobile ? 0.05 : 0.2), -0.9);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(13.8, 15, p);
     const out =

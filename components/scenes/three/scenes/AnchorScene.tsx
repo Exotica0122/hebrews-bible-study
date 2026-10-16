@@ -27,8 +27,10 @@ const SURFACE = 2.4;
 const BOAT_X = -2.6;
 const BOAT_Z = -3.5;
 const STORM = 2.4;
-const HOLD: [number, number, number] = [2.3, 0.5, -2.2];
-const VEIL_X = 4.25;
+const HOLD: [number, number, number] = [3.5, 0.1, -3.1];
+/** The veil's near edge, its plane and its top, kept below the swell's lowest trough. */
+const VEIL: [number, number, number] = [2.05, -1.7, 1.5];
+const VEIL_W = 4.4;
 const DEEP = "#2C5560";
 const WATER = { deep: "#0B1D24", sea: "#7FA6A4", sky: "#B9D6CF", mist: DEEP };
 const bow = new Vector3();
@@ -42,6 +44,7 @@ export function AnchorScene({ mobile, effects }: SceneProps) {
   const bowRef = useRef<Group>(null);
   const rope = useRef<Mesh>(null);
   const light = useRef<ShaderMaterial | null>(null);
+  const spill = useRef<ShaderMaterial | null>(null);
   const lamp = useRef<PointLight>(null);
   const line = useMemo(() => new CylinderGeometry(0.014, 0.014, 1, 6), []);
   const hemp = useMemo(
@@ -61,11 +64,11 @@ export function AnchorScene({ mobile, effects }: SceneProps) {
     squall.current = 1 - smoothstep(0, 1.4, p) + smoothstep(14.4, 16, p);
     const glow = smoothstep(3.5, 9, p) * (1 - smoothstep(14, 16, p));
     camera.position.set(
-      Math.sin(t * 0.07) * 0.15,
+      Math.sin(t * 0.07) * 0.15 + (mobile ? 0.5 : 0),
       Math.sin(t * 0.3) * 0.05,
       mobile ? 8.5 : 6,
     );
-    camera.lookAt(0, 0.4, -2);
+    camera.lookAt(mobile ? 0.7 : 0, 0.4, -2);
     if (boat.current) {
       const h = (x: number) => swell(x, BOAT_Z, t * 1.4, STORM);
       boat.current.position.y = SURFACE + h(BOAT_X);
@@ -78,8 +81,10 @@ export function AnchorScene({ mobile, effects }: SceneProps) {
       rope.current.quaternion.setFromUnitVectors(UP, bow.sub(hold).normalize());
     }
     if (light.current)
-      setUniform(light.current, "uAlpha", lerp(0.3, 0.75, glow));
-    if (lamp.current) lamp.current.intensity = lerp(1.5, 6, glow);
+      setUniform(light.current, "uAlpha", lerp(0.35, 0.9, glow));
+    if (spill.current)
+      setUniform(spill.current, "uAlpha", lerp(0.2, 0.95, glow));
+    if (lamp.current) lamp.current.intensity = lerp(1, 5, glow);
   });
 
   return (
@@ -110,12 +115,13 @@ export function AnchorScene({ mobile, effects }: SceneProps) {
       {[-3.4, -0.4, 1.6].map((x, i) => (
         <GodRay
           key={x}
-          from={[x + 0.5, SURFACE - 0.1, -2 - i]}
+          from={[x + 0.6, SURFACE + 0.7, -2 - i]}
           to={[x - 0.9, -3.5, -2.5 - i]}
           radiusStart={0.35}
           radiusEnd={1.2}
           color="#CFE6DC"
           alpha={0.1}
+          tipFade={0.35}
         />
       ))}
       <hemisphereLight args={["#8FC0BC", "#0B1D24", 1]} />
@@ -129,32 +135,45 @@ export function AnchorScene({ mobile, effects }: SceneProps) {
         <Anchor />
       </group>
       <Glow
-        position={[VEIL_X - 1.9, HOLD[1] - 0.4, HOLD[2] - 1]}
-        size={6}
-        scaleY={1.4}
+        position={[HOLD[0] - 0.4, HOLD[1] - 0.2, HOLD[2] - 0.6]}
+        size={5}
+        scaleY={1.5}
         color="#E2A14E"
         inner="#FFF4D6"
-        alpha={0.3}
-        power={1.2}
+        alpha={0.35}
+        power={1.4}
         renderOrder={6}
         depthTest
         onMaterial={(m) => {
           light.current = m;
         }}
       />
+      <Glow
+        position={[VEIL[0] + 0.05, VEIL[2] - 2.4, VEIL[1] + 0.05]}
+        size={4.6}
+        scaleX={0.22}
+        color="#E2A14E"
+        inner="#FFE7B0"
+        alpha={0.15}
+        power={1.6}
+        renderOrder={7}
+        onMaterial={(m) => {
+          spill.current = m;
+        }}
+      />
       <pointLight
         ref={lamp}
-        position={[HOLD[0] + 0.3, HOLD[1] - 0.3, HOLD[2] - 0.3]}
+        position={[VEIL[0] - 0.2, 0.2, VEIL[1] - 0.2]}
         color="#FFD49A"
-        intensity={1.5}
-        distance={6}
+        intensity={1}
+        distance={4}
         decay={1.4}
       />
       <Cloth
         kind="veil"
-        width={4.4}
-        height={6.4}
-        position={[VEIL_X, -3.8, HOLD[2] + 0.5]}
+        width={VEIL_W}
+        height={VEIL[2] + 3.8}
+        position={[VEIL[0] + VEIL_W / 2, -3.8, VEIL[1]]}
         folds={7}
         depth={0.12}
         repeat={1}

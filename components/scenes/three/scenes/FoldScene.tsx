@@ -124,8 +124,8 @@ export function FoldScene({ mobile, effects }: SceneProps) {
   );
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(Math.sin(t * 0.07) * 0.3, 0.9, mobile ? 11.5 : 8.6);
-    camera.lookAt(0, 0.1, -1);
+    camera.position.set(Math.sin(t * 0.07) * 0.3, 1.2, mobile ? 14.5 : 11.4);
+    camera.lookAt(0, 0.8, -1);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 1, p) + smoothstep(14.6, 16, p);
     const rolled = easeInOutCubic((p - 2.5) / 7);

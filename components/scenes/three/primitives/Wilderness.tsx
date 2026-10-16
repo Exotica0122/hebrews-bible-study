@@ -135,7 +135,13 @@ const smooth01 = (a: number, b: number, x: number) => {
 };
 
 /** Dune height above the floor at (x, z): long crests with a gentle windward slope and a steeper, rounded slip face, flattened inside the clearing. */
-function duneHeight(x: number, z: number, clear: Clearing, amp = 1) {
+function duneHeight(
+  x: number,
+  z: number,
+  clear: Clearing,
+  amp = 1,
+  channel?: [number, number],
+) {
   const u = x * 0.8 + z * 0.6 + Math.sin(z * 0.23 + x * 0.05) * 2.2;
   const s = fract(u * 0.13);
   const rise = smooth01(0, 0.7, s);
@@ -149,7 +155,11 @@ function duneHeight(x: number, z: number, clear: Clearing, amp = 1) {
     0.16 * Math.sin(x * 0.31 + z * 0.17) +
     0.1 * Math.sin(x * 0.53 - z * 0.41);
   const d = Math.hypot(x - clear[0], (z - clear[1]) * 1.2);
-  const t = smooth01(clear[2], clear[2] * 2.6 + 2, d);
+  const t =
+    smooth01(clear[2], clear[2] * 2.6 + 2, d) *
+    (channel
+      ? smooth01(channel[1], channel[1] + 1.6, Math.abs(z - channel[0]))
+      : 1);
   return Math.max(0, h + 0.2) * amp * t * (1 + Math.max(0, -z) * 0.035);
 }
 
@@ -197,9 +207,12 @@ export function DuneField({
   far = -48,
   width = 120,
   glow = 0.08,
+  channel,
 }: {
   y: number;
   clear?: Clearing;
+  /** [z, half-width] of a level band across the whole field, where a river runs. */
+  channel?: [number, number];
   amp?: number;
   color?: string;
   /** Emissive lift, so troughs facing the sky keep the ground's own colour. */
@@ -222,7 +235,7 @@ export function DuneField({
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const z = pos.getZ(i);
-      const hy = duneHeight(x, z, clear, amp);
+      const hy = duneHeight(x, z, clear, amp, channel);
       pos.setY(i, hy);
       c.lerpColors(low, high, Math.min(1, hy / (1.2 * amp)));
       colors[i * 3] = c.r;
@@ -232,7 +245,7 @@ export function DuneField({
     g.setAttribute("color", new Float32BufferAttribute(colors, 3));
     g.computeVertexNormals();
     return g;
-  }, [clear, amp, near, far, width, color]);
+  }, [clear, amp, near, far, width, color, channel]);
   const material = useMemo(() => {
     const map = rippleMap().clone();
     map.repeat.set(width / 1.6, (near - far) / 1.6);
@@ -918,19 +931,32 @@ export function makeDuskWater({
   source = [0, 0],
   rings = 0,
   round = true,
+  wet = false,
 }: {
   source?: [number, number];
   rings?: number;
   round?: boolean;
+  /** A round patch soaking into sand: a wavering rim that darkens to wet sand before it fades. */
+  wet?: boolean;
 } = {}) {
   return new ShaderMaterial({
     vertexShader: WATER_VERT,
-    fragmentShader: round
-      ? WATER_FRAG
-      : WATER_FRAG.replace(
+    fragmentShader: wet
+      ? WATER_FRAG.replace(
           "float edge = 1.0 - smoothstep(0.42, 0.5, length(vUv - 0.5));",
-          "float edge = smoothstep(0.0, 0.08, vUv.y) * (1.0 - smoothstep(0.92, 1.0, vUv.y));",
-        ),
+          `vec2 e = vUv - 0.5;
+  float ang = atan(e.y, e.x);
+  float wob = 0.06 * sin(ang * 3.0 + 1.0) + 0.04 * sin(ang * 7.0 + 2.0) + 0.02 * sin(ang * 13.0);
+  float r = length(e) * 2.0 - wob;
+  c = mix(c, vec3(0.09, 0.05, 0.03), smoothstep(0.35, 0.75, r));
+  float edge = 1.0 - smoothstep(0.6, 0.92, r);`,
+        )
+      : round
+        ? WATER_FRAG
+        : WATER_FRAG.replace(
+            "float edge = 1.0 - smoothstep(0.42, 0.5, length(vUv - 0.5));",
+            "float edge = smoothstep(0.0, 0.2, vUv.y) * (1.0 - smoothstep(0.8, 1.0, vUv.y)) * smoothstep(0.0, 0.3, vUv.x) * (1.0 - smoothstep(0.7, 1.0, vUv.x));",
+          ),
     uniforms: {
       uTime: { value: 0 },
       uAlpha: { value: 1 },

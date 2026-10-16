@@ -118,8 +118,8 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   const mats = useMemo(
     () => ({
       iron: new MeshStandardMaterial({
-        color: "#4A433B",
-        metalness: 0.75,
+        color: "#6E655A",
+        metalness: 0.6,
         roughness: 0.45,
       }),
       stone: new MeshStandardMaterial({
@@ -169,7 +169,7 @@ export function FreedScene({ mobile, effects }: SceneProps) {
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(Math.sin(t * 0.07) * 0.2, 1.5, mobile ? 8.6 : 6.4);
-    camera.lookAt(0, 1.05, 0);
+    camera.lookAt(0, mobile ? 0.8 : 1.05, 0);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.8, 16, p);
     const down = easeInOutCubic((p - DESCEND) / (LAND - DESCEND));
@@ -225,9 +225,9 @@ export function FreedScene({ mobile, effects }: SceneProps) {
     if (key.current)
       key.current.intensity =
         smoothstep(DESCEND - 0.2, DESCEND + 0.8, p) +
-        5 * lit +
-        7 * freed +
-        10 * burst;
+        2.5 * lit +
+        3.5 * freed +
+        5 * burst;
     if (shaft.current)
       setUniform(shaft.current, "uAlpha", 0.35 * lit + 0.25 * freed);
     if (halo.current) setUniform(halo.current, "uAlpha", 0.45 * lit);
@@ -237,11 +237,23 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   return (
     <>
       <color attach="background" args={["#0A0908"]} />
-      <fog attach="fog" args={["#0A0908", 6, 16]} />
-      <hemisphereLight args={["#4A5878", "#100C0A", 0.8]} />
+      <fog
+        attach="fog"
+        args={["#0A0908", mobile ? 8.5 : 6, mobile ? 19 : 16]}
+      />
+      <hemisphereLight args={["#5A6A8E", "#1A1410", 1.8]} />
+      {mobile && (
+        <pointLight
+          position={[0, 2.4, 3.2]}
+          intensity={8}
+          distance={9}
+          decay={1.2}
+          color={NIGHT.moonLight}
+        />
+      )}
       <directionalLight
         position={[3, 6, 2]}
-        intensity={0.6}
+        intensity={mobile ? 1.4 : 0.9}
         color={NIGHT.moonLight}
       />
       <instancedMesh
@@ -301,7 +313,7 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         </group>
       ))}
       <group ref={deliverer} position={[0, 3.6, 0.4]} visible={false}>
-        <Carved position={[0, 0, 0]} robe="#E2D6BE" />
+        <Carved position={[0, 0, 0]} robe="#BFB29A" />
         <Glow
           position={[0, 1.1, -0.1]}
           size={2.6}

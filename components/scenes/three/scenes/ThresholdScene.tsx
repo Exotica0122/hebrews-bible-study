@@ -52,6 +52,7 @@ const PEOPLE: [number, number, number, string][] = [
 ];
 const WILD: Clearing = [0, -3.4, 4.2];
 const LAND: Clearing = [0, -9.6, 2.2];
+const CHANNEL: [number, number] = [RIVER_Z, 0.9];
 const EMBER_BOX: [number, number, number] = [8, 2.4, 3];
 
 /** One of the people, walking away from the camera; its fade is handed up so the scene can let it settle into the sand. */
@@ -166,16 +167,18 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
         clear={WILD}
         amp={0.9}
         near={6}
-        far={RIVER_Z - 0.3}
+        far={RIVER_Z - 1}
+        channel={CHANNEL}
       />
       <DuneField
         y={GROUND}
         clear={LAND}
         amp={0.7}
-        near={RIVER_Z + 0.3}
+        near={RIVER_Z + 1}
         far={-40}
         color="#7E8A4E"
         glow={0.45}
+        channel={CHANNEL}
       />
       <mesh
         material={river}
@@ -183,7 +186,7 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
         rotation={[-Math.PI / 2, 0, 0]}
         renderOrder={3}
       >
-        <planeGeometry args={[9, 1.1]} />
+        <planeGeometry args={[44, 2.2]} />
       </mesh>
       <group ref={people}>
         {PEOPLE.map(([, , , robe], i) => (

@@ -36,6 +36,8 @@ const W = 2.4;
 const D = 1.5;
 const TOP = 0.95;
 const SEAL_R = 0.17;
+/** The seal's centre rolls between ±END so it never overhangs the tablet. */
+const END = W / 2 - SEAL_R - 0.05;
 const WET = new Color(SALEM.clay);
 const BAKED = new Color(SALEM.baked);
 
@@ -123,16 +125,15 @@ export function SwornScene({ mobile, effects }: SceneProps) {
     camera.position.set(Math.sin(t * 0.06) * 0.25, 3.4, mobile ? 6.4 : 4.6);
     camera.lookAt(0, TOP, 0);
     const roll = easeInOutCubic((p - 2.5) / 5.5);
-    const x = lerp(-W / 2, W / 2, roll);
+    const x = lerp(-END, END, roll);
     if (seal.current) {
       seal.current.position.x = x;
       seal.current.rotation.z = -x / SEAL_R;
-      seal.current.position.y = TOP + SEAL_R + smoothstep(8.2, 9.4, p) * 0.5;
     }
     if (cover.current) {
-      const left = W / 2 - x;
+      const left = END - x;
       cover.current.scale.x = Math.max(left, 0.0001);
-      cover.current.position.x = W / 2 - left / 2;
+      cover.current.position.x = END - left / 2;
       cover.current.visible = left > 0.001;
     }
     lerpColor(clay, WET, BAKED, smoothstep(9, 12, p));
@@ -161,7 +162,7 @@ export function SwornScene({ mobile, effects }: SceneProps) {
         position={[0, TOP + 0.002, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
-        <planeGeometry args={[W * 0.98, D * 0.92]} />
+        <planeGeometry args={[END * 2, D * 0.92]} />
       </mesh>
       <mesh
         ref={cover}
@@ -171,7 +172,7 @@ export function SwornScene({ mobile, effects }: SceneProps) {
       >
         <planeGeometry args={[1, D * 0.94]} />
       </mesh>
-      <group ref={seal} position={[-W / 2, TOP + SEAL_R, 0]}>
+      <group ref={seal} position={[-END, TOP + SEAL_R, 0]}>
         <mesh
           geometry={roller}
           material={stone}

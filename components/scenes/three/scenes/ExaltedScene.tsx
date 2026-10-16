@@ -32,12 +32,13 @@ const THRONE_Y = FLOOR + 1.05;
 const THRONE_Z = -3;
 /** Ministering angels sent out from before the throne: when each leaves (s), and where it flies to (x, y, z). */
 const SENT: [number, [number, number, number]][] = [
-  [2.4, [-5.5, FLOOR + 0.3, 2.2]],
-  [3.6, [5.8, FLOOR + 0.6, 1.6]],
-  [5.4, [-3.8, FLOOR - 0.2, 3.6]],
-  [6.8, [4.2, FLOOR - 0.1, 3.4]],
+  [1.4, [-4.2, FLOOR + 0.4, 0.2]],
+  [3.4, [4.4, FLOOR + 0.6, -0.4]],
+  [5.4, [-2.6, FLOOR + 0.2, 1.2]],
+  [7.4, [2.8, FLOOR + 0.3, 1]],
+  [9.5, [-3.8, FLOOR + 0.6, -0.8]],
 ];
-const FLIGHT = 4.2;
+const FLIGHT = 4.6;
 
 /** One ministering angel, flying out from the throne; it fades as it reaches the clouds below. */
 function Messenger({
@@ -117,11 +118,13 @@ export function ExaltedScene({ mobile, effects }: SceneProps) {
       const s = sent.current[i];
       if (!s?.g) return;
       const k = easeInOutCubic((p - at) / FLIGHT);
-      const x = lerp(0, to[0], k);
-      const z = lerp(THRONE_Z + 0.9, to[2], k);
-      const y = lerp(seat - 0.4, to[1], k) + Math.sin(k * Math.PI) * 0.9;
+      const tx = to[0] * (mobile ? 0.62 : 1);
+      const x0 = Math.sign(tx) * 1.45;
+      const x = lerp(x0, tx, k);
+      const z = lerp(THRONE_Z + 0.2, to[2], k);
+      const y = lerp(seat - 0.5, to[1], k) + Math.sin(k * Math.PI) * 0.7;
       s.g.position.set(x, y, z);
-      s.g.rotation.set(0, Math.atan2(to[0], to[2] - THRONE_Z), 0);
+      s.g.rotation.set(0, Math.atan2(tx - x0, to[2] - THRONE_Z - 0.2), 0);
       const o =
         smoothstep(at, at + 0.5, p) *
         (1 - smoothstep(at + FLIGHT - 1, at + FLIGHT, p));

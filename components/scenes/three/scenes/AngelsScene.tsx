@@ -17,12 +17,14 @@ import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const PERIOD = 16;
 const FLOOR = -1.4;
-const RING: [number, number] = [2.6, 1.7];
+const RING: [number, number] = [3.3, 2.1];
 const BOW_TIME = 0.9;
-/** Angles round the throne, leaving the front open so the throne shows; each angel bows in turn. */
-const ANGELS = [-0.45, -0.95, -1.5, -2.05, -2.6, 0.45, 0.95].map((a, i) => ({
-  a: a - Math.PI / 2,
-  bows: 4.6 + i * 0.45,
+const COUNT = 6;
+const GAP = 0.55;
+/** Angles from the front, evenly round the back, leaving the front open so the throne shows; each angel bows in turn. */
+const ANGELS = Array.from({ length: COUNT }, (_, i) => ({
+  a: GAP + (i * (Math.PI * 2 - GAP * 2)) / (COUNT - 1),
+  bows: 4.6 + i * 0.5,
 }));
 
 /** “Let all God’s angels worship him”: winged angels stand in a ring round the throne above the clouds; as its light grows, they bow one by one. */
@@ -33,8 +35,8 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
   const [kneels] = useState(() => ANGELS.map(() => ({ current: 0 })));
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(Math.sin(t * 0.07) * 0.5, 1.6, mobile ? 9.8 : 7.2);
-    camera.lookAt(0, -0.2, -0.6);
+    camera.position.set(Math.sin(t * 0.07) * 0.5, 2.4, mobile ? 12.6 : 7.8);
+    camera.lookAt(0, -0.35, -0.6);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 1, p) + smoothstep(14.6, 16, p);
     glory.current = 0.35 + 0.65 * smoothstep(1.4, 4.4, p);
@@ -52,9 +54,9 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
       <Throne position={[0, FLOOR - 0.1, -0.6]} glory={glory} mobile={mobile} />
       {ANGELS.map(({ a }, i) => {
         const pos: [number, number, number] = [
-          Math.cos(a) * RING[0],
+          Math.sin(a) * RING[0],
           FLOOR + 0.1,
-          -0.6 - Math.sin(a) * RING[1],
+          -0.6 + Math.cos(a) * RING[1],
         ];
         const face = Math.atan2(-pos[0], -0.6 - pos[2]);
         return (
