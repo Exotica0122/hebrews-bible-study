@@ -16,7 +16,9 @@ export function IntroVeil() {
 
   useEffect(() => {
     setCookie(INTRO_COOKIE, "1");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduced || window.location.hash) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhase("done");

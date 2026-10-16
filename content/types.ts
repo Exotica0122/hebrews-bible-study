@@ -1,9 +1,47 @@
 export type Lang = "en" | "ko";
 
 /** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight, chapter 6 a rain-washed headland above the sea, chapter 7 Salem at first light, cut in stone. */
-export type Setting = "heavens" | "earth" | "wilderness" | "garden" | "sanctuary" | "coast" | "salem";
+export type Setting =
+  | "heavens"
+  | "earth"
+  | "wilderness"
+  | "garden"
+  | "sanctuary"
+  | "coast"
+  | "salem";
 
-export type SceneId = "radiance" | "angels" | "throne" | "fold" | "exalted" | "drift" | "crowned" | "gather" | "freed" | "tabernacle" | "rock" | "coals" | "threshold" | "seventh" | "jordan" | "sword" | "mercy" | "offering" | "diadem" | "cries" | "bread" | "foundation" | "rain" | "footsteps" | "oath" | "anchor" | "meeting" | "tithe" | "arise" | "sworn" | "forever";
+export type SceneId =
+  | "radiance"
+  | "angels"
+  | "throne"
+  | "fold"
+  | "exalted"
+  | "drift"
+  | "crowned"
+  | "gather"
+  | "freed"
+  | "tabernacle"
+  | "rock"
+  | "coals"
+  | "threshold"
+  | "seventh"
+  | "jordan"
+  | "sword"
+  | "mercy"
+  | "offering"
+  | "diadem"
+  | "cries"
+  | "bread"
+  | "foundation"
+  | "rain"
+  | "footsteps"
+  | "oath"
+  | "anchor"
+  | "meeting"
+  | "tithe"
+  | "arise"
+  | "sworn"
+  | "forever";
 
 export type CommentaryBlock = ["h" | "p" | "q", string];
 

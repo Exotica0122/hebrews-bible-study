@@ -2,7 +2,18 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { AddEquation, CustomBlending, OneFactor, Color, CylinderGeometry, DoubleSide, Mesh, Quaternion, ShaderMaterial, Vector3 } from "three";
+import {
+  AddEquation,
+  CustomBlending,
+  OneFactor,
+  Color,
+  CylinderGeometry,
+  DoubleSide,
+  Mesh,
+  Quaternion,
+  ShaderMaterial,
+  Vector3,
+} from "three";
 
 const VERT = /* glsl */ `
 varying vec2 vUv;
@@ -45,19 +56,34 @@ interface GodRayProps {
 const UP = new Vector3(0, 1, 0);
 
 /** A soft volumetric beam: an open cone from `from` (tip) toward `to`, additive, brighter toward the source. */
-export function GodRay({ from, to, radiusStart = 0.05, radiusEnd = 1.6, color = "#F3D38A", alpha = 0.5, renderOrder = 5 }: GodRayProps) {
+export function GodRay({
+  from,
+  to,
+  radiusStart = 0.05,
+  radiusEnd = 1.6,
+  color = "#F3D38A",
+  alpha = 0.5,
+  renderOrder = 5,
+}: GodRayProps) {
   const mesh = useRef<Mesh>(null);
   const a = useMemo(() => new Vector3(...from), [from]);
   const b = useMemo(() => new Vector3(...to), [to]);
   const length = a.distanceTo(b);
 
-  const geometry = useMemo(() => new CylinderGeometry(radiusStart, radiusEnd, length, 32, 1, true), [radiusStart, radiusEnd, length]);
+  const geometry = useMemo(
+    () => new CylinderGeometry(radiusStart, radiusEnd, length, 32, 1, true),
+    [radiusStart, radiusEnd, length],
+  );
   const material = useMemo(
     () =>
       new ShaderMaterial({
         vertexShader: VERT,
         fragmentShader: FRAG,
-        uniforms: { uColor: { value: new Color(color) }, uAlpha: { value: alpha }, uTime: { value: 0 } },
+        uniforms: {
+          uColor: { value: new Color(color) },
+          uAlpha: { value: alpha },
+          uTime: { value: 0 },
+        },
         transparent: true,
         depthWrite: false,
         depthTest: false,

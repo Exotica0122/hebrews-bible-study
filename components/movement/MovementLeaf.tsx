@@ -42,7 +42,10 @@ export function MovementLeaf(p: MovementLeafProps) {
       ? `${ORD_KO[p.index]} 흐름 · 히브리서 ${p.chapter}:${m.range}`
       : `Movement ${m.num} · Hebrews ${p.chapter}:${m.range}`;
   const folio = lang === "ko" ? `${p.index + 1}면` : `fol. ${p.index + 1}`;
-  const labels = useMemo(() => ({ loading: t.loading, reduced: t.reduced }), [t.loading, t.reduced]);
+  const labels = useMemo(
+    () => ({ loading: t.loading, reduced: t.reduced }),
+    [t.loading, t.reduced],
+  );
 
   return (
     <section id={`hb-${m.id}`} aria-label={c.cap} className="hb-section">
@@ -66,8 +69,22 @@ export function MovementLeaf(p: MovementLeafProps) {
             </div>
             {hasAlt && (
               <div role="group" aria-label="Scene view" className={s.altGroup}>
-                <button type="button" className={s.altBtn} aria-pressed={!alt} onClick={() => p.onAlt(false)}>{t.altA}</button>
-                <button type="button" className={s.altBtn} aria-pressed={alt} onClick={() => p.onAlt(true)}>{t.altB}</button>
+                <button
+                  type="button"
+                  className={s.altBtn}
+                  aria-pressed={!alt}
+                  onClick={() => p.onAlt(false)}
+                >
+                  {t.altA}
+                </button>
+                <button
+                  type="button"
+                  className={s.altBtn}
+                  aria-pressed={alt}
+                  onClick={() => p.onAlt(true)}
+                >
+                  {t.altB}
+                </button>
               </div>
             )}
           </SceneFrame>
@@ -90,9 +107,18 @@ export function MovementLeaf(p: MovementLeafProps) {
               onClose={p.onCloseWord}
             />
             <Commentary blocks={c.com} />
-            <Threads chips={m.chips} openId={p.openChip} onToggle={p.onToggleChip} />
+            <Threads
+              chips={m.chips}
+              openId={p.openChip}
+              onToggle={p.onToggleChip}
+            />
           </article>
-          <GlossAside keys={keysOf(c.verses)} words={words} openKey={p.openKey} onToggle={p.onToggleWord} />
+          <GlossAside
+            keys={keysOf(c.verses)}
+            words={words}
+            openKey={p.openKey}
+            onToggle={p.onToggleWord}
+          />
         </div>
       </div>
     </section>

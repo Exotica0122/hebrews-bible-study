@@ -7,40 +7,129 @@ const C = `${s.abs} ${s.centered}`;
 const CR = `${s.abs} ${s.centered} ${s.round}`;
 
 const ANGEL_DOTS: [number, number, number][] = [
-  [18, 46, 0.55], [26, 54, 0.6], [37, 59, 0.65], [50, 61, 0.7], [63, 59, 0.65], [74, 54, 0.6], [82, 46, 0.55],
+  [18, 46, 0.55],
+  [26, 54, 0.6],
+  [37, 59, 0.65],
+  [50, 61, 0.7],
+  [63, 59, 0.65],
+  [74, 54, 0.6],
+  [82, 46, 0.55],
 ];
 const EMBERS: [number, number, number, number][] = [
-  [18, 38, 18, 26], [27, 50, 12, 18], [13, 57, 10, 15], [34, 32, 9, 13],
+  [18, 38, 18, 26],
+  [27, 50, 12, 18],
+  [13, 57, 10, 15],
+  [34, 32, 9, 13],
 ];
-const DUST: [number, number, number][] = [[36, 66, 0.4], [46, 68, 0.35], [56, 67, 0.4], [64, 69, 0.3]];
+const DUST: [number, number, number][] = [
+  [36, 66, 0.4],
+  [46, 68, 0.35],
+  [56, 67, 0.4],
+  [64, 69, 0.3],
+];
 /** Robed figure, feet at 0, 18 units tall; the SVG twin of GatherScene's figure. */
-const FIGURE = "M-3 0Q-2.7-6-2.2-9.5Q-2.5-12-2.7-13Q-2.5-14-0.7-14.4L-0.55-15Q-1.3-15.4-1.2-16.2Q-1.1-17.5 0-17.5Q1.1-17.5 1.2-16.2Q1.3-15.4 0.55-15L0.7-14.4Q2.5-14 2.7-13Q2.5-12 2.2-9.5Q2.7-6 3 0Z";
-const GATHERED: [number, number][] = [[50, 1], [44, 0.66], [56.4, 0.62], [39, 0.74], [61.6, 0.7], [34, 0.6], [66.2, 0.76]];
+const FIGURE =
+  "M-3 0Q-2.7-6-2.2-9.5Q-2.5-12-2.7-13Q-2.5-14-0.7-14.4L-0.55-15Q-1.3-15.4-1.2-16.2Q-1.1-17.5 0-17.5Q1.1-17.5 1.2-16.2Q1.3-15.4 0.55-15L0.7-14.4Q2.5-14 2.7-13Q2.5-12 2.2-9.5Q2.7-6 3 0Z";
+const GATHERED: [number, number][] = [
+  [50, 1],
+  [44, 0.66],
+  [56.4, 0.62],
+  [39, 0.74],
+  [61.6, 0.7],
+  [34, 0.6],
+  [66.2, 0.76],
+];
 const LEAVES = Array.from({ length: 22 }, (_, i) => {
   const side = i < 11 ? 1 : -1;
   const k = (i % 11) / 10;
   const a = -Math.PI / 2 + k * (Math.PI - 0.32);
-  return [50 + side * Math.cos(a) * 9, 44 - Math.sin(a) * 14, side * (k * 180 - 90) + (i % 2 ? 30 : -30)] as const;
+  return [
+    50 + side * Math.cos(a) * 9,
+    44 - Math.sin(a) * 14,
+    side * (k * 180 - 90) + (i % 2 ? 30 : -30),
+  ] as const;
 });
 const BED: [number, number, number][] = Array.from({ length: 16 }, (_, i) => {
   const a = i * 2.39996;
   const r = Math.sqrt((i + 0.5) / 16) * 12;
-  return [44 + Math.cos(a) * r, 62 + Math.sin(a) * r * 0.45, 0.6 + ((i * 7) % 5) * 0.1];
+  return [
+    44 + Math.cos(a) * r,
+    62 + Math.sin(a) * r * 0.45,
+    0.6 + ((i * 7) % 5) * 0.1,
+  ];
 });
-const EARTH_SCENES: SceneId[] = ["drift", "crowned", "gather", "freed", "heroEarth"];
-const WILDERNESS_SCENES: SceneId[] = ["tabernacle", "rock", "coals", "threshold", "heroCamp"];
-const GARDEN_SCENES: SceneId[] = ["seventh", "jordan", "sword", "mercy", "heroGarden"];
-const SANCTUARY_SCENES: SceneId[] = ["offering", "diadem", "cries", "bread", "heroSanctuary"];
-const COAST_SCENES: SceneId[] = ["foundation", "rain", "footsteps", "oath", "anchor", "heroCoast"];
-const SALEM_SCENES: SceneId[] = ["meeting", "tithe", "arise", "sworn", "forever", "heroSalem"];
+const EARTH_SCENES: SceneId[] = [
+  "drift",
+  "crowned",
+  "gather",
+  "freed",
+  "heroEarth",
+];
+const WILDERNESS_SCENES: SceneId[] = [
+  "tabernacle",
+  "rock",
+  "coals",
+  "threshold",
+  "heroCamp",
+];
+const GARDEN_SCENES: SceneId[] = [
+  "seventh",
+  "jordan",
+  "sword",
+  "mercy",
+  "heroGarden",
+];
+const SANCTUARY_SCENES: SceneId[] = [
+  "offering",
+  "diadem",
+  "cries",
+  "bread",
+  "heroSanctuary",
+];
+const COAST_SCENES: SceneId[] = [
+  "foundation",
+  "rain",
+  "footsteps",
+  "oath",
+  "anchor",
+  "heroCoast",
+];
+const SALEM_SCENES: SceneId[] = [
+  "meeting",
+  "tithe",
+  "arise",
+  "sworn",
+  "forever",
+  "heroSalem",
+];
 const STONE = "#E8DCC4";
 const MANTLE = "#9C8466";
 const GOLD = "#C99A3E";
 /** Footprints running away up the beach: left %, top %, size px. */
-const PRINTS: [number, number, number][] = Array.from({ length: 9 }, (_, i) => [62 + (i % 2 ? 1.6 : -1.6) * (1 - i / 10) - i * 0.9, 94 - i * 4.4 - i * i * 0.05, 20 - i * 1.7]);
-const SAND_GLINTS: [number, number][] = Array.from({ length: 60 }, (_, i) => [(i * 37.1) % 100, 70 + ((i * 13.7) % 28)]);
-const CROWD: [number, number][] = [[38, 0.5], [44, 0.55], [57, 0.53], [63, 0.48], [50.5, 0.58]];
-const STONES: [number, number, number][] = [[30, 70, 26], [35, 71, 24], [40, 70, 26], [32, 66, 22], [37, 66, 24], [34.5, 62, 20]];
+const PRINTS: [number, number, number][] = Array.from({ length: 9 }, (_, i) => [
+  62 + (i % 2 ? 1.6 : -1.6) * (1 - i / 10) - i * 0.9,
+  94 - i * 4.4 - i * i * 0.05,
+  20 - i * 1.7,
+]);
+const SAND_GLINTS: [number, number][] = Array.from({ length: 60 }, (_, i) => [
+  (i * 37.1) % 100,
+  70 + ((i * 13.7) % 28),
+]);
+const CROWD: [number, number][] = [
+  [38, 0.5],
+  [44, 0.55],
+  [57, 0.53],
+  [63, 0.48],
+  [50.5, 0.58],
+];
+const STONES: [number, number, number][] = [
+  [30, 70, 26],
+  [35, 71, 24],
+  [40, 70, 26],
+  [32, 66, 22],
+  [37, 66, 24],
+  [34.5, 62, 20],
+];
 
 function Scene({ scene }: { scene: SceneId }) {
   switch (scene) {
@@ -71,7 +160,11 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${CR} ${s.core} ${s.a_core}`} />
           <div className={`${A} ${s.a_arc}`} />
           {ANGEL_DOTS.map(([l, t, o]) => (
-            <span key={l} className={`${A} ${s.round} ${s.a_dot}`} style={{ left: `${l}%`, top: `${t}%`, opacity: o }} />
+            <span
+              key={l}
+              className={`${A} ${s.round} ${s.a_dot}`}
+              style={{ left: `${l}%`, top: `${t}%`, opacity: o }}
+            />
           ))}
         </>
       );
@@ -82,10 +175,31 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.t_pillar}`} />
           <div className={`${A} ${s.t_base}`} />
           {EMBERS.map(([l, t, w, h]) => (
-            <span key={l} className={`${A} ${s.t_ember}`} style={{ left: `${l}%`, top: `${t}%`, width: w, height: h }} />
+            <span
+              key={l}
+              className={`${A} ${s.t_ember}`}
+              style={{ left: `${l}%`, top: `${t}%`, width: w, height: h }}
+            />
           ))}
-          <div className={`${A} ${s.t_wind}`} style={{ left: "8%", top: "46%", width: "34%", transform: "rotate(-8deg)" }} />
-          <div className={`${A} ${s.t_wind}`} style={{ left: "10%", top: "52%", width: "30%", transform: "rotate(-5deg)", opacity: 0.8 }} />
+          <div
+            className={`${A} ${s.t_wind}`}
+            style={{
+              left: "8%",
+              top: "46%",
+              width: "34%",
+              transform: "rotate(-8deg)",
+            }}
+          />
+          <div
+            className={`${A} ${s.t_wind}`}
+            style={{
+              left: "10%",
+              top: "52%",
+              width: "30%",
+              transform: "rotate(-5deg)",
+              opacity: 0.8,
+            }}
+          />
         </>
       );
     case "fold":
@@ -110,7 +224,11 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.e_horizon}`} />
           <div className={`${A} ${s.e_haze}`} />
           {DUST.map(([l, t, o]) => (
-            <span key={l} className={`${A} ${s.round} ${s.e_dust}`} style={{ left: `${l}%`, top: `${t}%`, opacity: o }} />
+            <span
+              key={l}
+              className={`${A} ${s.round} ${s.e_dust}`}
+              style={{ left: `${l}%`, top: `${t}%`, opacity: o }}
+            />
           ))}
         </>
       );
@@ -134,7 +252,15 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${s.layer} ${s.cr_sky}`} />
           <div className={`${C} ${s.cr_halo}`} />
           {LEAVES.map(([l, t, r], i) => (
-            <span key={i} className={`${A} ${s.cr_leaf}`} style={{ left: `${l}%`, top: `${t}%`, transform: `translate(-50%, -50%) rotate(${r}deg)` }} />
+            <span
+              key={i}
+              className={`${A} ${s.cr_leaf}`}
+              style={{
+                left: `${l}%`,
+                top: `${t}%`,
+                transform: `translate(-50%, -50%) rotate(${r}deg)`,
+              }}
+            />
           ))}
         </>
       );
@@ -142,9 +268,18 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <div className={`${s.layer} ${s.ga_wall}`} />
-          <svg className={`${A} ${s.ga_people}`} viewBox="30 25 40 18" preserveAspectRatio="xMidYMax meet">
+          <svg
+            className={`${A} ${s.ga_people}`}
+            viewBox="30 25 40 18"
+            preserveAspectRatio="xMidYMax meet"
+          >
             {GATHERED.map(([x, h]) => (
-              <path key={x} d={FIGURE} fill="#0B0907" transform={`translate(${x} 43) scale(${h * 1.05} ${h})`} />
+              <path
+                key={x}
+                d={FIGURE}
+                fill="#0B0907"
+                transform={`translate(${x} 43) scale(${h * 1.05} ${h})`}
+              />
             ))}
           </svg>
         </>
@@ -186,7 +321,11 @@ function Scene({ scene }: { scene: SceneId }) {
         <>
           <div className={`${s.layer} ${s.co_ground}`} />
           {BED.map(([l, t, o], i) => (
-            <span key={i} className={`${A} ${s.co_coal}`} style={{ left: `${l}%`, top: `${t}%`, opacity: o }} />
+            <span
+              key={i}
+              className={`${A} ${s.co_coal}`}
+              style={{ left: `${l}%`, top: `${t}%`, opacity: o }}
+            />
           ))}
           <span className={`${A} ${s.co_coal} ${s.co_lone}`} />
         </>
@@ -197,9 +336,21 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${s.layer} ${s.wi_sky}`} />
           <div className={`${A} ${s.th_land}`} />
           <div className={`${A} ${s.th_river}`} />
-          <svg className={`${A} ${s.th_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
-            {[[48.6, 1], [51.4, 0.96]].map(([x, h]) => (
-              <path key={x} d={FIGURE} fill="#120D0C" transform={`translate(${x} 43) scale(${h * 0.5})`} />
+          <svg
+            className={`${A} ${s.th_people}`}
+            viewBox="40 22 20 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            {[
+              [48.6, 1],
+              [51.4, 0.96],
+            ].map(([x, h]) => (
+              <path
+                key={x}
+                d={FIGURE}
+                fill="#120D0C"
+                transform={`translate(${x} 43) scale(${h * 0.5})`}
+              />
             ))}
           </svg>
         </>
@@ -210,7 +361,10 @@ function Scene({ scene }: { scene: SceneId }) {
           <CssGardenBackdrop />
           <div className={`${A} ${s.ga_days}`}>
             {Array.from({ length: 7 }, (_, i) => (
-              <span key={i} className={`${s.round} ${i === 6 ? s.ga_dayGold : s.ga_day}`} />
+              <span
+                key={i}
+                className={`${s.round} ${i === 6 ? s.ga_dayGold : s.ga_day}`}
+              />
             ))}
           </div>
         </>
@@ -222,7 +376,16 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.jo_river}`} />
           <div className={`${A} ${s.jo_path}`} />
           {STONES.map(([l, t, w], i) => (
-            <span key={i} className={`${A} ${s.jo_stone}`} style={{ left: `${l}%`, top: `${t}%`, width: w, height: w * 0.62 }} />
+            <span
+              key={i}
+              className={`${A} ${s.jo_stone}`}
+              style={{
+                left: `${l}%`,
+                top: `${t}%`,
+                width: w,
+                height: w * 0.62,
+              }}
+            />
           ))}
         </>
       );
@@ -231,8 +394,16 @@ function Scene({ scene }: { scene: SceneId }) {
         <>
           <CssGardenBackdrop sun={false} water={false} />
           <div className={`${C} ${s.sw_halo}`} />
-          <svg className={`${A} ${s.sw_figure}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
-            <path d={FIGURE} fill="#B9A88C" transform="translate(50 43) scale(1)" />
+          <svg
+            className={`${A} ${s.sw_figure}`}
+            viewBox="40 22 20 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <path
+              d={FIGURE}
+              fill="#B9A88C"
+              transform="translate(50 43) scale(1)"
+            />
           </svg>
           <div className={`${A} ${s.sw_mist} ${s.sw_left}`} />
           <div className={`${A} ${s.sw_mist} ${s.sw_right}`} />
@@ -244,12 +415,23 @@ function Scene({ scene }: { scene: SceneId }) {
         <>
           <CssGardenBackdrop sun={false} water={false} />
           <div className={`${A} ${s.me_cloud}`} style={{ top: "14%" }} />
-          <div className={`${A} ${s.me_cloud}`} style={{ top: "26%", opacity: 0.7 }} />
+          <div
+            className={`${A} ${s.me_cloud}`}
+            style={{ top: "26%", opacity: 0.7 }}
+          />
           <div className={`${C} ${s.me_halo}`} />
           <div className={`${A} ${s.me_steps}`} />
           <div className={`${A} ${s.me_throne}`} />
-          <svg className={`${A} ${s.me_figure}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
-            <path d={FIGURE} fill="#2E3826" transform="translate(50 43) scale(0.6)" />
+          <svg
+            className={`${A} ${s.me_figure}`}
+            viewBox="40 22 20 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <path
+              d={FIGURE}
+              fill="#2E3826"
+              transform="translate(50 43) scale(0.6)"
+            />
           </svg>
         </>
       );
@@ -258,10 +440,23 @@ function Scene({ scene }: { scene: SceneId }) {
         <>
           <CssSanctuaryBackdrop lampstand={false} table={false} />
           <div className={`${A} ${s.sa_smoke} ${s.of_wide}`} />
-          <svg className={`${A} ${s.sa_people}`} viewBox="30 22 40 22" preserveAspectRatio="xMidYMax meet">
-            <path d={FIGURE} fill="#2E4C7E" transform="translate(50 37) scale(0.42)" />
+          <svg
+            className={`${A} ${s.sa_people}`}
+            viewBox="30 22 40 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <path
+              d={FIGURE}
+              fill="#2E4C7E"
+              transform="translate(50 37) scale(0.42)"
+            />
             {CROWD.map(([x, h]) => (
-              <path key={x} d={FIGURE} fill="#3A2C22" transform={`translate(${x} 44) scale(${h})`} />
+              <path
+                key={x}
+                d={FIGURE}
+                fill="#3A2C22"
+                transform={`translate(${x} 44) scale(${h})`}
+              />
             ))}
           </svg>
         </>
@@ -282,9 +477,20 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${s.layer} ${s.cr_dark}`} />
           <div className={`${A} ${s.cr_shaft}`} />
           <div className={`${A} ${s.cr_pool}`} />
-          <span className={`${A} ${s.round} ${s.sa_flame}`} style={{ left: "36%", top: "74%" }} />
-          <svg className={`${A} ${s.sa_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
-            <path d={FIGURE} fill="#B9A88C" transform="translate(50 37) scale(0.6)" />
+          <span
+            className={`${A} ${s.round} ${s.sa_flame}`}
+            style={{ left: "36%", top: "74%" }}
+          />
+          <svg
+            className={`${A} ${s.sa_people}`}
+            viewBox="40 22 20 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <path
+              d={FIGURE}
+              fill="#B9A88C"
+              transform="translate(50 37) scale(0.6)"
+            />
           </svg>
         </>
       );
@@ -295,8 +501,14 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.br_table}`} />
           <div className={`${A} ${s.br_cup}`} />
           <div className={`${A} ${s.br_loaf}`} style={{ top: "54%" }} />
-          <div className={`${A} ${s.br_loaf}`} style={{ top: "51%", transform: "scale(0.94)" }} />
-          <span className={`${A} ${s.round} ${s.sa_flame}`} style={{ left: "62%", top: "30%" }} />
+          <div
+            className={`${A} ${s.br_loaf}`}
+            style={{ top: "51%", transform: "scale(0.94)" }}
+          />
+          <span
+            className={`${A} ${s.round} ${s.sa_flame}`}
+            style={{ left: "62%", top: "30%" }}
+          />
         </>
       );
     case "foundation":
@@ -329,10 +541,27 @@ function Scene({ scene }: { scene: SceneId }) {
           <CssCoastBackdrop field={false} boat={false} cliff={false} />
           <div className={`${A} ${s.fs_sand}`} />
           {PRINTS.map(([l, t, w], i) => (
-            <span key={i} className={`${A} ${s.fs_print}`} style={{ left: `${l}%`, top: `${t}%`, width: w * 0.55, height: w }} />
+            <span
+              key={i}
+              className={`${A} ${s.fs_print}`}
+              style={{
+                left: `${l}%`,
+                top: `${t}%`,
+                width: w * 0.55,
+                height: w,
+              }}
+            />
           ))}
-          <svg className={`${A} ${s.sa_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
-            <path d={FIGURE} fill="#2E3A3E" transform="translate(52.4 31) scale(0.2)" />
+          <svg
+            className={`${A} ${s.sa_people}`}
+            viewBox="40 22 20 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <path
+              d={FIGURE}
+              fill="#2E3A3E"
+              transform="translate(52.4 31) scale(0.2)"
+            />
           </svg>
         </>
       );
@@ -344,10 +573,22 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.oa_sea}`} />
           <div className={`${A} ${s.oa_sand}`} />
           {SAND_GLINTS.map(([l, t], i) => (
-            <span key={i} className={`${A} ${s.round} ${s.oa_glint}`} style={{ left: `${l}%`, top: `${t}%` }} />
+            <span
+              key={i}
+              className={`${A} ${s.round} ${s.oa_glint}`}
+              style={{ left: `${l}%`, top: `${t}%` }}
+            />
           ))}
-          <svg className={`${A} ${s.sa_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
-            <path d={FIGURE} fill="#0A0D14" transform="translate(52 36) scale(0.42)" />
+          <svg
+            className={`${A} ${s.sa_people}`}
+            viewBox="40 22 20 22"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <path
+              d={FIGURE}
+              fill="#0A0D14"
+              transform="translate(52 36) scale(0.42)"
+            />
           </svg>
         </>
       );
@@ -359,7 +600,12 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.an_hull}`} />
           <div className={`${A} ${s.an_rope}`} />
           <svg className={`${A} ${s.an_anchor}`} viewBox="-50 -10 100 120">
-            <g fill="none" stroke="#1E2629" strokeWidth="7" strokeLinecap="round">
+            <g
+              fill="none"
+              stroke="#1E2629"
+              strokeWidth="7"
+              strokeLinecap="round"
+            >
               <circle cx="0" cy="0" r="8" />
               <path d="M0 8V100M-24 24H24M-40 72Q-36 104 0 104Q36 104 40 72" />
             </g>
@@ -371,16 +617,31 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <CssSalemBackdrop />
-          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+          <svg
+            className={`${A} ${s.sl_svg}`}
+            viewBox="0 0 100 50"
+            preserveAspectRatio="xMidYMax meet"
+          >
             <Fig x={58} y={44} s={1.15} fill={STONE} />
             <rect x={56.3} y={22.6} width={3.4} height={1.2} fill={GOLD} />
             <path d="M53.6 31h2.4l-0.4 2.4h-1.6z" fill={GOLD} />
             <ellipse cx={53.4} cy={33.6} rx={1.4} ry={0.7} fill="#C08646" />
             <Fig x={47} y={44} s={1.1} fill={MANTLE} />
-            {[[40, 43.4], [36, 44.6], [32, 43.8]].map(([x, y]) => (
+            {[
+              [40, 43.4],
+              [36, 44.6],
+              [32, 43.8],
+            ].map(([x, y]) => (
               <g key={x}>
                 <Fig x={x} y={y} s={1.05} fill="#A58E70" />
-                <line x1={x + 2.4} y1={y} x2={x + 3.2} y2={y - 24} stroke="#6E5A44" strokeWidth={0.35} />
+                <line
+                  x1={x + 2.4}
+                  y1={y}
+                  x2={x + 3.2}
+                  y2={y - 24}
+                  stroke="#6E5A44"
+                  strokeWidth={0.35}
+                />
               </g>
             ))}
           </svg>
@@ -390,15 +651,30 @@ function Scene({ scene }: { scene: SceneId }) {
       return (
         <>
           <CssSalemBackdrop city={false} />
-          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
-            {[[34, 40], [29, 37], [24, 34]].map(([x, y], i) => (
+          <svg
+            className={`${A} ${s.sl_svg}`}
+            viewBox="0 0 100 50"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            {[
+              [34, 40],
+              [29, 37],
+              [24, 34],
+            ].map(([x, y], i) => (
               <Fig key={x} x={x} y={y} s={1 - i * 0.08} fill={STONE} o={0.5} />
             ))}
             <Fig x={42} y={44} s={1.15} fill={MANTLE} />
             <Fig x={62} y={44} s={1.15} fill={STONE} />
             <rect x={60.3} y={22.6} width={3.4} height={1.2} fill={GOLD} />
             {Array.from({ length: 9 }, (_, i) => (
-              <ellipse key={i} cx={30 + i * 2.6} cy={47 + (i % 2) * 0.6} rx={1.3} ry={0.9} fill="#A07F58" />
+              <ellipse
+                key={i}
+                cx={30 + i * 2.6}
+                cy={47 + (i % 2) * 0.6}
+                rx={1.3}
+                ry={0.9}
+                fill="#A07F58"
+              />
             ))}
             <ellipse cx={58} cy={45} rx={1.3} ry={0.9} fill="#B08A5E" />
           </svg>
@@ -409,13 +685,28 @@ function Scene({ scene }: { scene: SceneId }) {
         <>
           <CssSalemBackdrop city={false} />
           <div className={`${A} ${s.sl_ray}`} />
-          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+          <svg
+            className={`${A} ${s.sl_svg}`}
+            viewBox="0 0 100 50"
+            preserveAspectRatio="xMidYMax meet"
+          >
             <rect x={36} y={34} width={9} height={8} fill="#B39A78" />
             <ellipse cx={40.5} cy={32.6} rx={1.4} ry={2} fill="#F0A060" />
-            {[[26, 43], [31, 41.6], [22, 41.2]].map(([x, y]) => (
+            {[
+              [26, 43],
+              [31, 41.6],
+              [22, 41.2],
+            ].map(([x, y]) => (
               <g key={x}>
                 <Fig x={x} y={y} s={1.05} fill={STONE} />
-                <rect x={x - 1.3} y={y - 19.6} width={2.6} height={1.4} rx={0.6} fill="#FFF8EA" />
+                <rect
+                  x={x - 1.3}
+                  y={y - 19.6}
+                  width={2.6}
+                  height={1.4}
+                  rx={0.6}
+                  fill="#FFF8EA"
+                />
               </g>
             ))}
             <Fig x={56} y={44} s={1.2} fill="#FFF6E4" />
@@ -440,13 +731,29 @@ function Scene({ scene }: { scene: SceneId }) {
         <>
           <CssSalemBackdrop city={false} />
           <div className={`${A} ${s.sl_ray}`} />
-          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+          <svg
+            className={`${A} ${s.sl_svg}`}
+            viewBox="0 0 100 50"
+            preserveAspectRatio="xMidYMax meet"
+          >
             <rect x={34} y={34} width={9} height={8} fill="#B39A78" />
             <ellipse cx={38.5} cy={32.6} rx={1.4} ry={2} fill="#F0A060" />
             {[0.12, 0.2, 0.3].map((o, i) => (
-              <Fig key={i} x={62 + i * 5} y={42 + i * 0.4} s={1.05} fill={STONE} o={o} />
+              <Fig
+                key={i}
+                x={62 + i * 5}
+                y={42 + i * 0.4}
+                s={1.05}
+                fill={STONE}
+                o={o}
+              />
             ))}
-            <path d="M53.4 26.5L51.4 20.5M58.6 26.5L60.6 20.5" stroke="#FFF6E4" strokeWidth={0.8} strokeLinecap="round" />
+            <path
+              d="M53.4 26.5L51.4 20.5M58.6 26.5L60.6 20.5"
+              stroke="#FFF6E4"
+              strokeWidth={0.8}
+              strokeLinecap="round"
+            />
             <Fig x={56} y={44} s={1.2} fill="#FFF6E4" />
             <rect x={54.3} y={21.3} width={3.4} height={1.2} fill={GOLD} />
           </svg>
@@ -469,10 +776,23 @@ function Scene({ scene }: { scene: SceneId }) {
   }
 }
 
-export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
+export function CssScene({
+  scene,
+  className = "",
+}: {
+  scene: SceneId;
+  className?: string;
+}) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && !SANCTUARY_SCENES.includes(scene) && !COAST_SCENES.includes(scene) && !SALEM_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
+      {!EARTH_SCENES.includes(scene) &&
+        !WILDERNESS_SCENES.includes(scene) &&
+        !GARDEN_SCENES.includes(scene) &&
+        !SANCTUARY_SCENES.includes(scene) &&
+        !COAST_SCENES.includes(scene) &&
+        !SALEM_SCENES.includes(scene) && (
+          <CssStarfield opacity={0.75} second={false} />
+        )}
       <Scene scene={scene} />
     </div>
   );
@@ -503,11 +823,24 @@ export function CssWildernessBackdrop({ pillar = true }: { pillar?: boolean }) {
 }
 
 /** The garden on the seventh day in full light: clear sky, a high sun, sage hills and still water. */
-export function CssGardenBackdrop({ sun = true, water = true, sunTop = 20 }: { sun?: boolean; water?: boolean; sunTop?: number }) {
+export function CssGardenBackdrop({
+  sun = true,
+  water = true,
+  sunTop = 20,
+}: {
+  sun?: boolean;
+  water?: boolean;
+  sunTop?: number;
+}) {
   return (
     <div aria-hidden="true" className={s.layer}>
       <div className={`${s.layer} ${s.gd_sky}`} />
-      {sun && <div className={`${A} ${s.round} ${s.gd_sun}`} style={{ top: `${sunTop}%` }} />}
+      {sun && (
+        <div
+          className={`${A} ${s.round} ${s.gd_sun}`}
+          style={{ top: `${sunTop}%` }}
+        />
+      )}
       <div className={`${s.layer} ${s.gd_far}`} />
       <div className={`${s.layer} ${s.gd_near}`} />
       {water && <div className={`${A} ${s.gd_water}`} />}
@@ -516,7 +849,15 @@ export function CssGardenBackdrop({ sun = true, water = true, sunTop = 20 }: { s
 }
 
 /** The Holy Place by lamplight: the woven veil at the back, curtains down both sides, the lampstand, the incense altar and the table. */
-export function CssSanctuaryBackdrop({ lampstand = true, altar = true, table = true }: { lampstand?: boolean; altar?: boolean; table?: boolean }) {
+export function CssSanctuaryBackdrop({
+  lampstand = true,
+  altar = true,
+  table = true,
+}: {
+  lampstand?: boolean;
+  altar?: boolean;
+  table?: boolean;
+}) {
   return (
     <div aria-hidden="true" className={s.layer}>
       <div className={`${s.layer} ${s.sa_veil}`} />
@@ -526,7 +867,12 @@ export function CssSanctuaryBackdrop({ lampstand = true, altar = true, table = t
       {altar && <div className={`${A} ${s.sa_altar}`} />}
       {altar && <div className={`${A} ${s.sa_smoke}`} />}
       {lampstand && <div className={`${A} ${s.sa_lampstand}`} />}
-      {lampstand && <div className={`${C} ${s.sa_glow}`} style={{ left: "24%", top: "40%" }} />}
+      {lampstand && (
+        <div
+          className={`${C} ${s.sa_glow}`}
+          style={{ left: "24%", top: "40%" }}
+        />
+      )}
       {table && <div className={`${A} ${s.sa_table}`} />}
       <div className={`${s.layer} ${s.sa_shade}`} />
     </div>
@@ -535,7 +881,17 @@ export function CssSanctuaryBackdrop({ lampstand = true, altar = true, table = t
 
 export function HeroHalo() {
   return (
-    <div aria-hidden="true" className={s.abs} style={{ position: "relative", width: 18, height: 18, marginBottom: "clamp(48px,14vh,160px)", flex: "none" }}>
+    <div
+      aria-hidden="true"
+      className={s.abs}
+      style={{
+        position: "relative",
+        width: 18,
+        height: 18,
+        marginBottom: "clamp(48px,14vh,160px)",
+        flex: "none",
+      }}
+    >
       <div className={`${C} ${s.h_halo}`} />
       <div className={`${s.abs} ${s.round} ${s.core} ${s.h_core}`} />
     </div>
@@ -543,7 +899,15 @@ export function HeroHalo() {
 }
 
 /** A headland above the sea as the rain moves off: slate cloud, misty headlands, sea-green swell with a break of light, a cliff and a ploughed field. */
-export function CssCoastBackdrop({ field = true, boat = true, cliff = true }: { field?: boolean; boat?: boolean; cliff?: boolean }) {
+export function CssCoastBackdrop({
+  field = true,
+  boat = true,
+  cliff = true,
+}: {
+  field?: boolean;
+  boat?: boolean;
+  cliff?: boolean;
+}) {
   return (
     <div aria-hidden="true" className={s.layer}>
       <div className={`${s.layer} ${s.cs_sky}`} />
@@ -560,8 +924,27 @@ export function CssCoastBackdrop({ field = true, boat = true, cliff = true }: { 
   );
 }
 
-function Fig({ x, y, s: k, fill, o = 1 }: { x: number; y: number; s: number; fill: string; o?: number }) {
-  return <path d={FIGURE} fill={fill} opacity={o} transform={`translate(${x} ${y}) scale(${k})`} />;
+function Fig({
+  x,
+  y,
+  s: k,
+  fill,
+  o = 1,
+}: {
+  x: number;
+  y: number;
+  s: number;
+  fill: string;
+  o?: number;
+}) {
+  return (
+    <path
+      d={FIGURE}
+      fill={fill}
+      opacity={o}
+      transform={`translate(${x} ${y}) scale(${k})`}
+    />
+  );
 }
 
 /** Salem on its terraced hill at first light: peach dawn under pale lapis, the walled city on the tell, a road down across the valley floor. */

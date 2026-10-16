@@ -21,7 +21,13 @@ import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers, Sky } from "../primitives/Earth";
-import { easeInOutCubic, easeOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  easeOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setOpacity } from "../primitives/mutate";
 
@@ -97,11 +103,24 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
 
   const leaf = useMemo(() => leafGeometry(), []);
   const leaves = useMemo(() => buildLeaves(), []);
-  const gold = useMemo(() => new MeshStandardMaterial({ color: "#C9A24A", metalness: 0.85, roughness: 0.32, envMapIntensity: 1.3, side: DoubleSide, transparent: true }), []);
+  const gold = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: "#C9A24A",
+        metalness: 0.85,
+        roughness: 0.32,
+        envMapIntensity: 1.3,
+        side: DoubleSide,
+        transparent: true,
+      }),
+    [],
+  );
   const stems = useMemo(
     () =>
       ([1, -1] as const).map((side) => {
-        const pts = Array.from({ length: 24 }, (_, i) => branchPoint(side, i / 23, new Vector3()));
+        const pts = Array.from({ length: 24 }, (_, i) =>
+          branchPoint(side, i / 23, new Vector3()),
+        );
         return new TubeGeometry(new CatmullRomCurve3(pts), 96, 0.022, 6, false);
       }),
     [],
@@ -138,7 +157,11 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
     if (mesh) {
       leaves.forEach((l, i) => {
         const s = easeOutCubic((grow - l.at) / 0.12);
-        scratch.s.makeScale(Math.max(0.001, s), Math.max(0.001, s), Math.max(0.001, s));
+        scratch.s.makeScale(
+          Math.max(0.001, s),
+          Math.max(0.001, s),
+          Math.max(0.001, s),
+        );
         scratch.m.multiplyMatrices(l.matrix, scratch.s);
         mesh.setMatrixAt(i, scratch.m);
       });
@@ -146,31 +169,105 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
     }
     if (key.current) key.current.intensity = lerp(4, 38, rise) * fade;
     if (pool.current) pool.current.uniforms.uAlpha.value = 0.35 * rise * fade;
-    if (low.current) low.current.uniforms.uAlpha.value = 0.22 * (1 - rise) * fade;
+    if (low.current)
+      low.current.uniforms.uAlpha.value = 0.22 * (1 - rise) * fade;
   });
 
   return (
     <>
-      <Sky top="#0C0A08" horizon="#1A140F" glow="#3A2714" horizonY={-2.4} glowStrength={0.45} />
+      <Sky
+        top="#0C0A08"
+        horizon="#1A140F"
+        glow="#3A2714"
+        horizonY={-2.4}
+        glowStrength={0.45}
+      />
       <hemisphereLight args={["#F3D38A", "#1A140F", 0.25]} />
-      <pointLight ref={key} position={[0.6, 2.8, 2.6]} intensity={4} distance={12} decay={1.8} color="#F3D38A" />
-      <pointLight position={[-2.5, -0.5, 1.5]} intensity={3} distance={8} decay={2} color="#B7892C" />
+      <pointLight
+        ref={key}
+        position={[0.6, 2.8, 2.6]}
+        intensity={4}
+        distance={12}
+        decay={1.8}
+        color="#F3D38A"
+      />
+      <pointLight
+        position={[-2.5, -0.5, 1.5]}
+        intensity={3}
+        distance={8}
+        decay={2}
+        color="#B7892C"
+      />
       <Environment resolution={64} frames={1}>
-        <Lightformer form="rect" intensity={3} color="#F3D38A" position={[-2, 3, 3]} scale={[4, 2, 1]} target={[0, 0, 0]} />
-        <Lightformer form="ring" intensity={1.5} color="#B7892C" position={[3, 1, -2]} scale={3} target={[0, 0, 0]} />
-        <Lightformer form="rect" intensity={0.6} color="#EEE4CF" position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[6, 6, 1]} />
+        <Lightformer
+          form="rect"
+          intensity={3}
+          color="#F3D38A"
+          position={[-2, 3, 3]}
+          scale={[4, 2, 1]}
+          target={[0, 0, 0]}
+        />
+        <Lightformer
+          form="ring"
+          intensity={1.5}
+          color="#B7892C"
+          position={[3, 1, -2]}
+          scale={3}
+          target={[0, 0, 0]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={0.6}
+          color="#EEE4CF"
+          position={[0, 5, 0]}
+          rotation-x={Math.PI / 2}
+          scale={[6, 6, 1]}
+        />
       </Environment>
 
-      <Glow position={[0, -1.35, -0.5]} size={1} scaleX={mobile ? 3 : 4.2} scaleY={0.5} color="#3A2A18" alpha={0} power={1.6} renderOrder={1} onMaterial={(m) => { low.current = m; }} />
-      <Glow position={[0, 0.3, -1.2]} size={mobile ? 5 : 6.5} color="#B7892C" alpha={0} power={2.2} renderOrder={1} onMaterial={(m) => { pool.current = m; }} />
+      <Glow
+        position={[0, -1.35, -0.5]}
+        size={1}
+        scaleX={mobile ? 3 : 4.2}
+        scaleY={0.5}
+        color="#3A2A18"
+        alpha={0}
+        power={1.6}
+        renderOrder={1}
+        onMaterial={(m) => {
+          low.current = m;
+        }}
+      />
+      <Glow
+        position={[0, 0.3, -1.2]}
+        size={mobile ? 5 : 6.5}
+        color="#B7892C"
+        alpha={0}
+        power={2.2}
+        renderOrder={1}
+        onMaterial={(m) => {
+          pool.current = m;
+        }}
+      />
 
       <group ref={wreath} position={[0, -1.25, 0]}>
         {stems.map((g, i) => (
           <mesh key={i} geometry={g} material={gold} />
         ))}
-        <instancedMesh ref={leavesMesh} args={[leaf, gold, leaves.length]} frustumCulled={false} />
+        <instancedMesh
+          ref={leavesMesh}
+          args={[leaf, gold, leaves.length]}
+          frustumCulled={false}
+        />
       </group>
-      <Embers count={mobile ? 18 : 36} box={EMBER_BOX} position={[0, -1.4, 0]} rise={0.05} size={2} alpha={0.55} />
+      <Embers
+        count={mobile ? 18 : 36}
+        box={EMBER_BOX}
+        position={[0, -1.4, 0]}
+        rise={0.05}
+        size={2}
+        alpha={0.55}
+      />
       {effects && <SceneEffects bloom={0.45} />}
     </>
   );

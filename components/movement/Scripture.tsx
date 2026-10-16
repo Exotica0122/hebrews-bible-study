@@ -39,10 +39,20 @@ function Popover({ word, onClose }: { word: WordStudy; onClose: () => void }) {
   return (
     <span role="dialog" aria-label={word.t} className={s.popover}>
       <span className={s.popHead}>
-        <span className={`hb-eyebrow ${s.popLabel}`}>{t.wordStudy} · {word.v}</span>
+        <span className={`hb-eyebrow ${s.popLabel}`}>
+          {t.wordStudy} · {word.v}
+        </span>
         <span className={s.popActions}>
           <CopyLinkButton className={s.popLink} />
-          <button ref={close} type="button" className={s.popClose} aria-label={t.close} onClick={onClose}>×</button>
+          <button
+            ref={close}
+            type="button"
+            className={s.popClose}
+            aria-label={t.close}
+            onClick={onClose}
+          >
+            ×
+          </button>
         </span>
       </span>
       <span className={s.popTitle}>{word.t}</span>
@@ -53,7 +63,18 @@ function Popover({ word, onClose }: { word: WordStudy; onClose: () => void }) {
   );
 }
 
-export function Scripture({ movementId, copy, version, words, openKey, showPopover, dropCap, ruled, onToggle, onClose }: ScriptureProps) {
+export function Scripture({
+  movementId,
+  copy,
+  version,
+  words,
+  openKey,
+  showPopover,
+  dropCap,
+  ruled,
+  onToggle,
+  onClose,
+}: ScriptureProps) {
   const { t } = useLang();
   return (
     <>
@@ -70,9 +91,15 @@ export function Scripture({ movementId, copy, version, words, openKey, showPopov
             }
             return (
               <div key={n} className={s.verse}>
-                <span aria-hidden="true" className={s.verseNum}>{n}</span>
+                <span aria-hidden="true" className={s.verseNum}>
+                  {n}
+                </span>
                 <div>
-                  {cap && <span aria-hidden="true" className={s.dropCap}>{cap}</span>}
+                  {cap && (
+                    <span aria-hidden="true" className={s.dropCap}>
+                      {cap}
+                    </span>
+                  )}
                   {segs.map((seg, i) => {
                     if (!seg.key) return <span key={i}>{seg.text}</span>;
                     const key = seg.key;
@@ -92,7 +119,9 @@ export function Scripture({ movementId, copy, version, words, openKey, showPopov
                         >
                           {seg.text}
                         </span>
-                        {open && showPopover && w && <Popover word={w} onClose={onClose} />}
+                        {open && showPopover && w && (
+                          <Popover word={w} onClose={onClose} />
+                        )}
                       </span>
                     );
                   })}

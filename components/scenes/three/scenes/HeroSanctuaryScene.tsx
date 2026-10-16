@@ -3,7 +3,15 @@
 import { damp } from "maath/easing";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Altar, FLOOR, HolyPlace, Lampstand, Smoke, Table, TABLE_TOP } from "../primitives/Sanctuary";
+import {
+  Altar,
+  FLOOR,
+  HolyPlace,
+  Lampstand,
+  Smoke,
+  Table,
+  TABLE_TOP,
+} from "../primitives/Sanctuary";
 import { useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
@@ -39,7 +47,11 @@ function BreadStacks({ x }: { x: number }) {
       {[-0.26, 0.26].map((dx) => (
         <group key={dx} position={[dx, 0, 0]}>
           {[0, 1, 2].map((i) => (
-            <mesh key={i} position={[0, 0.035 + i * 0.07, 0]} scale={[0.2, 0.035, 0.14]}>
+            <mesh
+              key={i}
+              position={[0, 0.035 + i * 0.07, 0]}
+              scale={[0.2, 0.035, 0.14]}
+            >
               <sphereGeometry args={[1, 16, 10]} />
               <meshStandardMaterial color="#B98552" roughness={0.9} />
             </mesh>

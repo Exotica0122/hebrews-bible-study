@@ -1,13 +1,33 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { CanvasTexture, Color, CylinderGeometry, MeshStandardMaterial, SRGBColorSpace, type Group, type Mesh, type ShaderMaterial } from "three";
+import {
+  CanvasTexture,
+  Color,
+  CylinderGeometry,
+  MeshStandardMaterial,
+  SRGBColorSpace,
+  type Group,
+  type Mesh,
+  type ShaderMaterial,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Squall } from "../primitives/Coast";
-import { Ground, SALEM, SalemLights, SalemSky, useStone } from "../primitives/Salem";
-import { easeInOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  Ground,
+  SALEM,
+  SalemLights,
+  SalemSky,
+  useStone,
+} from "../primitives/Salem";
+import {
+  easeInOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { lerpColor, setUniform } from "../primitives/mutate";
 
@@ -61,13 +81,32 @@ export function SwornScene({ mobile, effects }: SceneProps) {
   const cover = useRef<Mesh>(null);
   const glow = useRef<ShaderMaterial | null>(null);
   const plinth = useStone(SALEM.stone);
-  const clay = useMemo(() => new MeshStandardMaterial({ color: SALEM.clay, roughness: 0.85, flatShading: true }), []);
+  const clay = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: SALEM.clay,
+        roughness: 0.85,
+        flatShading: true,
+      }),
+    [],
+  );
   const stone = useStone("#3E3340", { roughness: 0.4 });
   const pressed = useMemo(() => {
     const map = impression();
-    return { map, material: new MeshStandardMaterial({ map, transparent: true, roughness: 0.9, depthWrite: false }) };
+    return {
+      map,
+      material: new MeshStandardMaterial({
+        map,
+        transparent: true,
+        roughness: 0.9,
+        depthWrite: false,
+      }),
+    };
   }, []);
-  const roller = useMemo(() => new CylinderGeometry(SEAL_R, SEAL_R, D * 0.9, 16), []);
+  const roller = useMemo(
+    () => new CylinderGeometry(SEAL_R, SEAL_R, D * 0.9, 16),
+    [],
+  );
   useEffect(
     () => () => {
       clay.dispose();
@@ -97,7 +136,12 @@ export function SwornScene({ mobile, effects }: SceneProps) {
       cover.current.visible = left > 0.001;
     }
     lerpColor(clay, WET, BAKED, smoothstep(9, 12, p));
-    if (glow.current) setUniform(glow.current, "uAlpha", 0.35 * smoothstep(9, 11.5, p) * (1 - smoothstep(14, 15.6, p)));
+    if (glow.current)
+      setUniform(
+        glow.current,
+        "uAlpha",
+        0.35 * smoothstep(9, 11.5, p) * (1 - smoothstep(14, 15.6, p)),
+      );
   });
 
   return (
@@ -112,16 +156,41 @@ export function SwornScene({ mobile, effects }: SceneProps) {
       <mesh material={clay} position={[0, TOP - 0.12, 0]}>
         <boxGeometry args={[W, 0.24, D]} />
       </mesh>
-      <mesh material={pressed.material} position={[0, TOP + 0.002, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh
+        material={pressed.material}
+        position={[0, TOP + 0.002, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
         <planeGeometry args={[W * 0.98, D * 0.92]} />
       </mesh>
-      <mesh ref={cover} material={clay} position={[0, TOP + 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh
+        ref={cover}
+        material={clay}
+        position={[0, TOP + 0.004, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
         <planeGeometry args={[1, D * 0.94]} />
       </mesh>
       <group ref={seal} position={[-W / 2, TOP + SEAL_R, 0]}>
-        <mesh geometry={roller} material={stone} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh
+          geometry={roller}
+          material={stone}
+          rotation={[Math.PI / 2, 0, 0]}
+        />
       </group>
-      <Glow position={[0, TOP + 0.3, 0]} size={4} scaleY={0.6} color={SALEM.blush} inner="#FFF2DC" alpha={0} power={1.5} renderOrder={6} onMaterial={(m) => { glow.current = m; }} />
+      <Glow
+        position={[0, TOP + 0.3, 0]}
+        size={4}
+        scaleY={0.6}
+        color={SALEM.blush}
+        inner="#FFF2DC"
+        alpha={0}
+        power={1.5}
+        renderOrder={6}
+        onMaterial={(m) => {
+          glow.current = m;
+        }}
+      />
       <Squall opacity={haze} color={SALEM.haze} />
       {effects && <SceneEffects bloom={0.3} threshold={0.9} vignette={0.35} />}
     </>

@@ -200,7 +200,9 @@
   font: 500 14px var(--font-text);
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 .langBtn[aria-pressed="true"] {
   background: var(--ink);

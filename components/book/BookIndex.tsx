@@ -12,7 +12,8 @@ interface BookIndexProps {
 
 export function BookIndex({ current }: BookIndexProps) {
   const { lang, t } = useLang();
-  const bookName = (n: number) => (lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`);
+  const bookName = (n: number) =>
+    lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`;
   return (
     <section id="hb-book" className="hb-section">
       <div className={`hb-container ${s.inner}`}>
@@ -23,8 +24,14 @@ export function BookIndex({ current }: BookIndexProps) {
             <p className={s.intro}>{t.bookIntro}</p>
           </div>
           <div className={s.legend}>
-            <span><span className={s.swatchLive} />{t.studying}</span>
-            <span><span className={s.swatchSoon} />{t.comingSoon}</span>
+            <span>
+              <span className={s.swatchLive} />
+              {t.studying}
+            </span>
+            <span>
+              <span className={s.swatchSoon} />
+              {t.comingSoon}
+            </span>
           </div>
         </div>
         <div className={s.grid}>
@@ -37,10 +44,14 @@ export function BookIndex({ current }: BookIndexProps) {
                 key={n}
                 href={chapterHref(n)}
                 className={`${s.tile} ${cls}`}
-                aria-label={live ? undefined : `${bookName(n)} · ${t.comingSoon}`}
+                aria-label={
+                  live ? undefined : `${bookName(n)} · ${t.comingSoon}`
+                }
               >
                 <span className={s.num}>{n}</span>
-                <span className={s.status}>{live ? t.studying : t.comingSoon}</span>
+                <span className={s.status}>
+                  {live ? t.studying : t.comingSoon}
+                </span>
                 {subtitle && <span className={s.sub}>{subtitle}</span>}
               </Link>
             );

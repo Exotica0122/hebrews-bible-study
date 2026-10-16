@@ -1,14 +1,33 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { MeshBasicMaterial, Shape, ShapeGeometry, type Group, type ShaderMaterial } from "three";
+import {
+  MeshBasicMaterial,
+  Shape,
+  ShapeGeometry,
+  type Group,
+  type ShaderMaterial,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { figureGeometry } from "../primitives/Earth";
-import { DAY, DayLights, DaySky, GardenHills, OliveTree, Soft } from "../primitives/Garden";
+import {
+  DAY,
+  DayLights,
+  DaySky,
+  GardenHills,
+  OliveTree,
+  Soft,
+} from "../primitives/Garden";
 import { Sand } from "../primitives/Wilderness";
-import { easeInOutCubic, easeOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  easeOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setOpacity, setUniform } from "../primitives/mutate";
 
@@ -19,8 +38,18 @@ const PART = 4.4;
 const BLADE_TOP = 3.4;
 const BLADE_LOW = -3.6;
 /** Patches of shade per side: x offset from the cut, y, size. */
-const SHADE: [number, number, number][] = [[0.9, -0.2, 4.2], [1.6, 0.9, 3.4], [1.2, -1.2, 3.6], [2.6, 0.1, 3.4]];
-const GROVE: [number, number, number][] = [[-3.4, -4.2, 1.9], [-2.2, -5.2, 1.4], [3.2, -4.4, 2], [2.1, -5.6, 1.3]];
+const SHADE: [number, number, number][] = [
+  [0.9, -0.2, 4.2],
+  [1.6, 0.9, 3.4],
+  [1.2, -1.2, 3.6],
+  [2.6, 0.1, 3.4],
+];
+const GROVE: [number, number, number][] = [
+  [-3.4, -4.2, 1.9],
+  [-2.2, -5.2, 1.4],
+  [3.2, -4.4, 2],
+  [2.1, -5.6, 1.3],
+];
 
 /** A two-edged blade pointing down, tip at y = 0: the edges taper to the point, then a crossguard, grip and pommel. */
 function bladeGeometry() {
@@ -54,7 +83,15 @@ export function SwordScene({ mobile, effects }: SceneProps) {
   const seam = useRef<ShaderMaterial>(null);
   const clear = useRef<ShaderMaterial>(null);
   const shape = useMemo(() => bladeGeometry(), []);
-  const steel = useMemo(() => new MeshBasicMaterial({ color: "#F4F8FF", transparent: true, opacity: 0 }), []);
+  const steel = useMemo(
+    () =>
+      new MeshBasicMaterial({
+        color: "#F4F8FF",
+        transparent: true,
+        opacity: 0,
+      }),
+    [],
+  );
   const figure = useMemo(() => figureGeometry(), []);
   const robe = useMemo(() => new MeshBasicMaterial({ color: "#B9A88C" }), []);
   useEffect(
@@ -74,22 +111,48 @@ export function SwordScene({ mobile, effects }: SceneProps) {
     const p = t % PERIOD;
     const back = smoothstep(14.4, 16, p);
     const fall = easeInOutCubic((p - CUT) / 2.2);
-    const shown = smoothstep(CUT - 0.6, CUT, p) * (1 - smoothstep(CUT + 2, CUT + 2.6, p));
+    const shown =
+      smoothstep(CUT - 0.6, CUT, p) * (1 - smoothstep(CUT + 2, CUT + 2.6, p));
     const part = easeOutCubic((p - PART) / 3) * (1 - back);
 
     blade.current?.position.set(0, lerp(BLADE_TOP, BLADE_LOW, fall), -1.4);
     setOpacity(steel, shown);
     if (bladeGlow.current) setUniform(bladeGlow.current, "uAlpha", 0.7 * shown);
-    if (seam.current) setUniform(seam.current, "uAlpha", 0.6 * smoothstep(CUT + 0.3, CUT + 1.2, p) * (1 - smoothstep(PART, PART + 1.6, p)));
+    if (seam.current)
+      setUniform(
+        seam.current,
+        "uAlpha",
+        0.6 *
+          smoothstep(CUT + 0.3, CUT + 1.2, p) *
+          (1 - smoothstep(PART, PART + 1.6, p)),
+      );
     left.current?.position.setX(-part * reach);
     right.current?.position.setX(part * reach);
     shade.current.forEach((m) => setOpacity(m, 0.9 * (1 - 0.85 * part)));
-    if (clear.current) setUniform(clear.current, "uAlpha", 0.45 * smoothstep(PART, PART + 1, p) * (1 - smoothstep(PART + 1.5, PART + 4, p)));
+    if (clear.current)
+      setUniform(
+        clear.current,
+        "uAlpha",
+        0.45 *
+          smoothstep(PART, PART + 1, p) *
+          (1 - smoothstep(PART + 1.5, PART + 4, p)),
+      );
   });
 
   const puffs = (side: 1 | -1) =>
     SHADE.map(([x, y, s], j) => (
-      <Soft key={j} position={[side * x, y, 0]} size={s} scaleY={1.1} color={DAY.shade} opacity={0.9} renderOrder={6} onMaterial={(m) => { if (!shade.current.includes(m)) shade.current.push(m); }} />
+      <Soft
+        key={j}
+        position={[side * x, y, 0]}
+        size={s}
+        scaleY={1.1}
+        color={DAY.shade}
+        opacity={0.9}
+        renderOrder={6}
+        onMaterial={(m) => {
+          if (!shade.current.includes(m)) shade.current.push(m);
+        }}
+      />
     ));
 
   return (
@@ -101,16 +164,69 @@ export function SwordScene({ mobile, effects }: SceneProps) {
       {GROVE.map(([x, z, s]) => (
         <OliveTree key={x} position={[x, GROUND, z]} scale={s} />
       ))}
-      <Soft position={[0.2, GROUND + 0.005, -2.9]} rotation={[-Math.PI / 2, 0, 0]} size={1} scaleX={0.9} scaleY={0.35} color={DAY.shade} opacity={0.35} renderOrder={2} />
-      <mesh geometry={figure} material={robe} position={[0, GROUND, -3]} scale={0.85} renderOrder={4} />
-      <Glow position={[0, GROUND + 0.9, -2.8]} size={3.4} scaleY={1.3} color="#9EC3E8" inner="#FFFFFF" alpha={0} power={1.4} renderOrder={5} onMaterial={(m) => { clear.current = m; }} />
+      <Soft
+        position={[0.2, GROUND + 0.005, -2.9]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        size={1}
+        scaleX={0.9}
+        scaleY={0.35}
+        color={DAY.shade}
+        opacity={0.35}
+        renderOrder={2}
+      />
+      <mesh
+        geometry={figure}
+        material={robe}
+        position={[0, GROUND, -3]}
+        scale={0.85}
+        renderOrder={4}
+      />
+      <Glow
+        position={[0, GROUND + 0.9, -2.8]}
+        size={3.4}
+        scaleY={1.3}
+        color="#9EC3E8"
+        inner="#FFFFFF"
+        alpha={0}
+        power={1.4}
+        renderOrder={5}
+        onMaterial={(m) => {
+          clear.current = m;
+        }}
+      />
       <group position={[0, 0, -2]}>
         <group ref={left}>{puffs(-1)}</group>
         <group ref={right}>{puffs(1)}</group>
       </group>
-      <Glow position={[0, -0.2, -1.9]} size={1} scaleX={0.12} scaleY={4.4} color="#9EC3E8" inner="#FFFFFF" alpha={0} power={1.1} renderOrder={7} onMaterial={(m) => { seam.current = m; }} />
+      <Glow
+        position={[0, -0.2, -1.9]}
+        size={1}
+        scaleX={0.12}
+        scaleY={4.4}
+        color="#9EC3E8"
+        inner="#FFFFFF"
+        alpha={0}
+        power={1.1}
+        renderOrder={7}
+        onMaterial={(m) => {
+          seam.current = m;
+        }}
+      />
       <group ref={blade}>
-        <Glow position={[0, 1.4, -0.05]} size={1} scaleX={0.7} scaleY={3.4} color="#9EC3E8" inner="#FFFFFF" alpha={0} power={1.5} renderOrder={8} onMaterial={(m) => { bladeGlow.current = m; }} />
+        <Glow
+          position={[0, 1.4, -0.05]}
+          size={1}
+          scaleX={0.7}
+          scaleY={3.4}
+          color="#9EC3E8"
+          inner="#FFFFFF"
+          alpha={0}
+          power={1.5}
+          renderOrder={8}
+          onMaterial={(m) => {
+            bladeGlow.current = m;
+          }}
+        />
         <mesh geometry={shape} material={steel} renderOrder={9} />
       </group>
       {effects && <SceneEffects bloom={0.4} threshold={0.92} vignette={0.25} />}

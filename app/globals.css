@@ -60,7 +60,8 @@ canvas {
   --font-text: var(--font-eb-garamond), var(--font-noto-serif-kr), serif;
   --font-display: var(--font-cormorant), var(--font-noto-serif-kr), serif;
 
-  --mat-shadow: 0 0 0 4px var(--vellum), 0 0 0 5px rgba(183, 137, 44, 0.5),
+  --mat-shadow:
+    0 0 0 4px var(--vellum), 0 0 0 5px rgba(183, 137, 44, 0.5),
     0 20px 50px rgba(43, 34, 24, 0.18);
   --double-rule: 3px double var(--gold);
 

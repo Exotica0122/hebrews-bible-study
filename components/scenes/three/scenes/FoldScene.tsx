@@ -2,12 +2,23 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
-import { Color, DoubleSide, Mesh, PlaneGeometry, ShaderMaterial, Vector2 } from "three";
+import {
+  Color,
+  DoubleSide,
+  Mesh,
+  PlaneGeometry,
+  ShaderMaterial,
+  Vector2,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Light } from "../primitives/Glow";
 import { Starfield } from "../primitives/Starfield";
-import { easeInOutCubic, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const VERT = /* glsl */ `
@@ -97,7 +108,10 @@ export function FoldScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const mesh = useRef<Mesh>(null);
 
-  const geometry = useMemo(() => new PlaneGeometry(26, 11, mobile ? 80 : 160, mobile ? 32 : 56), [mobile]);
+  const geometry = useMemo(
+    () => new PlaneGeometry(26, 11, mobile ? 80 : 160, mobile ? 32 : 56),
+    [mobile],
+  );
   const material = useMemo(
     () =>
       new ShaderMaterial({
@@ -134,9 +148,26 @@ export function FoldScene({ mobile, effects }: SceneProps) {
 
   return (
     <>
-      <Starfield count={mobile ? 200 : 400} alpha={0.35} depth={FAR_DEPTH} spread={FAR_SPREAD} />
-      <mesh ref={mesh} geometry={geometry} material={material} position={[0, 0, -2.5]} frustumCulled={false} renderOrder={1} />
-      <Light position={[0, 0.1 * height, 1]} size={mobile ? 0.5 : 0.6} coronaScale={mobile ? 5 : 7} renderOrder={20} />
+      <Starfield
+        count={mobile ? 200 : 400}
+        alpha={0.35}
+        depth={FAR_DEPTH}
+        spread={FAR_SPREAD}
+      />
+      <mesh
+        ref={mesh}
+        geometry={geometry}
+        material={material}
+        position={[0, 0, -2.5]}
+        frustumCulled={false}
+        renderOrder={1}
+      />
+      <Light
+        position={[0, 0.1 * height, 1]}
+        size={mobile ? 0.5 : 0.6}
+        coronaScale={mobile ? 5 : 7}
+        renderOrder={20}
+      />
       {effects && <SceneEffects bloom={0.8} />}
     </>
   );

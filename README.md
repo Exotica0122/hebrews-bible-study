@@ -26,13 +26,13 @@ pnpm install
 pnpm dev          # http://localhost:3000
 ```
 
-| Command          | What it does                            |
-| ---------------- | --------------------------------------- |
-| `pnpm test`      | Unit tests (Vitest)                     |
+| Command                     | What it does                             |
+| --------------------------- | ---------------------------------------- |
+| `pnpm test`                 | Unit tests (Vitest)                      |
 | `pnpm exec playwright test` | End-to-end tests (starts the dev server) |
-| `pnpm lint`      | ESLint                                  |
-| `pnpm typecheck` | TypeScript                              |
-| `pnpm build`     | Production build                        |
+| `pnpm lint`                 | ESLint                                   |
+| `pnpm typecheck`            | TypeScript                               |
+| `pnpm build`                | Production build                         |
 
 ### Debug query flags
 

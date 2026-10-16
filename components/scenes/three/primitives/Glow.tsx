@@ -2,7 +2,15 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { AddEquation, CustomBlending, OneFactor, Color, Mesh, PlaneGeometry, ShaderMaterial } from "three";
+import {
+  AddEquation,
+  CustomBlending,
+  OneFactor,
+  Color,
+  Mesh,
+  PlaneGeometry,
+  ShaderMaterial,
+} from "three";
 
 const VERT = /* glsl */ `
 varying vec2 vUv;
@@ -27,7 +35,13 @@ void main() {
   gl_FragColor = vec4(c * a, a);
 }`;
 
-export function makeGlowMaterial(color: string, inner: string, alpha: number, power: number, depthTest = false) {
+export function makeGlowMaterial(
+  color: string,
+  inner: string,
+  alpha: number,
+  power: number,
+  depthTest = false,
+) {
   return new ShaderMaterial({
     vertexShader: VERT,
     fragmentShader: FRAG,
@@ -41,9 +55,9 @@ export function makeGlowMaterial(color: string, inner: string, alpha: number, po
     depthWrite: false,
     depthTest,
     blending: CustomBlending,
-        blendEquation: AddEquation,
-        blendSrc: OneFactor,
-        blendDst: OneFactor,
+    blendEquation: AddEquation,
+    blendSrc: OneFactor,
+    blendDst: OneFactor,
   });
 }
 
@@ -84,7 +98,10 @@ export function Glow({
   onMaterial,
   onMesh,
 }: GlowProps) {
-  const material = useMemo(() => makeGlowMaterial(color, inner, alpha, power, depthTest), [color, inner, alpha, power, depthTest]);
+  const material = useMemo(
+    () => makeGlowMaterial(color, inner, alpha, power, depthTest),
+    [color, inner, alpha, power, depthTest],
+  );
   const localMesh = useRef<Mesh>(null);
   useEffect(() => () => material.dispose(), [material]);
   useEffect(() => {
@@ -94,7 +111,8 @@ export function Glow({
     onMesh?.(localMesh.current);
   }, [onMesh]);
   useFrame(({ camera }) => {
-    if (billboard && localMesh.current) localMesh.current.quaternion.copy(camera.quaternion);
+    if (billboard && localMesh.current)
+      localMesh.current.quaternion.copy(camera.quaternion);
   });
   return (
     <mesh
@@ -136,9 +154,31 @@ export function Light({
 }: LightProps) {
   return (
     <group position={position}>
-      <Glow size={size * coronaScale} color={corona} alpha={0.16 * intensity} power={2.4} renderOrder={renderOrder} billboard={billboard} />
-      <Glow size={size * 2.4} color={glow} alpha={0.4 * intensity} power={2.2} renderOrder={renderOrder + 1} billboard={billboard} />
-      <Glow size={size} color={glow} inner={core} alpha={0.95 * intensity} power={1.3} renderOrder={renderOrder + 2} billboard={billboard} />
+      <Glow
+        size={size * coronaScale}
+        color={corona}
+        alpha={0.16 * intensity}
+        power={2.4}
+        renderOrder={renderOrder}
+        billboard={billboard}
+      />
+      <Glow
+        size={size * 2.4}
+        color={glow}
+        alpha={0.4 * intensity}
+        power={2.2}
+        renderOrder={renderOrder + 1}
+        billboard={billboard}
+      />
+      <Glow
+        size={size}
+        color={glow}
+        inner={core}
+        alpha={0.95 * intensity}
+        power={1.3}
+        renderOrder={renderOrder + 2}
+        billboard={billboard}
+      />
     </group>
   );
 }

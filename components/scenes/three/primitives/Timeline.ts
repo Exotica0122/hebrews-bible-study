@@ -7,7 +7,8 @@ export const easeInOutCubic = (x: number) => {
   const t = clamp01(x);
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 };
-export const easeInSine = (x: number) => 1 - Math.cos((clamp01(x) * Math.PI) / 2);
+export const easeInSine = (x: number) =>
+  1 - Math.cos((clamp01(x) * Math.PI) / 2);
 export const smoothstep = (a: number, b: number, x: number) => {
   const t = clamp01((x - a) / (b - a));
   return t * t * (3 - 2 * t);
@@ -17,7 +18,9 @@ export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const MAX_DELTA = 0.05;
 
 /** Accumulated scene time in seconds, clamped so background tabs do not jump. */
-export function useSceneTime(onFrame: (t: number, dt: number, state: RootState) => void) {
+export function useSceneTime(
+  onFrame: (t: number, dt: number, state: RootState) => void,
+) {
   const time = useRef(0);
   useFrame((state, delta) => {
     const dt = Math.min(delta, MAX_DELTA);

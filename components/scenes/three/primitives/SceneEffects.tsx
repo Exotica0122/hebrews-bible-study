@@ -2,7 +2,13 @@
 
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
-import { Bloom, EffectComposer, GodRays, Noise, Vignette } from "@react-three/postprocessing";
+import {
+  Bloom,
+  EffectComposer,
+  GodRays,
+  Noise,
+  Vignette,
+} from "@react-three/postprocessing";
 import { BlendFunction, KernelSize } from "postprocessing";
 import { Color, type Mesh } from "three";
 import { useTune } from "../tune";
@@ -17,7 +23,12 @@ interface SceneEffectsProps {
 }
 
 /** Tier-3 post stack: bloom for the lights, filmic grain and a vignette, plus screen-space god rays when a sun mesh is given. */
-export function SceneEffects({ sun, bloom = 0.6, threshold = 0.72, vignette = 0.45 }: SceneEffectsProps) {
+export function SceneEffects({
+  sun,
+  bloom = 0.6,
+  threshold = 0.72,
+  vignette = 0.45,
+}: SceneEffectsProps) {
   const gl = useThree((s) => s.gl);
   const tune = useTune("Post", {
     bloomIntensity: { value: bloom, min: 0, max: 3, step: 0.05 },
@@ -34,9 +45,25 @@ export function SceneEffects({ sun, bloom = 0.6, threshold = 0.72, vignette = 0.
 
   return (
     <EffectComposer multisampling={0}>
-      <Bloom intensity={tune.bloomIntensity} luminanceThreshold={tune.bloomThreshold} luminanceSmoothing={0.15} mipmapBlur radius={0.55} />
+      <Bloom
+        intensity={tune.bloomIntensity}
+        luminanceThreshold={tune.bloomThreshold}
+        luminanceSmoothing={0.15}
+        mipmapBlur
+        radius={0.55}
+      />
       {sun ? (
-        <GodRays sun={sun} density={0.8} decay={0.92} weight={tune.godRayWeight} exposure={0.14} clampMax={0.9} samples={36} kernelSize={KernelSize.SMALL} blur />
+        <GodRays
+          sun={sun}
+          density={0.8}
+          decay={0.92}
+          weight={tune.godRayWeight}
+          exposure={0.14}
+          clampMax={0.9}
+          samples={36}
+          kernelSize={KernelSize.SMALL}
+          blur
+        />
       ) : (
         <></>
       )}

@@ -27,7 +27,9 @@
   color: var(--ink);
   text-decoration: none;
   font: 500 15px var(--font-text);
-  transition: transform 140ms var(--ease-out), background-color 140ms ease;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 140ms ease;
   @starting-style {
     opacity: 0;
     transform: translateY(-6px);

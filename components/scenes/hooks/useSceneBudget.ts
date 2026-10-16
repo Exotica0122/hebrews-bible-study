@@ -56,9 +56,23 @@ function release(id: string) {
   if (alive.delete(id)) notify();
 }
 
-export function useSceneSlot(id: string, wants: boolean, ref: RefObject<HTMLElement | null>, max: number, retryKey = 0): boolean {
-  const held = useSyncExternalStore(subscribe, () => alive.has(id), () => false);
-  const tick = useSyncExternalStore(subscribe, () => version, () => 0);
+export function useSceneSlot(
+  id: string,
+  wants: boolean,
+  ref: RefObject<HTMLElement | null>,
+  max: number,
+  retryKey = 0,
+): boolean {
+  const held = useSyncExternalStore(
+    subscribe,
+    () => alive.has(id),
+    () => false,
+  );
+  const tick = useSyncExternalStore(
+    subscribe,
+    () => version,
+    () => 0,
+  );
 
   useEffect(() => {
     if (wants) request(id, ref.current, max);

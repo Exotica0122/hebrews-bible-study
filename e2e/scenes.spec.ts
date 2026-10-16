@@ -7,23 +7,36 @@ async function canvasCount(page: Page) {
   return page.evaluate(() => document.querySelectorAll("canvas").length);
 }
 
-test("mounts a WebGL canvas for the hero and for miniatures near the viewport", async ({ page }) => {
+test("mounts a WebGL canvas for the hero and for miniatures near the viewport", async ({
+  page,
+}) => {
   await page.goto("/");
-  await expect.poll(() => canvasCount(page), { timeout: 15_000 }).toBeGreaterThanOrEqual(1);
+  await expect
+    .poll(() => canvasCount(page), { timeout: 15_000 })
+    .toBeGreaterThanOrEqual(1);
   await page.locator('[data-scene="m1"]').scrollIntoViewIfNeeded();
-  await expect.poll(async () => page.locator("#hb-m1 canvas").count(), { timeout: 15_000 }).toBe(1);
+  await expect
+    .poll(async () => page.locator("#hb-m1 canvas").count(), {
+      timeout: 15_000,
+    })
+    .toBe(1);
 });
 
-test("keeps the number of live canvases within the budget while scrolling", async ({ page }, testInfo) => {
+test("keeps the number of live canvases within the budget while scrolling", async ({
+  page,
+}, testInfo) => {
   // Scrolls the whole chapter, mounting canvases whose shaders compile on the CPU under SwiftShader.
   test.slow();
   const budget = testInfo.project.name === "mobile" ? 2 : 3;
   const warnings: string[] = [];
   page.on("console", (m) => {
-    if (m.type() === "error" || /WebGL context/i.test(m.text())) warnings.push(m.text());
+    if (m.type() === "error" || /WebGL context/i.test(m.text()))
+      warnings.push(m.text());
   });
   await page.goto("/");
-  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  const height = await page.evaluate(
+    () => document.documentElement.scrollHeight,
+  );
   for (let y = 0; y <= height; y += 700) {
     await page.evaluate((y) => window.scrollTo(0, y), y);
     await page.waitForTimeout(250);
@@ -46,7 +59,9 @@ test("shows the shimmer, then hides it", async ({ page }) => {
   await expect(m1.getByText(SHIMMER)).toBeHidden({ timeout: 6_000 });
 });
 
-test("reduced motion shows the CSS still with a badge and mounts no canvas", async ({ page }) => {
+test("reduced motion shows the CSS still with a badge and mounts no canvas", async ({
+  page,
+}) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const m1 = page.locator("#hb-m1");
@@ -57,13 +72,24 @@ test("reduced motion shows the CSS still with a badge and mounts no canvas", asy
   expect(await canvasCount(page)).toBe(0);
 });
 
-test("without WebGL the CSS scene stays, with no badge and no errors", async ({ page }) => {
+test("without WebGL the CSS scene stays, with no badge and no errors", async ({
+  page,
+}) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(() => {
     const orig = HTMLCanvasElement.prototype.getContext;
-    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...rest: unknown[]) {
-      if (type === "webgl" || type === "webgl2" || type === "experimental-webgl") return null;
+    HTMLCanvasElement.prototype.getContext = function (
+      this: HTMLCanvasElement,
+      type: string,
+      ...rest: unknown[]
+    ) {
+      if (
+        type === "webgl" ||
+        type === "webgl2" ||
+        type === "experimental-webgl"
+      )
+        return null;
       return (orig as (...a: unknown[]) => unknown).call(this, type, ...rest);
     } as typeof orig;
   });
@@ -78,28 +104,44 @@ test("without WebGL the CSS scene stays, with no badge and no errors", async ({ 
   expect(errors).toEqual([]);
 });
 
-test("the scene toggle swaps the scene without remounting the canvas", async ({ page }) => {
+test("the scene toggle swaps the scene without remounting the canvas", async ({
+  page,
+}) => {
   await page.goto("/");
   const m1 = page.locator("#hb-m1");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
-  await expect.poll(async () => m1.locator("canvas").count(), { timeout: 15_000 }).toBe(1);
-  const before = await m1.locator("canvas").evaluate((el) => ((el as HTMLElement).dataset.id ??= String(Math.random())));
+  await expect
+    .poll(async () => m1.locator("canvas").count(), { timeout: 15_000 })
+    .toBe(1);
+  const before = await m1
+    .locator("canvas")
+    .evaluate(
+      (el) => ((el as HTMLElement).dataset.id ??= String(Math.random())),
+    );
   await m1.getByRole("button", { name: "Exact imprint", exact: true }).click();
   await page.waitForTimeout(600);
-  const after = await m1.locator("canvas").evaluate((el) => (el as HTMLElement).dataset.id);
+  const after = await m1
+    .locator("canvas")
+    .evaluate((el) => (el as HTMLElement).dataset.id);
   expect(after).toBe(before);
 });
 
-test("three.js is not in the initial HTML and renders a non-blank frame", async ({ page }) => {
+test("three.js is not in the initial HTML and renders a non-blank frame", async ({
+  page,
+}) => {
   const res = await page.goto("/?scenetest");
   const html = (await res?.text()) ?? "";
-  const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => m[1]);
+  const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(
+    (m) => m[1],
+  );
   expect(scripts.some((s) => /three/i.test(s))).toBe(false);
   const m1 = page.locator("#hb-m1");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
-  await expect.poll(async () => m1.locator("canvas").count(), { timeout: 15_000 }).toBe(1);
+  await expect
+    .poll(async () => m1.locator("canvas").count(), { timeout: 15_000 })
+    .toBe(1);
   await page.waitForTimeout(2500);
   const nonBlank = await m1.locator("canvas").evaluate((c) => {
     const canvas = c as HTMLCanvasElement;
@@ -116,18 +158,32 @@ test("three.js is not in the initial HTML and renders a non-blank frame", async 
   expect(nonBlank).toBeGreaterThan(20);
 });
 
-test("hero fragments return home when the hero canvas unmounts", async ({ page }) => {
+test("hero fragments return home when the hero canvas unmounts", async ({
+  page,
+}) => {
   await page.goto("/");
-  await expect.poll(async () => page.locator("#hb-top canvas").count(), { timeout: 15_000 }).toBe(1);
+  await expect
+    .poll(async () => page.locator("#hb-top canvas").count(), {
+      timeout: 15_000,
+    })
+    .toBe(1);
   await page.waitForTimeout(1500);
-  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  const height = await page.evaluate(
+    () => document.documentElement.scrollHeight,
+  );
   for (let y = 0; y <= height * 0.7; y += 700) {
     await page.evaluate((y) => window.scrollTo(0, y), y);
     await page.waitForTimeout(250);
   }
-  await expect.poll(async () => page.locator("#hb-top canvas").count(), { timeout: 15_000 }).toBe(0);
+  await expect
+    .poll(async () => page.locator("#hb-top canvas").count(), {
+      timeout: 15_000,
+    })
+    .toBe(0);
   const leftovers = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>("#hb-top [class*=fragment]")].map((el) => ({
+    [
+      ...document.querySelectorAll<HTMLElement>("#hb-top [class*=fragment]"),
+    ].map((el) => ({
       transform: el.style.transform,
       caption: (el.lastElementChild as HTMLElement).style.opacity,
     })),

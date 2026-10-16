@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { keysOf } from "../parse";
-import { CHAPTER_COUNT, LATEST_LIVE, LIVE_COUNT, chapterTitle, getChapter, isLive } from "./index";
+import {
+  CHAPTER_COUNT,
+  LATEST_LIVE,
+  LIVE_COUNT,
+  chapterTitle,
+  getChapter,
+  isLive,
+} from "./index";
 
 const LIVE = [1, 2, 3, 4, 5, 6, 7];
 
@@ -23,24 +30,44 @@ describe("chapter registry", () => {
   it("returns chapter 1 with five movements in order", async () => {
     const ch = await getChapter(1);
     expect(ch?.number).toBe(1);
-    expect(ch?.movements.map((m) => m.id)).toEqual(["m1", "m2", "m3", "m4", "m5"]);
+    expect(ch?.movements.map((m) => m.id)).toEqual([
+      "m1",
+      "m2",
+      "m3",
+      "m4",
+      "m5",
+    ]);
   });
 
   it("returns chapter 2 with four movements covering verses 1–18", async () => {
     const ch = await getChapter(2);
     expect(ch?.number).toBe(2);
-    expect(ch?.movements.map((m) => m.range)).toEqual(["1–4", "5–9", "10–13", "14–18"]);
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–4",
+      "5–9",
+      "10–13",
+      "14–18",
+    ]);
     for (const lang of ["en", "ko"] as const) {
-      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 18 }, (_, i) => i + 1));
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 18 }, (_, i) => i + 1));
     }
   });
 
   it("returns chapter 3 with four movements covering verses 1–19", async () => {
     const ch = await getChapter(3);
     expect(ch?.number).toBe(3);
-    expect(ch?.movements.map((m) => m.range)).toEqual(["1–6", "7–11", "12–15", "16–19"]);
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–6",
+      "7–11",
+      "12–15",
+      "16–19",
+    ]);
     for (const lang of ["en", "ko"] as const) {
-      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 19 }, (_, i) => i + 1));
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 19 }, (_, i) => i + 1));
     }
   });
 
@@ -48,9 +75,16 @@ describe("chapter registry", () => {
     const ch = await getChapter(4);
     expect(ch?.number).toBe(4);
     expect(ch?.setting).toBe("garden");
-    expect(ch?.movements.map((m) => m.range)).toEqual(["1–5", "6–11", "12–13", "14–16"]);
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–5",
+      "6–11",
+      "12–13",
+      "14–16",
+    ]);
     for (const lang of ["en", "ko"] as const) {
-      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 16 }, (_, i) => i + 1));
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 16 }, (_, i) => i + 1));
     }
   });
 
@@ -58,9 +92,16 @@ describe("chapter registry", () => {
     const ch = await getChapter(5);
     expect(ch?.number).toBe(5);
     expect(ch?.setting).toBe("sanctuary");
-    expect(ch?.movements.map((m) => m.range)).toEqual(["1–4", "5–6", "7–10", "11–14"]);
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–4",
+      "5–6",
+      "7–10",
+      "11–14",
+    ]);
     for (const lang of ["en", "ko"] as const) {
-      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 14 }, (_, i) => i + 1));
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 14 }, (_, i) => i + 1));
     }
   });
 
@@ -68,9 +109,17 @@ describe("chapter registry", () => {
     const ch = await getChapter(6);
     expect(ch?.number).toBe(6);
     expect(ch?.setting).toBe("coast");
-    expect(ch?.movements.map((m) => m.range)).toEqual(["1–3", "4–8", "9–12", "13–15", "16–20"]);
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–3",
+      "4–8",
+      "9–12",
+      "13–15",
+      "16–20",
+    ]);
     for (const lang of ["en", "ko"] as const) {
-      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 20 }, (_, i) => i + 1));
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 20 }, (_, i) => i + 1));
     }
   });
 
@@ -78,9 +127,17 @@ describe("chapter registry", () => {
     const ch = await getChapter(7);
     expect(ch?.number).toBe(7);
     expect(ch?.setting).toBe("salem");
-    expect(ch?.movements.map((m) => m.range)).toEqual(["1–3", "4–10", "11–19", "20–22", "23–28"]);
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–3",
+      "4–10",
+      "11–19",
+      "20–22",
+      "23–28",
+    ]);
     for (const lang of ["en", "ko"] as const) {
-      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 28 }, (_, i) => i + 1));
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 28 }, (_, i) => i + 1));
     }
   });
 
@@ -113,7 +170,9 @@ describe.each(LIVE)("chapter %i data integrity", (n) => {
     const ch = await getChapter(n);
     for (const m of ch!.movements) {
       for (const lang of ["en", "ko"] as const) {
-        expect(Object.keys(m.words[lang]).sort(), `${m.id}/${lang}`).toEqual([...keysOf(m[lang].verses)].sort());
+        expect(Object.keys(m.words[lang]).sort(), `${m.id}/${lang}`).toEqual(
+          [...keysOf(m[lang].verses)].sort(),
+        );
       }
     }
   });
@@ -121,7 +180,9 @@ describe.each(LIVE)("chapter %i data integrity", (n) => {
   it("marks the same keys in English and Korean for every movement", async () => {
     const ch = await getChapter(n);
     for (const m of ch!.movements) {
-      expect([...keysOf(m.en.verses)].sort()).toEqual([...keysOf(m.ko.verses)].sort());
+      expect([...keysOf(m.en.verses)].sort()).toEqual(
+        [...keysOf(m.ko.verses)].sort(),
+      );
     }
   });
 

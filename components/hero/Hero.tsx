@@ -4,7 +4,15 @@ import { useRef, useState, type ComponentType } from "react";
 import type { ChapterCopy, Setting } from "@/content/types";
 import { Fleuron, DoubleFrame } from "@/components/ornaments/Ornaments";
 import { CssStarfield } from "@/components/scenes/fallback/CssStarfield";
-import { CssEarthBackdrop, CssGardenBackdrop, CssSanctuaryBackdrop, CssWildernessBackdrop, CssCoastBackdrop, CssSalemBackdrop, HeroHalo } from "@/components/scenes/fallback/CssScene";
+import {
+  CssEarthBackdrop,
+  CssGardenBackdrop,
+  CssSanctuaryBackdrop,
+  CssWildernessBackdrop,
+  CssCoastBackdrop,
+  CssSalemBackdrop,
+  HeroHalo,
+} from "@/components/scenes/fallback/CssScene";
 import { HeroStage } from "@/components/scenes/HeroStage";
 import type { SceneId } from "@/components/scenes/types";
 import { useLang } from "@/lib/lang";
@@ -22,17 +30,31 @@ interface HeroProps {
 import { HERO_FRAGMENTS } from "./fragments";
 
 /** `scrim` shades the title area for daylit heroes, where the parchment type would otherwise sit on a bright sky. */
-const STAGES: Record<Setting, { scene: SceneId; Backdrop: ComponentType; scrim?: boolean }> = {
+const STAGES: Record<
+  Setting,
+  { scene: SceneId; Backdrop: ComponentType; scrim?: boolean }
+> = {
   heavens: { scene: "hero", Backdrop: CssStarfield },
   earth: { scene: "heroEarth", Backdrop: CssEarthBackdrop },
   wilderness: { scene: "heroCamp", Backdrop: CssWildernessBackdrop },
   garden: { scene: "heroGarden", Backdrop: CssGardenBackdrop, scrim: true },
-  sanctuary: { scene: "heroSanctuary", Backdrop: CssSanctuaryBackdrop, scrim: true },
+  sanctuary: {
+    scene: "heroSanctuary",
+    Backdrop: CssSanctuaryBackdrop,
+    scrim: true,
+  },
   coast: { scene: "heroCoast", Backdrop: CssCoastBackdrop, scrim: true },
   salem: { scene: "heroSalem", Backdrop: CssSalemBackdrop, scrim: true },
 };
 
-export function Hero({ copy, setting, onBegin, onMap, artNote, reduceMotion }: HeroProps) {
+export function Hero({
+  copy,
+  setting,
+  onBegin,
+  onMap,
+  artNote,
+  reduceMotion,
+}: HeroProps) {
   const { t } = useLang();
   const hostRef = useRef<HTMLElement>(null);
   const captionRefs = useRef<(HTMLElement | null)[]>([]);
@@ -40,11 +62,22 @@ export function Hero({ copy, setting, onBegin, onMap, artNote, reduceMotion }: H
   const { scene, Backdrop, scrim } = STAGES[setting];
 
   return (
-    <section id="hb-top" ref={hostRef} aria-label={copy.heroTitle} className={s.hero}>
+    <section
+      id="hb-top"
+      ref={hostRef}
+      aria-label={copy.heroTitle}
+      className={s.hero}
+    >
       <div className={`${s.cssLayers} ${live ? s.cssLayersHidden : ""}`}>
         <Backdrop />
       </div>
-      <HeroStage scene={scene} hostRef={hostRef} captionRefs={captionRefs} reduceMotion={reduceMotion} onReadyChange={setLive} />
+      <HeroStage
+        scene={scene}
+        hostRef={hostRef}
+        captionRefs={captionRefs}
+        reduceMotion={reduceMotion}
+        onReadyChange={setLive}
+      />
       {scrim && <div aria-hidden="true" className={s.scrim} />}
       <DoubleFrame />
       {copy.fragments &&
@@ -55,14 +88,24 @@ export function Hero({ copy, setting, onBegin, onMap, artNote, reduceMotion }: H
               captionRefs.current[i] = el;
             }}
             className={s.fragment}
-            style={{ "--l": `${f.left}%`, "--t": `${f.top}%`, "--lm": `${f.leftMobile}%`, "--tm": `${f.topMobile}%` } as React.CSSProperties}
+            style={
+              {
+                "--l": `${f.left}%`,
+                "--t": `${f.top}%`,
+                "--lm": `${f.leftMobile}%`,
+                "--tm": `${f.topMobile}%`,
+              } as React.CSSProperties
+            }
           >
             <span className={`${s[f.cls]} ${live ? s.dotHidden : ""}`} />
             <span className={s.fragCap}>{copy.fragments?.[i]}</span>
           </div>
         ))}
       <div className={s.stack}>
-        <div id="hb-hero-centre" className={live || !copy.fragments ? s.haloHidden : undefined}>
+        <div
+          id="hb-hero-centre"
+          className={live || !copy.fragments ? s.haloHidden : undefined}
+        >
           <HeroHalo />
         </div>
         <div className={`hb-eyebrow ${s.eyebrow}`}>{copy.heroEyebrow}</div>
@@ -71,8 +114,20 @@ export function Hero({ copy, setting, onBegin, onMap, artNote, reduceMotion }: H
         <p className={s.tagline}>{copy.tagline}</p>
         <div className={s.ref}>{copy.taglineRef}</div>
         <div className={s.actions}>
-          <button type="button" className={`hb-btn hb-btn-gold ${s.begin}`} onClick={onBegin}>{t.begin}</button>
-          <button type="button" className="hb-btn hb-btn-outline" onClick={onMap}>{t.seeMap}</button>
+          <button
+            type="button"
+            className={`hb-btn hb-btn-gold ${s.begin}`}
+            onClick={onBegin}
+          >
+            {t.begin}
+          </button>
+          <button
+            type="button"
+            className="hb-btn hb-btn-outline"
+            onClick={onMap}
+          >
+            {t.seeMap}
+          </button>
         </div>
       </div>
       <div aria-hidden="true" className={s.scrollCue}>
