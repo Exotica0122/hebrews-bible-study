@@ -22,7 +22,6 @@ import {
   SRGBColorSpace,
   TorusGeometry,
   Vector2,
-  type Group,
   type Mesh,
   type Points,
   type Side,
@@ -638,53 +637,6 @@ export function Anchor({ color = COAST.iron }: { color?: string }) {
         position={[0.42, -0.86, 0]}
         rotation={[0, 0, -0.5]}
         scale={[1, 1, 0.4]}
-      />
-    </group>
-  );
-}
-
-/** A rope between two points, as a thin cylinder. */
-export function Rope({
-  from,
-  to,
-  color = "#7A6A52",
-  radius = 0.012,
-}: {
-  from: [number, number, number];
-  to: [number, number, number];
-  color?: string;
-  radius?: number;
-}) {
-  const ref = useRef<Group>(null);
-  const geometry = useMemo(
-    () => new CylinderGeometry(radius, radius, 1, 6),
-    [radius],
-  );
-  const material = useMemo(
-    () => new MeshStandardMaterial({ color, roughness: 1 }),
-    [color],
-  );
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
-  const [ax, ay, az] = from;
-  const [bx, by, bz] = to;
-  const len = Math.hypot(bx - ax, by - ay, bz - az);
-  useEffect(() => {
-    ref.current?.lookAt(bx, by, bz);
-  }, [bx, by, bz]);
-  return (
-    <group ref={ref} position={from}>
-      <mesh
-        geometry={geometry}
-        material={material}
-        position={[0, 0, len / 2]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={[1, len, 1]}
       />
     </group>
   );

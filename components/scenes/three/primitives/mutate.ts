@@ -19,18 +19,6 @@ export function setUniform(
   material.uniforms[name].value = value;
 }
 
-export function writeXYZ(
-  target: Float32Array,
-  i: number,
-  x: number,
-  y: number,
-  z: number,
-) {
-  target[i * 3] = x;
-  target[i * 3 + 1] = y;
-  target[i * 3 + 2] = z;
-}
-
 export function setEmissive(material: MeshStandardMaterial, intensity: number) {
   material.emissiveIntensity = intensity;
 }
