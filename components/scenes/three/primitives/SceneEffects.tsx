@@ -33,7 +33,7 @@ export function SceneEffects({ sun, bloom = 0.6, threshold = 0.72, vignette = 0.
   }, [gl]);
 
   return (
-    <EffectComposer multisampling={0} depthBuffer={false}>
+    <EffectComposer multisampling={0}>
       <Bloom intensity={tune.bloomIntensity} luminanceThreshold={tune.bloomThreshold} luminanceSmoothing={0.15} mipmapBlur radius={0.55} />
       {sun ? (
         <GodRays sun={sun} density={0.8} decay={0.92} weight={tune.godRayWeight} exposure={0.14} clampMax={0.9} samples={36} kernelSize={KernelSize.SMALL} blur />

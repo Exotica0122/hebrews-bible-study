@@ -12,6 +12,7 @@ const chapters: Record<number, ChapterEntry> = {
   2: { load: () => import("./2").then((m) => m.chapter2), title: { en: "Such a great salvation", ko: "이렇게도 귀중한 구원" } },
   3: { load: () => import("./3").then((m) => m.chapter3), title: { en: "Consider Jesus", ko: "예수를 깊이 생각하십시오" } },
   4: { load: () => import("./4").then((m) => m.chapter4), title: { en: "A Sabbath rest remains", ko: "안식하는 일이 아직 남아 있습니다" } },
+  5: { load: () => import("./5").then((m) => m.chapter5), title: { en: "A priest forever", ko: "영원한 제사장" } },
 };
 
 export const LIVE_COUNT = Object.keys(chapters).length;

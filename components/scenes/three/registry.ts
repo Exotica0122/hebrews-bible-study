@@ -22,6 +22,11 @@ import { SeventhScene } from "./scenes/SeventhScene";
 import { JordanScene } from "./scenes/JordanScene";
 import { SwordScene } from "./scenes/SwordScene";
 import { MercyScene } from "./scenes/MercyScene";
+import { HeroSanctuaryScene } from "./scenes/HeroSanctuaryScene";
+import { OfferingScene } from "./scenes/OfferingScene";
+import { DiademScene } from "./scenes/DiademScene";
+import { CriesScene } from "./scenes/CriesScene";
+import { BreadScene } from "./scenes/BreadScene";
 
 export interface DragState {
   dx: number;
@@ -64,4 +69,9 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   jordan: JordanScene,
   sword: SwordScene,
   mercy: MercyScene,
+  heroSanctuary: HeroSanctuaryScene,
+  offering: OfferingScene,
+  diadem: DiademScene,
+  cries: CriesScene,
+  bread: BreadScene,
 };
