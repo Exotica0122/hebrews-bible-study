@@ -1193,3 +1193,105 @@
   width: 90px;
   height: 108px;
 }
+
+/* salem: Hebrews 7, Salem at first light, cut in stone */
+.sl_sky {
+  background:
+    radial-gradient(ellipse 34% 12% at 18% 58%, rgba(255, 228, 196, 0.7), rgba(255, 228, 196, 0) 70%),
+    linear-gradient(#8b9ec2, #aab3cb 30%, #e8d2c2 52%, #f3dcc4 58%);
+}
+.sl_far {
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 8%;
+  background: linear-gradient(#cbc4cf, #c8b7aa);
+  clip-path: polygon(0 70%, 14% 40%, 30% 55%, 46% 20%, 62% 45%, 78% 15%, 92% 40%, 100% 30%, 100% 100%, 0 100%);
+}
+.sl_tell {
+  left: 52%;
+  top: 44%;
+  width: 34%;
+  height: 16%;
+  background: linear-gradient(#e2cfae 0 25%, #c7b08c 25% 27%, #d8c39f 27% 52%, #bea783 52% 54%, #d5c09c 54% 78%, #b8a07c 78% 80%, #ccb592 80%);
+  clip-path: polygon(30% 0, 70% 0, 72% 25%, 80% 27%, 82% 52%, 90% 54%, 92% 78%, 100% 80%, 100% 100%, 0 100%, 0 80%, 8% 78%, 10% 54%, 18% 52%, 20% 27%, 28% 25%);
+}
+.sl_city {
+  left: 62%;
+  top: 38.5%;
+  width: 14%;
+  height: 6%;
+  background:
+    linear-gradient(#4a3e46, #4a3e46) 50% 100% / 12% 45% no-repeat,
+    repeating-linear-gradient(90deg, #e8dbc0 0 7%, #d3c2a2 7% 8%);
+  clip-path: polygon(0 30%, 6% 30%, 6% 0, 14% 0, 14% 30%, 44% 30%, 44% 10%, 56% 10%, 56% 30%, 86% 30%, 86% 0, 94% 0, 94% 30%, 100% 30%, 100% 100%, 0 100%);
+}
+.sl_ground {
+  left: 0;
+  right: 0;
+  top: 60%;
+  bottom: 0;
+  background: linear-gradient(#dcc6a4, #cdb592 40%, #c4aa86);
+}
+.sl_road {
+  left: 30%;
+  width: 40%;
+  top: 60%;
+  bottom: 0;
+  background: linear-gradient(#b89b74, #b89b74);
+  clip-path: polygon(68% 0, 74% 0, 54% 40%, 70% 100%, 30% 100%, 44% 40%);
+}
+.sl_svg {
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  height: 72%;
+}
+.sl_ray {
+  left: 46%;
+  width: 20%;
+  top: 0;
+  height: 75%;
+  background: radial-gradient(ellipse 50% 70% at 50% 60%, rgba(255, 240, 214, 0.75), rgba(255, 240, 214, 0) 70%);
+}
+.sw_plinth {
+  left: 14%;
+  right: 14%;
+  top: 56%;
+  bottom: 8%;
+  background: linear-gradient(#e9dbbf, #cbb592);
+  clip-path: polygon(8% 0, 92% 0, 100% 30%, 100% 100%, 0 100%, 0 30%);
+}
+.sw_tablet {
+  left: 24%;
+  right: 24%;
+  top: 48%;
+  height: 20%;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(90deg, rgba(90, 54, 32, 0.6) 0 3px, transparent 3px 14px) 0 30% / 100% 18% no-repeat,
+    repeating-linear-gradient(90deg, rgba(90, 54, 32, 0.6) 0 3px, transparent 3px 14px) 0 75% / 100% 18% no-repeat,
+    linear-gradient(#d6a878, #b98a5e);
+}
+.sw_seal {
+  left: 77%;
+  top: 46%;
+  width: 4%;
+  height: 22%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #2e2630, #5a4c5c 40%, #2e2630);
+}
+@media (max-width: 859px) {
+  .sl_tell {
+    left: 30%;
+    width: 40%;
+    top: 47%;
+    height: 13%;
+  }
+  .sl_city {
+    left: 42%;
+    width: 16%;
+    top: 43%;
+    height: 4.5%;
+  }
+}

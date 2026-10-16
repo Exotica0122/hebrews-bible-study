@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import { keysOf } from "../parse";
 import { CHAPTER_COUNT, LATEST_LIVE, LIVE_COUNT, chapterTitle, getChapter, isLive } from "./index";
 
-const LIVE = [1, 2, 3, 4, 5, 6];
+const LIVE = [1, 2, 3, 4, 5, 6, 7];
 
 describe("chapter registry", () => {
-  it("has thirteen chapters with chapters 1 to 6 live", () => {
+  it("has thirteen chapters with chapters 1 to 7 live", () => {
     expect(CHAPTER_COUNT).toBe(13);
     expect(isLive(1)).toBe(true);
     expect(isLive(2)).toBe(true);
@@ -13,10 +13,11 @@ describe("chapter registry", () => {
     expect(isLive(4)).toBe(true);
     expect(isLive(5)).toBe(true);
     expect(isLive(6)).toBe(true);
-    expect(isLive(7)).toBe(false);
+    expect(isLive(7)).toBe(true);
+    expect(isLive(8)).toBe(false);
     expect(isLive(13)).toBe(false);
-    expect(LIVE_COUNT).toBe(6);
-    expect(LATEST_LIVE).toBe(6);
+    expect(LIVE_COUNT).toBe(7);
+    expect(LATEST_LIVE).toBe(7);
   });
 
   it("returns chapter 1 with five movements in order", async () => {
@@ -73,16 +74,26 @@ describe("chapter registry", () => {
     }
   });
 
+  it("returns chapter 7 with five movements covering verses 1–28", async () => {
+    const ch = await getChapter(7);
+    expect(ch?.number).toBe(7);
+    expect(ch?.setting).toBe("salem");
+    expect(ch?.movements.map((m) => m.range)).toEqual(["1–3", "4–10", "11–19", "20–22", "23–28"]);
+    for (const lang of ["en", "ko"] as const) {
+      expect(ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n))).toEqual(Array.from({ length: 28 }, (_, i) => i + 1));
+    }
+  });
+
   it("names every live chapter in both languages", () => {
     for (const n of LIVE) {
       expect(chapterTitle(n, "en")).toBeTruthy();
       expect(chapterTitle(n, "ko")).toBeTruthy();
     }
-    expect(chapterTitle(7, "en")).toBeUndefined();
+    expect(chapterTitle(8, "en")).toBeUndefined();
   });
 
   it("returns null for chapters that are not live", async () => {
-    expect(await getChapter(8)).toBeNull();
+    expect(await getChapter(9)).toBeNull();
   });
 });
 
