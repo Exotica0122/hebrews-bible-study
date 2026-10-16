@@ -60,4 +60,18 @@ Update `content/hebrews/index.test.ts` (live count, latest chapter, verse covera
 
 ## 7. Verify
 
-Reuse the user's dev server on :3000. Run `pnpm typecheck`, `pnpm lint`, `pnpm test`, then screenshot each scene at several points in its loop under SwiftShader (`e2e/tools/scene-shots.mjs` is the pattern) and look at them. Put them next to the previous chapter's shots: if the new chapter reads like the old one with different colours, rework the style. Finish with `pnpm exec playwright test`.
+Reuse the user's dev server on :3000. Run `pnpm typecheck`, `pnpm lint` and `pnpm test`, then shoot the chapter:
+
+```bash
+node e2e/tools/chapter-shots.mjs 5 <scratch>/shots
+```
+
+It opens real Chrome on the GPU, so the post-processing stack is on as visitors see it, and it shoots the hero and every scene at several points in its loop, the reduced-motion CSS twins and mobile. `--swiftshader` runs without a GPU, but that turns effects off and hides bugs in them (a missing depth buffer once erased every solid object), so never sign off on SwiftShader shots alone. Open every shot and check:
+
+- **Each scene shows what its `art` note promises.** List the objects (the cup, the bread, the crown) and find each one in the shots. Something missing usually means draw order or depth, not the camera.
+- **The event reads across the loop**: fade in, the event, the hold, the fade out.
+- **Captions and the hero title stay legible**, on desktop and on mobile.
+- **The CSS twins read on their own** and don't clutter the hero title at mobile width.
+- **The theme is new.** Put the shots next to the previous chapter's: if it reads like the old one with different colours, rework the style.
+
+If you changed a shared primitive (`SceneEffects`, `Glow`, `Earth`, ...), shoot the earlier chapters again too. Finish with `pnpm exec playwright test`.
