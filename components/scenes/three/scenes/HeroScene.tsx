@@ -5,11 +5,14 @@ import { Cloud, Clouds } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { damp } from "maath/easing";
 import {
+  BoxGeometry,
   CanvasTexture,
   ConeGeometry,
   CylinderGeometry,
+  DoubleSide,
   ExtrudeGeometry,
   Group,
+  IcosahedronGeometry,
   MeshBasicMaterial,
   MeshStandardMaterial,
   Shape,
@@ -21,6 +24,7 @@ import { Flames } from "../primitives/Flames";
 import { Glow, Light } from "../primitives/Glow";
 import {
   CloudFloor,
+  Cumulus,
   HEAVEN,
   HeavenLights,
   HeavenSky,
@@ -50,13 +54,71 @@ const FRAGMENTS = HERO_FRAGMENTS.map((f, i) => ({
   leftMobile: f.leftMobile / 100,
   topMobile: f.topMobile / 100,
 }));
-const BRANCHES = Array.from({ length: 7 }, (_, i) => ({
-  yaw: i * 2.4,
-  tilt: 0.3 + (i % 3) * 0.24,
-}));
+/** The bush's forked limbs: tilt about z, lean about x, length. */
+const LIMBS: [number, number, number][] = [
+  [0, 0, 0.42],
+  [0.55, 0.1, 0.36],
+  [-0.6, -0.15, 0.34],
+  [0.25, -0.5, 0.3],
+  [-0.3, 0.55, 0.3],
+];
+/** Leaf clumps of the bush, each wrapped in flame: x, y, z, size. */
+const LEAVES: [number, number, number, number][] = [
+  [0, 0.46, 0, 0.16],
+  [0.2, 0.36, 0.04, 0.13],
+  [-0.21, 0.34, -0.03, 0.13],
+  [0.1, 0.3, -0.16, 0.11],
+  [-0.08, 0.32, 0.17, 0.11],
+  [0.06, 0.58, 0.05, 0.1],
+];
+const BUSH_FIRE: [number, number, number][] = [
+  [0, 0.5, 0.05],
+  [0.19, 0.38, 0.08],
+  [-0.2, 0.36, 0.06],
+];
+/** Pillar of cloud, as heaps stacked and turning slightly as they rise: y, scale. */
+const PILLAR: [number, number][] = [
+  [0.08, 0.36],
+  [0.28, 0.32],
+  [0.48, 0.3],
+  [0.68, 0.28],
+  [0.88, 0.27],
+  [1.06, 0.24],
+];
 const FIRE = "#F09A3E";
 
-/** A stone tablet with a rounded top, 0.4 wide and 0.56 tall, standing on y = 0. */
+function hash3(x: number, y: number, z: number) {
+  const n = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
+  return n - Math.floor(n);
+}
+
+/** Mount Sinai: a jagged granite peak with a shoulder, base on y = 0 and summit near y = 1. */
+function mountainGeometry() {
+  const g = new ConeGeometry(0.72, 1.15, 10, 6, true);
+  g.translate(0, 0.575, 0);
+  const pos = g.getAttribute("position");
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i);
+    const y = pos.getY(i);
+    const z = pos.getZ(i);
+    if (y < 0.01) continue;
+    const n = hash3(x, y, z) - 0.5;
+    const ridge = 1 + 0.18 * Math.sin(Math.atan2(z, x) * 3 + 0.6);
+    const top = y > 1.14 ? 0 : 1;
+    pos.setXYZ(
+      i,
+      x * (ridge + n * 0.35) * top,
+      y + n * 0.12 * top,
+      z * (ridge + n * 0.35) * 0.8 * top,
+    );
+  }
+  const flat = g.toNonIndexed();
+  g.dispose();
+  flat.computeVertexNormals();
+  return flat;
+}
+
+/** A stone tablet with a rounded top and softened edges, 0.4 wide and 0.56 tall, standing on y = 0. */
 function tabletGeometry() {
   const w = 0.2;
   const h = 0.56;
@@ -66,8 +128,15 @@ function tabletGeometry() {
   s.absarc(0, h - w, w, Math.PI, 0, true);
   s.lineTo(w, 0);
   s.closePath();
-  const g = new ExtrudeGeometry(s, { depth: 0.07, bevelEnabled: false });
-  g.translate(0, 0, -0.035);
+  const g = new ExtrudeGeometry(s, {
+    depth: 0.06,
+    bevelEnabled: true,
+    bevelThickness: 0.015,
+    bevelSize: 0.015,
+    bevelSegments: 2,
+    curveSegments: 16,
+  });
+  g.translate(0, 0, -0.03);
   return g;
 }
 
@@ -118,23 +187,45 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
 
   const kit = useMemo(
     () => ({
-      branch: new CylinderGeometry(0.012, 0.035, 0.5, 5),
+      branch: new CylinderGeometry(0.014, 0.03, 1, 5),
+      clump: new IcosahedronGeometry(1, 0),
       wood: new MeshStandardMaterial({
-        color: "#4A2E1E",
-        roughness: 1,
-        transparent: true,
-      }),
-      peak: new ConeGeometry(0.95, 0.9, 6, 1),
-      rock: new MeshStandardMaterial({
-        color: "#1C1612",
+        color: "#5A3A26",
         roughness: 1,
         flatShading: true,
         transparent: true,
       }),
+      leaf: new MeshStandardMaterial({
+        color: "#4A5632",
+        roughness: 0.9,
+        flatShading: true,
+        emissive: "#8A3A22",
+        emissiveIntensity: 0.2,
+        transparent: true,
+      }),
+      peak: mountainGeometry(),
+      rock: new MeshStandardMaterial({
+        color: "#6A4A40",
+        roughness: 1,
+        flatShading: true,
+        emissive: "#2A1A1C",
+        emissiveIntensity: 0.3,
+        side: DoubleSide,
+        transparent: true,
+      }),
       tablet: tabletGeometry(),
+      slab: new BoxGeometry(0.95, 0.08, 0.34),
       stone: new MeshStandardMaterial({
-        color: "#B9AE98",
-        roughness: 0.95,
+        color: "#BFB298",
+        roughness: 0.9,
+        emissive: "#3A3428",
+        emissiveIntensity: 0.15,
+        transparent: true,
+      }),
+      base: new MeshStandardMaterial({
+        color: "#6E5E52",
+        roughness: 1,
+        flatShading: true,
         transparent: true,
       }),
       script: new MeshBasicMaterial({
@@ -146,7 +237,12 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
     [],
   );
   const fading = useMemo(
-    () => [[kit.wood], [kit.rock], [], [kit.stone, kit.script]],
+    () => [
+      [kit.wood, kit.leaf],
+      [kit.rock],
+      [],
+      [kit.stone, kit.script, kit.base],
+    ],
     [kit],
   );
   useEffect(
@@ -302,42 +398,47 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
             />
             {i === 0 && (
               <>
-                {BRANCHES.map((b, j) => (
-                  <group
-                    key={j}
-                    rotation={[
-                      b.tilt * Math.sin(b.yaw),
-                      0,
-                      b.tilt * Math.cos(b.yaw),
-                    ]}
-                  >
+                {LIMBS.map(([tz, tx, len], j) => (
+                  <group key={j} rotation={[tx, 0, tz]}>
                     <mesh
                       geometry={kit.branch}
                       material={kit.wood}
-                      position={[0, 0.25, 0]}
+                      position={[0, len / 2, 0]}
+                      scale={[1, len, 1]}
                     />
                   </group>
                 ))}
+                {LEAVES.map(([x, y, z, r], j) => (
+                  <mesh
+                    key={j}
+                    geometry={kit.clump}
+                    material={kit.leaf}
+                    position={[x, y, z]}
+                    rotation={[j, j * 1.3, 0]}
+                    scale={[r * 1.2, r * 0.8, r]}
+                  />
+                ))}
                 <pointLight
-                  position={[0, 0.5, 0.3]}
-                  intensity={2.5}
+                  position={[0, 0.55, 0.35]}
+                  intensity={1.6}
                   distance={2}
-                  decay={1.6}
+                  decay={1.5}
                   color={FIRE}
                 />
                 <Glow
-                  position={[0, 0.4, 0]}
-                  size={1.5}
+                  position={[0, 0.45, 0]}
+                  size={1.3}
                   color="#C8553D"
+                  inner="#F3B35A"
                   alpha={0.3}
                   power={2.2}
                   renderOrder={8}
                 />
                 <Flames
-                  emitters={[[0, 0.28, 0]]}
-                  count={mobile ? 30 : 60}
-                  rise={0.6}
-                  size={mobile ? 4 : 5}
+                  emitters={BUSH_FIRE}
+                  count={mobile ? 40 : 80}
+                  rise={0.45}
+                  size={mobile ? 3.5 : 4.5}
                   gust={gust}
                   fade={fadeRefs[0]}
                 />
@@ -348,18 +449,17 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
                 <mesh
                   geometry={kit.peak}
                   material={kit.rock}
-                  position={[0, 0.45, 0]}
                   rotation={[0, 0.4, 0]}
                 />
                 <pointLight
-                  position={[0, 1, 0.25]}
-                  intensity={1.5}
-                  distance={2}
-                  decay={1.6}
+                  position={[0, 1.3, 0.3]}
+                  intensity={1.8}
+                  distance={2.2}
+                  decay={1.5}
                   color={FIRE}
                 />
                 <Glow
-                  position={[0, 0.95, 0]}
+                  position={[0, 1.12, 0]}
                   size={1.1}
                   color={FIRE}
                   inner="#FFE3B0"
@@ -368,7 +468,7 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
                   renderOrder={8}
                 />
                 <Flames
-                  emitters={[[0, 0.88, 0]]}
+                  emitters={[[0, 1.08, 0]]}
                   count={mobile ? 30 : 60}
                   rise={0.55}
                   size={mobile ? 4 : 5}
@@ -376,12 +476,12 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
                   fade={fadeRefs[1]}
                 />
                 <Cloud
-                  position={[0, 1.1, 0]}
+                  position={[0, 1.38, 0]}
                   segments={mobile ? 4 : 6}
-                  bounds={[0.9, 0.3, 0.4]}
-                  volume={0.8}
-                  color="#8A7A68"
-                  opacity={0.4}
+                  bounds={[0.9, 0.25, 0.4]}
+                  volume={0.7}
+                  color="#5A4A48"
+                  opacity={0.45}
                   fade={30}
                   speed={0.1}
                   growth={1.4}
@@ -391,42 +491,52 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
             )}
             {i === 2 && (
               <>
+                {PILLAR.map(([y, sc], j) => (
+                  <group key={j} rotation={[0, j * 0.9, 0]}>
+                    <Cumulus
+                      position={[Math.sin(j * 1.7) * 0.04, y, 0]}
+                      scale={[sc, sc * 1.5, sc]}
+                      seed={j + 11}
+                      puffs={9}
+                      opacity={fadeRefs[2]}
+                    />
+                  </group>
+                ))}
+                <pointLight
+                  position={[0.3, 0.7, 0.8]}
+                  intensity={1.4}
+                  distance={2.5}
+                  decay={1.5}
+                  color="#F3D38A"
+                />
                 <Glow
-                  position={[0, 0.55, 0]}
-                  size={1.2}
-                  scaleX={0.5}
-                  scaleY={1.4}
+                  position={[0, 0.6, -0.2]}
+                  size={1.3}
+                  scaleX={0.55}
+                  scaleY={1.3}
                   color="#B7892C"
                   inner="#F3D38A"
-                  alpha={0.3}
+                  alpha={0.25}
                   power={1.8}
                   renderOrder={6}
-                />
-                <Cloud
-                  position={[0, 0.6, 0]}
-                  segments={mobile ? 6 : 10}
-                  bounds={[0.25, 1.1, 0.25]}
-                  volume={0.8}
-                  color="#E6DCC8"
-                  opacity={0.5}
-                  fade={40}
-                  speed={0.15}
-                  growth={1.2}
-                  seed={3}
-                  concentrate="inside"
                 />
               </>
             )}
             {i === 3 && (
               <>
+                <mesh
+                  geometry={kit.slab}
+                  material={kit.base}
+                  position={[0, -0.04, 0]}
+                />
                 {[-0.22, 0.22].map((x) => (
                   <group
                     key={x}
                     position={[x, 0, 0]}
-                    rotation={[0, x * 0.5, 0]}
+                    rotation={[-0.08, -x * 0.9, x * 0.08]}
                   >
                     <mesh geometry={kit.tablet} material={kit.stone} />
-                    <mesh material={kit.script} position={[0, 0.28, 0.037]}>
+                    <mesh material={kit.script} position={[0, 0.28, 0.047]}>
                       <planeGeometry args={[0.4, 0.56]} />
                     </mesh>
                   </group>
