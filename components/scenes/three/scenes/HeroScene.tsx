@@ -17,10 +17,14 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Sky } from "../primitives/Earth";
 import { Flames } from "../primitives/Flames";
 import { Glow, Light } from "../primitives/Glow";
-import { Starfield } from "../primitives/Starfield";
+import {
+  CloudFloor,
+  HEAVEN,
+  HeavenLights,
+  HeavenSky,
+} from "../primitives/Heavens";
 import {
   easeInSine,
   lerp,
@@ -32,7 +36,6 @@ import { setOpacity } from "../primitives/mutate";
 import { HERO_FRAGMENTS } from "@/components/hero/fragments";
 
 const CYCLE = 14;
-const HERO_SPREAD: [number, number] = [28, 16];
 /** Phase offset and trail colour per fragment, in HERO_FRAGMENTS order: the bush, Sinai, the pillar of cloud, the tablets. */
 const LOOKS = [
   { phase: 0.0, trail: "#C8553D" },
@@ -87,7 +90,7 @@ function drawScript(): CanvasTexture {
   return new CanvasTexture(c);
 }
 
-/** Hebrews 1 opening: the ways God once spoke (bush, Sinai, cloud, tablets) drift in from the heavens and gather into one light, the Son. */
+/** Hebrews 1 opening: above a sea of cloud under the night heavens, the ways God once spoke (bush, Sinai, cloud, tablets) drift in and gather into one light, the Son, shining out over the clouds. */
 export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
   const { width, height } = useThree((s) => s.viewport);
   const size = useThree((s) => s.size);
@@ -227,15 +230,25 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
 
   return (
     <>
-      <Sky
-        top="#0A0A12"
-        horizon="#15110E"
-        glow="#2E2114"
-        horizonY={-9}
-        glowStrength={0.3}
-      />
-      <Starfield count={mobile ? 500 : 1100} spread={HERO_SPREAD} />
-      <hemisphereLight args={["#2E3050", "#1B1413", 0.4]} />
+      <fog attach="fog" args={["#2A2238", 12, 70]} />
+      <HeavenSky horizonY={-2.4} glow={0.7} stars={mobile ? 400 : 900} />
+      <HeavenLights sun={[-3, 4, 6]} intensity={1.1} fill={0.7} />
+      <CloudFloor y={-4.6} amp={1.6} tone={0.38} warm={[0, -14]} />
+      {[-1.15, -0.6, 0, 0.6, 1.15].map((a, i) => (
+        <Glow
+          key={a}
+          position={[Math.sin(a) * 9, -2 + Math.cos(a) * 9, -16]}
+          rotation={-a}
+          size={1}
+          scaleX={mobile ? 1 : 1.4}
+          scaleY={20}
+          color={HEAVEN.gold}
+          inner={HEAVEN.light}
+          alpha={0.08 + (i % 2) * 0.04}
+          power={1.4}
+          renderOrder={-6}
+        />
+      ))}
       <group ref={centreGroup} position={[0, 0.24 * height, 0]}>
         <pointLight intensity={10} distance={8} decay={1.4} color="#F3D38A" />
         <Glow

@@ -1,312 +1,348 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { Environment, Lightformer } from "@react-three/drei";
 import {
+  BoxGeometry,
   Color,
-  DoubleSide,
-  Group,
-  InstancedMesh,
+  Euler,
   Matrix4,
   MeshStandardMaterial,
-  PlaneGeometry,
   Quaternion,
-  ShaderMaterial,
   TorusGeometry,
   Vector3,
+  type Group,
+  type InstancedMesh,
   type PointLight,
+  type ShaderMaterial,
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
+import { Embers } from "../primitives/Earth";
+import { Squall } from "../primitives/Coast";
+import { Carved } from "../primitives/Salem";
+import { NIGHT } from "../primitives/Road";
 import {
   easeInOutCubic,
+  lerp,
   smoothstep,
   useSceneTime,
 } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setOpacity, setUniform } from "../primitives/mutate";
+import { setUniform } from "../primitives/mutate";
 
-const PERIOD = 14;
-const BREAK = 4.6;
-const LINKS_PER_SIDE = 17;
-const PITCH = 0.27;
+const PERIOD = 16;
+const WALL_Z = -1.4;
+const DESCEND = 1.4;
+const LAND = 5;
+const BREAK = 5.3;
+const RISE = 6.2;
+const LINKS = 11;
+const CAPTIVES: [number, string][] = [
+  [-2.2, "#6B5442"],
+  [-1.1, "#5E4A3A"],
+  [1.1, "#7A6248"],
+  [2.2, "#5A4636"],
+];
+const EMBER_BOX: [number, number, number] = [5, 3, 2];
 
-const VEIL_VERT = /* glsl */ `
-uniform float uTime;
-uniform float uOpen;
-uniform float uSide;
-varying vec2 vUv;
-varying float vShade;
-void main() {
-  vUv = uv;
-  float inner = uSide > 0.0 ? 1.0 - uv.x : uv.x;
-  vec3 p = position;
-  float phase = p.x * 5.5 + sin(p.y * 0.8 + uTime * 0.4) * 0.6 + uTime * 0.35;
-  p.z += sin(phase) * 0.09 * (0.6 + 0.4 * (1.0 - uv.y));
-  vShade = 0.62 + 0.38 * cos(phase);
-  float pull = uOpen * pow(inner, 2.2) * (0.35 + 0.65 * smoothstep(1.0, 0.25, uv.y));
-  p.x += uSide * pull * 1.6;
-  p.z += pull * 0.25;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-}`;
-
-const VEIL_FRAG = /* glsl */ `
-uniform float uSide;
-uniform float uBack;
-uniform float uDim;
-uniform vec3 uBlue;
-uniform vec3 uPurple;
-uniform vec3 uScarlet;
-uniform vec3 uGold;
-varying vec2 vUv;
-varying float vShade;
-void main() {
-  float inner = uSide > 0.0 ? 1.0 - vUv.x : vUv.x;
-  float band = fract(vUv.x * 9.0);
-  vec3 c = mix(uBlue, uPurple, smoothstep(0.2, 0.8, sin(vUv.x * 18.0) * 0.5 + 0.5));
-  c = mix(c, uScarlet, smoothstep(0.46, 0.5, band) * (1.0 - smoothstep(0.5, 0.54, band)) * 0.8);
-  float weave = 0.93 + 0.07 * sin(vUv.y * 900.0) * sin(vUv.x * 700.0);
-  c *= vShade * weave;
-  c += uGold * pow(inner, 6.0) * uBack * 0.9;
-  c += uGold * uBack * 0.06;
-  gl_FragColor = vec4(c * uDim, 1.0);
-}`;
-
-/** Damped swing from 0 toward `target`, as a broken chain half falls from its anchor. */
-function swing(target: number, s: number) {
-  if (s <= 0) return 0;
-  return target * (1 - Math.exp(-2.6 * s) * Math.cos(4.2 * s));
+function hash(n: number) {
+  const x = Math.sin(n * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
 }
 
-/** Links for one half of the chain, laid from its anchor toward the centre along a sagging curve. */
-function linkMatrices(side: 1 | -1, span: number, sag: number) {
-  const curve = (x: number) =>
-    -sag * Math.sin((Math.min(1, x / span) * Math.PI) / 2) ** 1.4;
-  const m = new Matrix4();
-  const q = new Quaternion();
-  const turn = new Quaternion().setFromAxisAngle(
-    new Vector3(1, 0, 0),
-    Math.PI / 2,
-  );
-  const z = new Vector3(0, 0, 1);
-  const one = new Vector3(1, 1, 1);
-  return Array.from({ length: LINKS_PER_SIDE }, (_, i) => {
-    const d = (i + 0.5) * PITCH;
-    const angle = Math.atan2(curve(d + 0.01) - curve(d - 0.01), 0.02 * side);
-    q.setFromAxisAngle(z, angle);
-    if (i % 2) q.multiply(turn);
-    return m.compose(new Vector3(side * d, curve(d), 0), q, one).clone();
-  });
-}
+/** Where each link hangs on its chain from the wall ring down to the captive's wrists, and where it flies when the chain breaks. */
+const LINK_REST = CAPTIVES.flatMap(([cx], c) =>
+  Array.from({ length: LINKS }, (_, i) => {
+    const k = (i + 0.5) / LINKS;
+    const a = new Vector3(cx, 1.55, WALL_Z + 0.08);
+    const b = new Vector3(cx, 0.5, 0.42);
+    const p = a.clone().lerp(b, k);
+    p.y -= 0.22 * Math.sin(k * Math.PI);
+    const tangent = b.clone().sub(a).normalize();
+    const n = c * LINKS + i;
+    return {
+      p,
+      q: new Quaternion()
+        .setFromUnitVectors(new Vector3(1, 0, 0), tangent)
+        .multiply(
+          new Quaternion().setFromAxisAngle(
+            new Vector3(1, 0, 0),
+            i % 2 ? Math.PI / 2 : 0,
+          ),
+        ),
+      v: new Vector3(
+        (hash(n) - 0.5) * 2.4 + Math.sign(cx) * 0.6,
+        1 + hash(n + 1) * 1.6,
+        hash(n + 2) * 1.6,
+      ),
+      spin: new Vector3(hash(n + 3), hash(n + 4), hash(n + 5)).multiplyScalar(
+        9,
+      ),
+    };
+  }),
+);
 
+const BLOCKS = (() => {
+  const out: [number, number, number][] = [];
+  for (let row = 0; row < 11; row++) {
+    const off = row % 2 ? 0.3 : 0;
+    for (let i = -13; i <= 13; i++)
+      out.push([i * 0.6 + off, 0.15 + row * 0.3, hash(row * 19 + i)]);
+  }
+  return out;
+})();
+
+/** “That through death he might destroy the one who has the power of death, and deliver all those who through fear of death were subject to lifelong slavery”: captives kneel chained to a prison wall; one comes down among them in light, the chains break and scatter, and the captives rise. */
 export function FreedScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
-  const left = useRef<Group>(null);
-  const right = useRef<Group>(null);
-  const leftMesh = useRef<InstancedMesh>(null);
-  const rightMesh = useRef<InstancedMesh>(null);
-  const back = useRef<ShaderMaterial>(null);
-  const flash = useRef<ShaderMaterial>(null);
-  const backLight = useRef<PointLight>(null);
-
-  const anchorX = LINKS_PER_SIDE * PITCH;
-  const anchorY = 1.55;
-  const sag = 1.1;
-  const link = useMemo(
-    () => new TorusGeometry(0.12, 0.036, 8, 20).scale(1.45, 1, 1),
-    [],
-  );
-  const iron = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: "#4A433B",
-        metalness: 0.85,
-        roughness: 0.42,
-        envMapIntensity: 1.1,
-        transparent: true,
-      }),
-    [],
-  );
-  const matrices = useMemo(
+  const haze = useRef(1);
+  const deliverer = useRef<Group>(null);
+  const links = useRef<InstancedMesh>(null);
+  const wall = useRef<InstancedMesh>(null);
+  const kneeling = useRef<Group>(null);
+  const standing = useRef<Group>(null);
+  const key = useRef<PointLight>(null);
+  const shaft = useRef<ShaderMaterial | null>(null);
+  const halo = useRef<ShaderMaterial | null>(null);
+  const flash = useRef<ShaderMaterial | null>(null);
+  const geo = useMemo(
     () => ({
-      l: linkMatrices(1, anchorX, sag),
-      r: linkMatrices(-1, anchorX, sag),
+      link: new TorusGeometry(0.06, 0.018, 6, 14).scale(1.5, 1, 1),
+      ring: new TorusGeometry(0.1, 0.025, 8, 18),
+      block: new BoxGeometry(0.58, 0.28, 0.3),
     }),
-    [anchorX],
+    [],
   );
-
-  const veil = useMemo(() => {
-    const g = new PlaneGeometry(9, 8, mobile ? 40 : 70, 30);
-    const make = (side: number) =>
-      new ShaderMaterial({
-        vertexShader: VEIL_VERT,
-        fragmentShader: VEIL_FRAG,
-        uniforms: {
-          uTime: { value: 0 },
-          uOpen: { value: 0 },
-          uSide: { value: side },
-          uBack: { value: 0 },
-          uDim: { value: 1 },
-          uBlue: { value: new Color("#1C2340") },
-          uPurple: { value: new Color("#34203E") },
-          uScarlet: { value: new Color("#7A2226") },
-          uGold: { value: new Color("#F3C77A") },
-        },
-        side: DoubleSide,
-      });
-    return { g, l: make(-1), r: make(1) };
-  }, [mobile]);
+  const mats = useMemo(
+    () => ({
+      iron: new MeshStandardMaterial({
+        color: "#4A433B",
+        metalness: 0.75,
+        roughness: 0.45,
+      }),
+      stone: new MeshStandardMaterial({
+        color: "#FFFFFF",
+        roughness: 1,
+        flatShading: true,
+      }),
+      floor: new MeshStandardMaterial({ color: "#3A342E", roughness: 1 }),
+    }),
+    [],
+  );
+  const scratch = useMemo(
+    () => ({
+      m: new Matrix4(),
+      p: new Vector3(),
+      q: new Quaternion(),
+      e: new Euler(),
+      one: new Vector3(1, 1, 1),
+    }),
+    [],
+  );
   useEffect(
     () => () => {
-      link.dispose();
-      iron.dispose();
-      veil.g.dispose();
-      veil.l.dispose();
-      veil.r.dispose();
+      Object.values(geo).forEach((g) => g.dispose());
+      Object.values(mats).forEach((m) => m.dispose());
     },
-    [link, iron, veil],
+    [geo, mats],
   );
-
   useEffect(() => {
-    for (const [mesh, list] of [
-      [leftMesh.current, matrices.l],
-      [rightMesh.current, matrices.r],
-    ] as const) {
-      if (!mesh) continue;
-      list.forEach((m, i) => mesh.setMatrixAt(i, m));
-      mesh.instanceMatrix.needsUpdate = true;
-    }
-  }, [matrices]);
+    const m = wall.current;
+    if (!m) return;
+    const c = new Color();
+    BLOCKS.forEach(([x, y, h], i) => {
+      scratch.m.compose(
+        scratch.p.set(x, y, WALL_Z - 0.15 + h * 0.03),
+        scratch.q.identity(),
+        scratch.one,
+      );
+      m.setMatrixAt(i, scratch.m);
+      m.setColorAt(i, c.set("#5A534A").multiplyScalar(0.75 + h * 0.4));
+    });
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+  }, [scratch]);
+
+  const spread = mobile ? 0.72 : 1;
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(0, 0.1, mobile ? 11 : 8.4);
-    camera.lookAt(0, 0.2, 0);
+    camera.position.set(Math.sin(t * 0.07) * 0.2, 1.5, mobile ? 8.6 : 6.4);
+    camera.lookAt(0, 1.05, 0);
     const p = t % PERIOD;
-    const dim = smoothstep(0, 0.9, p) * (1 - smoothstep(12.8, 13.8, p));
-    const tension = smoothstep(0.5, BREAK, p);
-    const s = p - BREAK;
-    const sway =
-      Math.sin(t * 1.3) * 0.015 * (1 - tension) +
-      (p < BREAK ? Math.sin(t * 17) * 0.004 * tension : 0);
-    if (left.current) left.current.rotation.z = sway - swing(1.2, s);
-    if (right.current) right.current.rotation.z = -sway + swing(1.2, s);
-    setOpacity(iron, dim * (1 - smoothstep(BREAK + 3.4, BREAK + 5, p)));
-
-    const open = easeInOutCubic((p - BREAK - 0.3) / 3.2);
-    const backLit = (0.15 + 0.45 * tension + 0.9 * open) * dim;
-    for (const m of [veil.l, veil.r]) {
-      setUniform(m, "uTime", t);
-      setUniform(m, "uOpen", open);
-      setUniform(m, "uBack", backLit);
-      setUniform(m, "uDim", 0.25 + 0.75 * dim);
-    }
-    if (back.current)
-      back.current.uniforms.uAlpha.value = (0.25 + 0.95 * open) * dim;
+    haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.8, 16, p);
+    const down = easeInOutCubic((p - DESCEND) / (LAND - DESCEND));
+    const lit = smoothstep(DESCEND, LAND, p);
+    const freed = smoothstep(BREAK, BREAK + 1.5, p);
     const burst =
       smoothstep(BREAK - 0.15, BREAK, p) *
-      (1 - smoothstep(BREAK, BREAK + 1.2, p));
-    if (flash.current) flash.current.uniforms.uAlpha.value = 0.7 * burst;
-    if (backLight.current)
-      backLight.current.intensity = (4 + 30 * open + 40 * burst) * dim;
+      (1 - smoothstep(BREAK, BREAK + 1, p));
+
+    if (deliverer.current) {
+      deliverer.current.position.y = lerp(3.6, 0, down);
+      deliverer.current.visible = p > DESCEND - 0.2;
+    }
+    const rose = p > RISE;
+    if (kneeling.current) kneeling.current.visible = !rose;
+    if (standing.current) standing.current.visible = rose;
+
+    const m = links.current;
+    if (m) {
+      const s = Math.max(0, p - BREAK);
+      const gone = smoothstep(BREAK + 4, BREAK + 6, p);
+      LINK_REST.forEach((l, i) => {
+        if (s === 0) {
+          scratch.p.copy(l.p);
+          scratch.p.x *= spread;
+          scratch.p.y += Math.sin(t * 1.2 + i * 0.3) * 0.004;
+          scratch.q.copy(l.q);
+        } else {
+          scratch.p.set(
+            l.p.x * spread + l.v.x * s,
+            Math.max(0.03, l.p.y + l.v.y * s - 4.9 * s * s),
+            l.p.z + l.v.z * s,
+          );
+          const k = Math.min(s, 1.2);
+          scratch.e.set(l.spin.x * k, l.spin.y * k, l.spin.z * k);
+          scratch.q.setFromEuler(scratch.e).multiply(l.q);
+        }
+        scratch.m.compose(
+          scratch.p,
+          scratch.q,
+          scratch.one.setScalar(Math.max(0.001, 1 - gone)),
+        );
+        m.setMatrixAt(i, scratch.m);
+      });
+      scratch.one.setScalar(1);
+      m.instanceMatrix.needsUpdate = true;
+    }
+
+    if (key.current)
+      key.current.intensity = 1 + 5 * lit + 7 * freed + 10 * burst;
+    if (shaft.current)
+      setUniform(shaft.current, "uAlpha", 0.35 * lit + 0.25 * freed);
+    if (halo.current) setUniform(halo.current, "uAlpha", 0.45 * lit);
+    if (flash.current) setUniform(flash.current, "uAlpha", 0.8 * burst);
   });
 
   return (
     <>
-      <color attach="background" args={["#0B0908"]} />
-      <hemisphereLight args={["#3A3028", "#050403", 0.4]} />
-      <pointLight
-        ref={backLight}
-        position={[0, 0.6, 1.6]}
-        intensity={4}
-        distance={10}
-        decay={1.8}
-        color="#F3C77A"
+      <color attach="background" args={["#0A0908"]} />
+      <fog attach="fog" args={["#0A0908", 6, 16]} />
+      <hemisphereLight args={["#4A5878", "#100C0A", 0.8]} />
+      <directionalLight
+        position={[3, 6, 2]}
+        intensity={0.6}
+        color={NIGHT.moonLight}
       />
-      <Environment resolution={64} frames={1}>
-        <Lightformer
-          form="rect"
-          intensity={2.5}
-          color="#F3D38A"
-          position={[0, 2, -3]}
-          scale={[3, 5, 1]}
-          target={[0, 0.5, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={0.8}
-          color="#EEE4CF"
-          position={[-3, 3, 3]}
-          scale={[4, 2, 1]}
-          target={[0, 0.5, 0]}
-        />
-      </Environment>
-
+      <instancedMesh
+        ref={wall}
+        args={[geo.block, mats.stone, BLOCKS.length]}
+        frustumCulled={false}
+      />
+      <mesh
+        material={mats.floor}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0, 1]}
+      >
+        <planeGeometry args={[20, 6]} />
+      </mesh>
       <Glow
-        position={[0, 0.3, -2.4]}
+        position={[0, 2.4, WALL_Z + 0.3]}
         size={1}
-        scaleX={mobile ? 3.2 : 4}
-        scaleY={7}
-        color="#F3C77A"
-        inner="#FFF8E8"
+        scaleX={mobile ? 1.6 : 2}
+        scaleY={6}
+        color="#8A6A3A"
+        inner="#FFF1D0"
         alpha={0}
-        power={1.4}
-        renderOrder={1}
+        power={1.5}
+        renderOrder={2}
         onMaterial={(m) => {
-          back.current = m;
+          shaft.current = m;
         }}
       />
-      <mesh
-        geometry={veil.g}
-        material={veil.l}
-        position={[-4.5, 0.3, -1.6]}
-        renderOrder={2}
-      />
-      <mesh
-        geometry={veil.g}
-        material={veil.r}
-        position={[4.5, 0.3, -1.6]}
-        renderOrder={2}
-      />
-
-      <group ref={left} position={[-anchorX, anchorY, 0]}>
-        <instancedMesh
-          ref={leftMesh}
-          args={[link, iron, LINKS_PER_SIDE]}
-          frustumCulled={false}
+      {CAPTIVES.map(([x]) => (
+        <mesh
+          key={x}
+          geometry={geo.ring}
+          material={mats.iron}
+          position={[x * spread, 1.58, WALL_Z + 0.05]}
         />
-      </group>
-      <group ref={right} position={[anchorX, anchorY, 0]}>
-        <instancedMesh
-          ref={rightMesh}
-          args={[link, iron, LINKS_PER_SIDE]}
-          frustumCulled={false}
-        />
-      </group>
-      {[-anchorX, anchorX].map((x) => (
-        <mesh key={x} position={[x, anchorY, -0.1]}>
-          <torusGeometry args={[0.16, 0.05, 10, 24]} />
-          <meshStandardMaterial
-            color="#3A332C"
-            metalness={0.85}
-            roughness={0.45}
-            envMapIntensity={1.1}
-          />
-        </mesh>
       ))}
+      <instancedMesh
+        ref={links}
+        args={[geo.link, mats.iron, LINK_REST.length]}
+        frustumCulled={false}
+      />
+      <group ref={kneeling}>
+        {CAPTIVES.map(([x, robe]) => (
+          <Carved
+            key={x}
+            position={[x * spread, 0, 0.2]}
+            robe={robe}
+            pose="kneeling"
+            rotationY={-Math.sign(x) * 0.2}
+            scale={0.85}
+          />
+        ))}
+      </group>
+      <group ref={standing} visible={false}>
+        {CAPTIVES.map(([x, robe]) => (
+          <Carved
+            key={x}
+            position={[x * spread, 0, 0.3]}
+            robe={robe}
+            rotationY={-Math.sign(x) * 0.35}
+            scale={0.85}
+            arms
+          />
+        ))}
+      </group>
+      <group ref={deliverer} position={[0, 3.6, 0.4]} visible={false}>
+        <Carved position={[0, 0, 0]} robe="#E2D6BE" />
+        <Glow
+          position={[0, 1.1, -0.1]}
+          size={2.6}
+          color="#B7892C"
+          inner="#FFE9C0"
+          alpha={0}
+          power={2}
+          renderOrder={6}
+          onMaterial={(m) => {
+            halo.current = m;
+          }}
+        />
+        <pointLight
+          ref={key}
+          position={[0, 1.2, 1.8]}
+          intensity={1}
+          distance={8}
+          decay={1.5}
+          color="#FFD9A0"
+        />
+      </group>
       <Glow
-        position={[0, anchorY - sag, 0.3]}
-        size={mobile ? 3 : 4}
+        position={[0, 0.9, 0.6]}
+        size={mobile ? 5 : 6}
         color="#FFF8E8"
         inner="#FFFFFF"
         alpha={0}
-        power={1.5}
+        power={1.6}
         renderOrder={12}
         onMaterial={(m) => {
           flash.current = m;
         }}
       />
-      {effects && <SceneEffects bloom={0.6} />}
+      <Embers
+        count={mobile ? 14 : 28}
+        box={EMBER_BOX}
+        position={[0, 0.1, 0]}
+        rise={0.05}
+        size={1.6}
+        alpha={0.45}
+      />
+      <Squall opacity={haze} color="#0A0908" />
+      {effects && <SceneEffects bloom={0.5} threshold={0.8} />}
     </>
   );
 }

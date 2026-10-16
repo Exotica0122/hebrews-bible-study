@@ -14,7 +14,7 @@ const MV: Movement[] = [
     num: "I",
     range: "1–4",
     scene: "radiance",
-    art: "3D · R3F — sun volume, one god-ray toward camera, slow dolly-in. Alt: brass seal presses into gold wax.",
+    art: "3D · R3F — above a sea of cloud at night the sun breaks up through a bank of cumulus, its shafts fanning out across the sky. Alt: on a stone above the clouds a gold signet presses its device, the sun in glory, clear into the wax.",
     en: {
       title: "God has spoken by his Son",
       quote: "“He is the radiance of the glory of God…”",
@@ -380,7 +380,7 @@ const MV: Movement[] = [
     num: "II",
     range: "5–6",
     scene: "angels",
-    art: "3D · R3F — one central light; a wide arc of small lights lowers and dims toward it.",
+    art: "3D · R3F — winged angels stand in a ring round a gold throne above the clouds, on which there is only light; as the light grows they kneel and bow one by one.",
     en: {
       title: "The Son vs the angels",
       quote: "“Let all God’s angels worship him.”",
@@ -566,7 +566,7 @@ const MV: Movement[] = [
     num: "III",
     range: "7–9",
     scene: "throne",
-    art: "3D · R3F — ember flames gust like wind on the left; a still pillar of gold light (the throne) on the right.",
+    art: "3D · R3F — on the left an angel in a whirl of wind and an angel wreathed in flame, never still; on the right the throne and the gold sceptre of uprightness, unmoved.",
     en: {
       title: "Servants vs the throne",
       quote: "“Your throne, O God, is forever and ever.”",
@@ -756,7 +756,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "10–12",
     scene: "fold",
-    art: "3D · R3F — star-cloth mesh folds and rolls up like a robe; the centre light is fixed and never moves.",
+    art: "3D · R3F — the starry heavens hang over the clouds like a great gold-hemmed cloth; it is rolled up from the hem like a robe, and behind it the throne’s light is where it always was.",
     en: {
       title: "The heavens perish, you remain",
       quote: "“They will perish, but you remain.”",
@@ -922,7 +922,7 @@ const MV: Movement[] = [
     num: "V",
     range: "13–14",
     scene: "exalted",
-    art: "3D · R3F — one light rises to the highest point; a gold horizon settles beneath it with dim shapes below.",
+    art: "3D · R3F — the throne raised high on its steps above a heap of cloud, the footstool before it; ministering angels are sent out from it one after another, down toward the clouds.",
     en: {
       title: "Sit at my right hand",
       quote:

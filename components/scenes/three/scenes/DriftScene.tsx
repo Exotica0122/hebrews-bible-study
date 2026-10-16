@@ -1,25 +1,62 @@
 "use client";
 
-import { useEffect, useMemo, useRef, type ComponentRef } from "react";
-import { Line } from "@react-three/drei";
+import { useEffect, useMemo, useRef } from "react";
 import {
+  CatmullRomCurve3,
   Color,
+  CylinderGeometry,
   DoubleSide,
   Group,
+  InstancedMesh,
+  Matrix4,
+  MeshStandardMaterial,
   PlaneGeometry,
+  Quaternion,
   ShaderMaterial,
+  SphereGeometry,
+  TubeGeometry,
   Vector3,
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
-import { Hills, Sky, type HillLayer } from "../primitives/Earth";
-import { easeInOutCubic, lerp, useSceneTime } from "../primitives/Timeline";
+import { Squall } from "../primitives/Coast";
+import {
+  HillField,
+  Lamp,
+  MoonLights,
+  NIGHT,
+  NightSky,
+  terrainHeight,
+  type Terrain,
+} from "../primitives/Road";
+import {
+  easeInOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setUniform, writeXYZ } from "../primitives/mutate";
+import { setUniform } from "../primitives/mutate";
 
-const PERIOD = 13;
+const PERIOD = 15;
 const WATER_Y = -1;
+const ROPE_SEGMENTS = 22;
+const SHORE_LIGHTS: [number, number, number][] = [
+  [8.4, 0.2, -25],
+  [9.1, 0.35, -25.5],
+  [10.2, 0.25, -24.8],
+  [-13, 0.1, -24],
+  [-12.2, 0.3, -24.6],
+];
+const SHORE: Terrain = {
+  amp: 0.8,
+  rises: [
+    [-14, -26, 7, 2.6],
+    [10, -30, 8, 3.2],
+  ],
+};
+
 /** [dirX, dirZ, amplitude, wavenumber, speed]: mostly running toward +x, the way the current pulls. */
 const WAVES: [number, number, number, number, number][] = [
   [1, 0.15, 0.07, 0.9, 1.1],
@@ -27,18 +64,6 @@ const WAVES: [number, number, number, number, number][] = [
   [0.95, 0.3, 0.025, 3.4, 2.3],
   [0.3, 1, 0.02, 2.6, 1.3],
 ];
-const ROPE_POINTS = 24;
-const SHORE: HillLayer[] = [
-  {
-    y: WATER_Y - 0.05,
-    z: -20,
-    amp: 0.35,
-    freq: 0.22,
-    seed: 3.3,
-    color: "#16120E",
-  },
-];
-
 function waveHeight(x: number, z: number, t: number) {
   let h = 0;
   for (const [dx, dz, a, k, w] of WAVES) {
@@ -121,20 +146,117 @@ void main() {
 /** 0 = moored near the post, 1 = pulled furthest by the current; drawn back late in each cycle. */
 function driftAt(t: number) {
   const p = t % PERIOD;
-  return easeInOutCubic(p / 7) * (1 - easeInOutCubic((p - 8.5) / 3.5));
+  return easeInOutCubic((p - 1.2) / 6) * (1 - easeInOutCubic((p - 8.8) / 3.6));
 }
 
+/** Where the hull's rim runs at fraction `a` round it: a pointed bow and stern with the sheer rising toward the ends. */
+function rimPoint(a: number, out: Vector3) {
+  const x = Math.cos(a);
+  return out.set(
+    x * 1.1,
+    0.14 * x * x,
+    Math.sin(a) * 0.42 * Math.sqrt(1 - x ** 4 * 0.85),
+  );
+}
+
+/** A small open boat, bow toward −x, waterline at the origin: a pinched planked hull, its rim, two thwarts and a short mast with the sail furled. */
+function useBoat() {
+  return useMemo(() => {
+    const hull = new SphereGeometry(
+      1,
+      40,
+      14,
+      0,
+      Math.PI * 2,
+      Math.PI / 2,
+      Math.PI / 2,
+    );
+    const pos = hull.getAttribute("position");
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const z = pos.getZ(i);
+      pos.setXYZ(
+        i,
+        x * 1.1,
+        y * 0.42 + 0.14 * x * x,
+        z * 0.42 * Math.sqrt(1 - x ** 4 * 0.85),
+      );
+    }
+    hull.computeVertexNormals();
+    const pts = Array.from({ length: 49 }, (_, i) =>
+      rimPoint((i / 48) * Math.PI * 2, new Vector3()),
+    );
+    const rim = new TubeGeometry(
+      new CatmullRomCurve3(pts, true),
+      96,
+      0.035,
+      6,
+      true,
+    );
+    const strakes = [0.55, 0.78].map((k) => {
+      const ring = Array.from({ length: 49 }, (_, i) => {
+        const p = rimPoint((i / 48) * Math.PI * 2, new Vector3());
+        return new Vector3(p.x * (0.6 + 0.4 * k), p.y - (1 - k) * 0.3, p.z * k);
+      });
+      return new TubeGeometry(
+        new CatmullRomCurve3(ring, true),
+        96,
+        0.012,
+        4,
+        true,
+      );
+    });
+    return { hull, rim, strakes };
+  }, []);
+}
+
+/** “Pay much closer attention to what we have heard, lest we drift away from it”: a boat moored to a lamp-lit post by the jetty; the current pulls it out until the rope is taut, and the rope draws it back. */
 export function DriftScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const haze = useRef(1);
   const boat = useRef<Group>(null);
-  const rope = useRef<ComponentRef<typeof Line>>(null);
+  const rope = useRef<InstancedMesh>(null);
+  const boatGeo = useBoat();
 
-  const postX = mobile ? -2.2 : -3.4;
-  const lamp = useMemo(() => new Vector3(postX, 0.75, 0.4), [postX]);
-  const moored = useMemo(() => ({ x: postX + 2.1, z: 0.9 }), [postX]);
-  const adrift = useMemo(() => ({ x: mobile ? 2.2 : 3.6, z: -1.6 }), [mobile]);
-  const ropePts = useMemo(() => new Float32Array(ROPE_POINTS * 3), []);
-  const bow = useMemo(() => new Vector3(), []);
+  const postX = mobile ? -2 : -3.2;
+  const lamp = useMemo(() => new Vector3(postX + 0.36, 0.9, 0.4), [postX]);
+  const moored = useMemo(() => ({ x: postX + 2.2, z: 0.9 }), [postX]);
+  const adrift = useMemo(() => ({ x: mobile ? 2 : 3.4, z: -1.4 }), [mobile]);
+  const scratch = useMemo(
+    () => ({
+      bow: new Vector3(),
+      a: new Vector3(),
+      b: new Vector3(),
+      d: new Vector3(),
+      up: new Vector3(0, 1, 0),
+      q: new Quaternion(),
+      s: new Vector3(),
+      m: new Matrix4(),
+    }),
+    [],
+  );
+
+  const mats = useMemo(
+    () => ({
+      hull: new MeshStandardMaterial({
+        color: "#7A5638",
+        roughness: 0.8,
+        side: DoubleSide,
+      }),
+      trim: new MeshStandardMaterial({ color: "#A07A4E", roughness: 0.6 }),
+      wood: new MeshStandardMaterial({ color: "#4A3626", roughness: 0.95 }),
+      iron: new MeshStandardMaterial({
+        color: "#3A342E",
+        roughness: 0.5,
+        metalness: 0.6,
+      }),
+      sail: new MeshStandardMaterial({ color: "#CFC4AA", roughness: 1 }),
+      rope: new MeshStandardMaterial({ color: "#B89A68", roughness: 1 }),
+    }),
+    [],
+  );
+  const ropeGeo = useMemo(() => new CylinderGeometry(0.018, 0.018, 1, 5), []);
 
   const water = useMemo(() => {
     const g = new PlaneGeometry(70, 40, mobile ? 140 : 220, mobile ? 70 : 110);
@@ -144,9 +266,9 @@ export function DriftScene({ mobile, effects }: SceneProps) {
       fragmentShader: WATER_FRAG,
       uniforms: {
         uTime: { value: 0 },
-        uDeep: { value: new Color("#0D1215") },
-        uSky: { value: new Color("#6A5038") },
-        uHorizon: { value: new Color("#33261A") },
+        uDeep: { value: new Color("#0B1220") },
+        uSky: { value: new Color("#4A5C86") },
+        uHorizon: { value: new Color(NIGHT.haze) },
         uLampColor: { value: new Color("#F3C77A") },
         uLamp: { value: lamp },
       },
@@ -157,13 +279,20 @@ export function DriftScene({ mobile, effects }: SceneProps) {
     () => () => {
       water.g.dispose();
       water.m.dispose();
+      ropeGeo.dispose();
+      Object.values(mats).forEach((m) => m.dispose());
+      boatGeo.hull.dispose();
+      boatGeo.rim.dispose();
+      boatGeo.strakes.forEach((g) => g.dispose());
     },
-    [water],
+    [water, ropeGeo, mats, boatGeo],
   );
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(0, 1.3, mobile ? 10.5 : 8.5);
-    camera.lookAt(0, -0.45, 0);
+    camera.position.set(0, 1.4, mobile ? 10.5 : 8.5);
+    camera.lookAt(0, -0.4, 0);
+    const p = t % PERIOD;
+    haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(13.8, 15, p);
     setUniform(water.m, "uTime", t);
 
     const d = driftAt(t);
@@ -174,54 +303,80 @@ export function DriftScene({ mobile, effects }: SceneProps) {
       (waveHeight(bx, bz + 0.3, t) - waveHeight(bx, bz - 0.3, t)) * 1.4;
     const pitch =
       (waveHeight(bx + 0.6, bz, t) - waveHeight(bx - 0.6, bz, t)) * 0.9;
-    const yaw = lerp(0.05, -0.35, d);
     const b = boat.current;
     if (b) {
-      b.position.set(bx, WATER_Y + h + 0.24, bz);
-      b.rotation.set(roll, yaw, pitch);
-      bow.set(-1.05, 0.12, 0).applyEuler(b.rotation).add(b.position);
+      b.position.set(bx, WATER_Y + h + 0.12, bz);
+      b.rotation.set(roll, lerp(0.05, -0.35, d), pitch);
+      scratch.bow
+        .set(-1.08, 0.18, 0)
+        .multiplyScalar(1.15)
+        .applyEuler(b.rotation)
+        .add(b.position);
     }
 
-    const sag = lerp(0.28, 0.03, d);
-    const start = { x: postX + 0.14, y: -0.25, z: 0.4 };
-    for (let i = 0; i < ROPE_POINTS; i++) {
-      const k = i / (ROPE_POINTS - 1);
-      writeXYZ(
-        ropePts,
-        i,
-        lerp(start.x, bow.x, k),
-        lerp(start.y, bow.y, k) - sag * Math.sin(k * Math.PI),
-        lerp(start.z, bow.z, k),
-      );
+    const sag = lerp(0.35, 0.02, smoothstep(0.2, 1, d));
+    const sx = postX + 0.13;
+    const sy = -0.55;
+    const sz = 0.4;
+    const r = rope.current;
+    if (r) {
+      for (let i = 0; i < ROPE_SEGMENTS; i++) {
+        const k0 = i / ROPE_SEGMENTS;
+        const k1 = (i + 1) / ROPE_SEGMENTS;
+        const at = (k: number, out: Vector3) =>
+          out.set(
+            lerp(sx, scratch.bow.x, k),
+            lerp(sy, scratch.bow.y, k) - sag * Math.sin(k * Math.PI),
+            lerp(sz, scratch.bow.z, k),
+          );
+        at(k0, scratch.a);
+        at(k1, scratch.b);
+        scratch.d.subVectors(scratch.b, scratch.a);
+        const len = scratch.d.length();
+        scratch.q.setFromUnitVectors(scratch.up, scratch.d.normalize());
+        scratch.s.set(1, len, 1);
+        scratch.m.compose(
+          scratch.a.add(scratch.b).multiplyScalar(0.5),
+          scratch.q,
+          scratch.s,
+        );
+        r.setMatrixAt(i, scratch.m);
+      }
+      r.instanceMatrix.needsUpdate = true;
     }
-    rope.current?.geometry.setPositions(ropePts);
   });
 
   return (
     <>
-      <Sky
-        horizon="#33261A"
-        glow="#6A4420"
-        horizonY={WATER_Y}
-        glowStrength={0.85}
+      <fog attach="fog" args={[NIGHT.haze, 12, 45]} />
+      <NightSky
+        horizonY={WATER_Y + 0.2}
+        glow={0.45}
+        stars={mobile ? 120 : 220}
+        moon={mobile ? [5, 6.5, -45] : [12, 5.5, -45]}
       />
-      <Hills layers={SHORE} span={90} />
-      <hemisphereLight args={["#5A4A36", "#0A0806", 1.1]} />
-      <pointLight
-        position={[2, 0.2, -6]}
-        intensity={6}
-        distance={14}
-        decay={1.4}
-        color="#B7892C"
-      />
+      <MoonLights moon={[6, 6, -4]} intensity={1.4} fill={0.7} />
+      <HillField y={WATER_Y - 0.4} terrain={SHORE} near={-16} far={-60} />
       <pointLight
         position={[lamp.x, lamp.y, lamp.z]}
         intensity={9}
-        distance={14}
+        distance={12}
         decay={1.6}
         color="#F3C77A"
       />
-
+      {SHORE_LIGHTS.map(([x, y, z], i) => (
+        <Glow
+          key={i}
+          position={[x, WATER_Y - 0.35 + terrainHeight(x, z, SHORE) + y, z]}
+          size={0.35}
+          color={NIGHT.lamp}
+          inner={NIGHT.core}
+          alpha={0.8}
+          power={1.2}
+          renderOrder={-5}
+          depthTest
+        />
+      ))}
       <mesh
         geometry={water.g}
         material={water.m}
@@ -230,84 +385,90 @@ export function DriftScene({ mobile, effects }: SceneProps) {
       />
 
       <group position={[postX, 0, 0.4]}>
-        <mesh position={[0, -0.4, 0]}>
-          <cylinderGeometry args={[0.11, 0.14, 2.4, 12]} />
-          <meshStandardMaterial color="#2B2118" roughness={0.9} />
+        <mesh material={mats.wood} position={[0, -0.5, 0]}>
+          <cylinderGeometry args={[0.12, 0.15, 2.4, 10]} />
         </mesh>
-        <mesh position={[0, 0.62, 0]}>
-          <cylinderGeometry args={[0.13, 0.11, 0.22, 8]} />
-          <meshStandardMaterial
-            color="#3A2E22"
-            roughness={0.6}
-            metalness={0.4}
-          />
+        {[-0.15, -0.65].map((y) => (
+          <mesh key={y} material={mats.iron} position={[0, y, 0]}>
+            <cylinderGeometry args={[0.135, 0.135, 0.05, 12]} />
+          </mesh>
+        ))}
+        <mesh
+          material={mats.iron}
+          position={[0.13, -0.55, 0]}
+          rotation={[0, 0, Math.PI / 2]}
+        >
+          <torusGeometry args={[0.06, 0.016, 6, 16]} />
         </mesh>
-        <mesh position={[0, 0.9, 0]}>
-          <coneGeometry args={[0.17, 0.16, 8]} />
-          <meshStandardMaterial
-            color="#2E251C"
-            roughness={0.6}
-            metalness={0.4}
-          />
+        <mesh
+          material={mats.wood}
+          position={[0.18, 0.62, 0]}
+          rotation={[0, 0, Math.PI / 2]}
+        >
+          <cylinderGeometry args={[0.035, 0.035, 0.42, 6]} />
         </mesh>
-        <Glow
-          position={[0, 0.75, 0.1]}
-          size={mobile ? 3.2 : 4}
-          color="#B7892C"
-          alpha={0.28}
-          power={2.4}
-          renderOrder={12}
-          billboard
-        />
-        <Glow
-          position={[0, 0.75, 0.12]}
-          size={0.26}
-          color="#F3D38A"
-          inner="#FFF8E8"
-          alpha={1.3}
-          power={1.1}
-          renderOrder={13}
-          billboard
-        />
+        <mesh material={mats.iron} position={[0.36, 0.76, 0]}>
+          <cylinderGeometry args={[0.006, 0.006, 0.26, 4]} />
+        </mesh>
+        <mesh material={mats.iron} position={[0.36, 0.86, 0]}>
+          <cylinderGeometry args={[0.07, 0.09, 0.14, 8, 1, true]} />
+        </mesh>
+        <Lamp position={[0.36, 0.88, 0.02]} size={2.4} />
+      </group>
+      <group position={[postX - 2.4, 0, 0.1]}>
+        {[0, 1.2].map((x) =>
+          [-0.5, 0.5].map((z) => (
+            <mesh
+              key={`${x}${z}`}
+              material={mats.wood}
+              position={[x, -0.55, z]}
+            >
+              <cylinderGeometry args={[0.08, 0.1, 1.5, 8]} />
+            </mesh>
+          )),
+        )}
+        {Array.from({ length: 9 }, (_, i) => (
+          <mesh
+            key={i}
+            material={mats.wood}
+            position={[-0.6 + i * 0.26, 0.22, 0]}
+            rotation={[0, 0.02 * (i % 3), 0]}
+          >
+            <boxGeometry args={[0.24, 0.05, 1.3]} />
+          </mesh>
+        ))}
       </group>
 
-      <Line
+      <instancedMesh
         ref={rope}
-        points={[
-          [0, 0, 0],
-          [1, 0, 0],
-        ]}
-        color="#B89A68"
-        lineWidth={mobile ? 1.4 : 1.8}
-        transparent
-        opacity={0.85}
+        args={[ropeGeo, mats.rope, ROPE_SEGMENTS]}
+        frustumCulled={false}
       />
 
       <group ref={boat} position={[moored.x, WATER_Y, moored.z]} scale={1.15}>
-        <mesh scale={[1.1, 0.4, 0.42]}>
-          <sphereGeometry
-            args={[1, 32, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]}
-          />
-          <meshStandardMaterial
-            color="#7A5638"
-            roughness={0.75}
-            side={DoubleSide}
-          />
+        <mesh geometry={boatGeo.hull} material={mats.hull} />
+        <mesh geometry={boatGeo.rim} material={mats.trim} />
+        {boatGeo.strakes.map((g, i) => (
+          <mesh key={i} geometry={g} material={mats.trim} />
+        ))}
+        {[-0.35, 0.4].map((x) => (
+          <mesh key={x} material={mats.trim} position={[x, 0.05, 0]}>
+            <boxGeometry args={[0.1, 0.03, 0.78]} />
+          </mesh>
+        ))}
+        <mesh material={mats.wood} position={[-0.3, 0.62, 0]}>
+          <cylinderGeometry args={[0.02, 0.026, 1.2, 6]} />
         </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} scale={[1.1, 0.42, 1]}>
-          <torusGeometry args={[1, 0.035, 6, 48]} />
-          <meshStandardMaterial color="#A07A4E" roughness={0.6} />
-        </mesh>
-        <mesh position={[0.05, -0.08, 0]} scale={[0.06, 0.03, 0.8]}>
-          <boxGeometry />
-          <meshStandardMaterial color="#5A4130" roughness={0.8} />
-        </mesh>
-        <mesh position={[0.15, 0.5, 0]}>
-          <cylinderGeometry args={[0.022, 0.028, 1.1, 6]} />
-          <meshStandardMaterial color="#3A2A1C" roughness={0.8} />
+        <mesh
+          material={mats.sail}
+          position={[0.05, 0.28, 0]}
+          rotation={[0, 0, Math.PI / 2 - 0.12]}
+        >
+          <cylinderGeometry args={[0.045, 0.035, 0.75, 8]} />
         </mesh>
       </group>
-      {effects && <SceneEffects bloom={0.55} />}
+      <Squall opacity={haze} color="#0A0E18" />
+      {effects && <SceneEffects bloom={0.5} threshold={0.8} />}
     </>
   );
 }

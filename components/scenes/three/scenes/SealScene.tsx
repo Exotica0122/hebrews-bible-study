@@ -13,7 +13,7 @@ import {
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
-import { Starfield } from "../primitives/Starfield";
+import { CloudFloor, HEAVEN, HeavenSky } from "../primitives/Heavens";
 import { smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
@@ -26,25 +26,36 @@ function drawImprint(): CanvasTexture {
   c.width = c.height = 256;
   const ctx = c.getContext("2d")!;
   ctx.clearRect(0, 0, 256, 256);
-  ctx.strokeStyle = "rgba(90, 58, 12, 0.85)";
+  ctx.strokeStyle = "rgba(90, 58, 12, 0.9)";
+  ctx.fillStyle = "rgba(90, 58, 12, 0.9)";
   ctx.lineWidth = 6;
-  for (const r of [100, 78, 40]) {
+  ctx.beginPath();
+  ctx.arc(128, 128, 104, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(128, 128, 92, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(128, 128, 26, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.lineCap = "round";
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    const r1 = 36;
+    const r2 = i % 2 ? 66 : 80;
+    ctx.lineWidth = i % 2 ? 4 : 7;
     ctx.beginPath();
-    ctx.arc(128, 128, r, 0, Math.PI * 2);
+    ctx.moveTo(128 + Math.cos(a) * r1, 128 + Math.sin(a) * r1);
+    ctx.lineTo(128 + Math.cos(a) * r2, 128 + Math.sin(a) * r2);
     ctx.stroke();
   }
-  ctx.lineWidth = 8;
-  ctx.beginPath();
-  ctx.moveTo(128, 60);
-  ctx.lineTo(128, 196);
-  ctx.moveTo(84, 118);
-  ctx.lineTo(172, 118);
-  ctx.stroke();
   const tex = new CanvasTexture(c);
   tex.anisotropy = 4;
   return tex;
 }
 
+/** “The exact imprint of his nature”: on a stone above the clouds a gold signet comes down into warm wax and lifts away, leaving its device, the sun in glory, pressed clear. */
 export function SealScene({ mobile, effects, drag }: SceneProps) {
   const seal = useRef<Group>(null);
   const turntable = useRef<Group>(null);
@@ -94,7 +105,15 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
 
   return (
     <>
-      <Starfield count={mobile ? 300 : 600} alpha={0.6} />
+      <fog attach="fog" args={[HEAVEN.haze, 12, 50]} />
+      <group position={[0, 1.2, 0]}>
+        <HeavenSky horizonY={-1} stars={mobile ? 260 : 500} />
+      </group>
+      <CloudFloor y={-2.6} warm={[0, 0]} />
+      <mesh position={[0, -1.25, 0]}>
+        <cylinderGeometry args={[2.3, 2.6, 2.2, 10]} />
+        <meshStandardMaterial color="#C9B48E" roughness={0.9} flatShading />
+      </mesh>
       <hemisphereLight args={["#F3D38A", "#241E17", 0.5]} />
       <pointLight
         position={[-2.5, 3.5, 3]}

@@ -1,140 +1,168 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { useThree } from "@react-three/fiber";
-import { Group, type Mesh, type ShaderMaterial } from "three";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
+import type { Group, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Glow, Light } from "../primitives/Glow";
-import { GodRay } from "../primitives/GodRay";
-import { Starfield } from "../primitives/Starfield";
+import { Glow } from "../primitives/Glow";
+import { Squall } from "../primitives/Coast";
 import {
-  easeOutCubic,
+  Angel,
+  CloudFloor,
+  Cumulus,
+  HEAVEN,
+  HeavenLights,
+  HeavenSky,
+  Throne,
+  throneSeat,
+} from "../primitives/Heavens";
+import {
+  easeInOutCubic,
   lerp,
   smoothstep,
   useSceneTime,
 } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { setUniform } from "../primitives/mutate";
 
-const DUST: [number, number, number][] = [
-  [0.36, 0.66, 0.4],
-  [0.46, 0.68, 0.35],
-  [0.56, 0.67, 0.4],
-  [0.64, 0.69, 0.3],
+const PERIOD = 16;
+const FLOOR = -1.6;
+const STEPS = 6;
+const THRONE_Y = FLOOR + 1.05;
+const THRONE_Z = -3;
+/** Ministering angels sent out from before the throne: when each leaves (s), and where it flies to (x, y, z). */
+const SENT: [number, [number, number, number]][] = [
+  [2.4, [-5.5, FLOOR + 0.3, 2.2]],
+  [3.6, [5.8, FLOOR + 0.6, 1.6]],
+  [5.4, [-3.8, FLOOR - 0.2, 3.6]],
+  [6.8, [4.2, FLOOR - 0.1, 3.4]],
 ];
+const FLIGHT = 4.2;
 
-export function ExaltedScene({ mobile, effects }: SceneProps) {
-  const { width, height } = useThree((s) => s.viewport);
-  useResetCameraOnUnmount();
-  const light = useRef<Group>(null);
-  const horizon = useRef<Mesh>(null);
-  const horizonMat = useRef<ShaderMaterial>(null);
-  const hazeMat = useRef<ShaderMaterial>(null);
-  const beamGroup = useRef<Group>(null);
-  const dustMats = useRef<(ShaderMaterial | null)[]>([]);
-  const dustMeshes = useRef<(Mesh | null)[]>([]);
-
-  const top = 0.24 * height;
-  const bottom = -0.35 * height;
-  const horizonY = -0.08 * height;
-  const beamFrom = useMemo<[number, number, number]>(() => [0, 0, 0], []);
-  const beamTo = useMemo<[number, number, number]>(
-    () => [0, -0.6 * height, 0.5],
-    [height],
+/** One ministering angel, flying out from the throne; it fades as it reaches the clouds below. */
+function Messenger({
+  onReady,
+}: {
+  onReady: (
+    g: Group | null,
+    fade: RefObject<number>,
+    trail: ShaderMaterial | null,
+  ) => void;
+}) {
+  const group = useRef<Group>(null);
+  const fade = useRef(0);
+  const trail = useRef<ShaderMaterial | null>(null);
+  useEffect(() => onReady(group.current, fade, trail.current), [onReady]);
+  return (
+    <group ref={group}>
+      <Glow
+        position={[0, 0.9, -0.3]}
+        size={2.6}
+        color={HEAVEN.gold}
+        inner={HEAVEN.light}
+        alpha={0}
+        power={2}
+        renderOrder={5}
+        billboard
+        onMaterial={(m) => {
+          trail.current = m;
+        }}
+      />
+      <Angel
+        position={[0, 0, 0]}
+        scale={0.7}
+        spread={1}
+        bow={0.45}
+        opacity={fade}
+      />
+    </group>
   );
+}
 
-  useSceneTime((t) => {
-    const rise = easeOutCubic(t / 6);
-    const y = lerp(bottom, top, rise) + Math.sin(t * 0.6) * 0.03;
-    if (light.current) light.current.position.y = y;
-    if (beamGroup.current) {
-      beamGroup.current.position.y = y;
-      beamGroup.current.visible = t < 9;
-    }
-    const settle = smoothstep(3, 6, t);
-    if (horizon.current) {
-      horizon.current.scale.x = lerp(0.6, 1, settle) * (mobile ? 5 : 9);
-      horizon.current.position.y = lerp(horizonY - 0.15, horizonY, settle);
-    }
-    if (horizonMat.current)
-      horizonMat.current.uniforms.uAlpha.value = 1.0 * settle;
-    if (hazeMat.current) hazeMat.current.uniforms.uAlpha.value = 0.35 * settle;
-    dustMats.current.forEach((m, i) => {
-      if (m) m.uniforms.uAlpha.value = DUST[i][2] * (1 - 0.5 * settle);
-      const d = dustMeshes.current[i];
-      if (d) d.position.y = (0.5 - DUST[i][1]) * height - 0.2 * settle;
+/** “Sit at my right hand until I make your enemies a footstool for your feet … Are they not all ministering spirits sent out?”: the throne raised high on its steps above the clouds with the footstool before it, and angels sent out from it, one after another. */
+export function ExaltedScene({ mobile, effects }: SceneProps) {
+  useResetCameraOnUnmount();
+  const haze = useRef(1);
+  const glory = useRef(1);
+  const sent = useRef<
+    { g: Group | null; fade: RefObject<number>; trail: ShaderMaterial | null }[]
+  >([]);
+  const ready = useMemo(
+    () =>
+      SENT.map(
+        (_, i) =>
+          (
+            g: Group | null,
+            fade: RefObject<number>,
+            trail: ShaderMaterial | null,
+          ) => {
+            sent.current[i] = { g, fade, trail };
+          },
+      ),
+    [],
+  );
+  const seat = THRONE_Y + throneSeat(STEPS) * 1.3;
+
+  useSceneTime((t, _dt, { camera }) => {
+    camera.position.set(
+      Math.sin(t * 0.06) * 0.3,
+      THRONE_Y + 2.4,
+      mobile ? 12 : 9,
+    );
+    camera.lookAt(0, THRONE_Y + 1.1, THRONE_Z);
+    const p = t % PERIOD;
+    haze.current = 1 - smoothstep(0, 1, p) + smoothstep(14.6, 16, p);
+    glory.current = 0.85 + 0.15 * smoothstep(1, 3, p);
+    SENT.forEach(([at, to], i) => {
+      const s = sent.current[i];
+      if (!s?.g) return;
+      const k = easeInOutCubic((p - at) / FLIGHT);
+      const x = lerp(0, to[0], k);
+      const z = lerp(THRONE_Z + 0.9, to[2], k);
+      const y = lerp(seat - 0.4, to[1], k) + Math.sin(k * Math.PI) * 0.9;
+      s.g.position.set(x, y, z);
+      s.g.rotation.set(0, Math.atan2(to[0], to[2] - THRONE_Z), 0);
+      const o =
+        smoothstep(at, at + 0.5, p) *
+        (1 - smoothstep(at + FLIGHT - 1, at + FLIGHT, p));
+      s.fade.current = o;
+      if (s.trail) setUniform(s.trail, "uAlpha", 0.4 * o);
     });
   });
 
   return (
     <>
-      <Starfield count={mobile ? 400 : 900} />
-      <group ref={light} position={[0, bottom, 0]}>
-        <Light
-          size={mobile ? 0.6 : 0.8}
-          coronaScale={8}
-          intensity={1.15}
-          renderOrder={12}
-        />
-      </group>
-      <group ref={beamGroup} position={[0, bottom, 0]}>
-        <GodRay
-          from={beamFrom}
-          to={beamTo}
-          radiusStart={0.02}
-          radiusEnd={0.12}
-          alpha={0.35}
-          renderOrder={6}
-        />
-      </group>
-      <Glow
-        position={[0, horizonY, 0]}
-        size={1}
-        scaleX={mobile ? 5 : 9}
-        scaleY={0.045}
-        color="#F3D38A"
-        inner="#FFF8E8"
-        alpha={0}
-        power={1}
-        renderOrder={8}
-        onMesh={(m) => {
-          horizon.current = m;
-        }}
-        onMaterial={(m) => {
-          horizonMat.current = m;
-        }}
+      <fog attach="fog" args={[HEAVEN.haze, 10, 46]} />
+      <HeavenSky horizonY={-1.2} stars={mobile ? 260 : 520} />
+      <HeavenLights sun={[-3, 4, 7]} intensity={1.3} />
+      <CloudFloor y={FLOOR - 0.6} warm={[0, THRONE_Z]} />
+      <Cumulus
+        position={[0, FLOOR - 0.6, THRONE_Z]}
+        scale={[2.4, 2.1, 1.8]}
+        seed={4}
+        puffs={13}
+      />
+      <Throne
+        position={[0, THRONE_Y, THRONE_Z]}
+        scale={1.3}
+        steps={STEPS}
+        glory={glory}
+        mobile={mobile}
+        footstool
       />
       <Glow
-        position={[0, horizonY - 0.12, 0]}
-        size={1}
-        scaleX={mobile ? 2.6 : 4.2}
-        scaleY={0.28}
-        color="#B7892C"
-        alpha={0}
-        power={1.4}
-        renderOrder={7}
-        onMaterial={(m) => {
-          hazeMat.current = m;
-        }}
+        position={[0, seat + 1, THRONE_Z - 2]}
+        size={mobile ? 10 : 14}
+        color={HEAVEN.gold}
+        alpha={0.16}
+        power={2.4}
+        renderOrder={1}
       />
-      {DUST.map(([l, tp, a], i) => (
-        <Glow
-          key={i}
-          position={[(l - 0.5) * width, (0.5 - tp) * height, 0]}
-          size={0.14}
-          color="#A89A82"
-          alpha={a}
-          power={1.2}
-          renderOrder={5}
-          onMesh={(m) => {
-            dustMeshes.current[i] = m;
-          }}
-          onMaterial={(m) => {
-            dustMats.current[i] = m;
-          }}
-        />
+      {SENT.map((_, i) => (
+        <Messenger key={i} onReady={ready[i]} />
       ))}
-      {effects && <SceneEffects bloom={0.9} />}
+      <Squall opacity={haze} color={HEAVEN.top} />
+      {effects && <SceneEffects bloom={0.45} threshold={0.82} vignette={0.4} />}
     </>
   );
 }

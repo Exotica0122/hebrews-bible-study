@@ -572,7 +572,7 @@
     );
 }
 
-/* freed: chains broken before a veil, light between its halves */
+/* freed: a prison wall, light in the middle and the chains broken */
 .fr_back {
   background: radial-gradient(
     ellipse at 50% 45%,
@@ -582,26 +582,25 @@
   );
 }
 .fr_veil {
-  top: -4%;
-  bottom: -4%;
-  width: 48%;
+  top: 0;
+  bottom: 22%;
+  width: 50%;
   background:
     repeating-linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.35) 0,
-      rgba(255, 255, 255, 0.04) 22px,
-      rgba(0, 0, 0, 0.35) 44px
+      0deg,
+      rgba(0, 0, 0, 0.55) 0 2px,
+      rgba(0, 0, 0, 0) 2px 26px
     ),
-    linear-gradient(90deg, #1c2340, #34203e 60%, #3a1e2e);
+    linear-gradient(90deg, #1e1a16, #3a332c);
 }
 .fr_left {
   left: 0;
-  box-shadow: inset -30px 0 40px -20px rgba(243, 199, 122, 0.55);
+  box-shadow: inset -40px 0 50px -20px rgba(243, 199, 122, 0.45);
 }
 .fr_right {
   right: 0;
   transform: scaleX(-1);
-  box-shadow: inset -30px 0 40px -20px rgba(243, 199, 122, 0.55);
+  box-shadow: inset -40px 0 50px -20px rgba(243, 199, 122, 0.45);
 }
 .fr_chain {
   top: 18%;

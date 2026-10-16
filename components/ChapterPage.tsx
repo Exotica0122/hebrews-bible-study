@@ -38,11 +38,11 @@ interface OpenWord {
 
 const HERO_ART: Record<Setting, string> = {
   heavens:
-    "3D · R3F — the burning bush, Sinai, the pillar of cloud and the tablets drift in from the heavens and gather into one light",
+    "3D · R3F — above a sea of cloud under the night heavens, the burning bush, Sinai, the pillar of cloud and the tablets drift in and gather into one light shining out over the clouds",
   earth:
-    "3D · R3F — lamp-lit travellers on a road through the night hills toward a lit town",
+    "3D · R3F — moonlit hills; lamp-carrying travellers wind up the road toward a walled town lit on its hill",
   wilderness:
-    "3D · R3F — the camp of Israel at dusk, tents around the tabernacle under the pillar of fire",
+    "3D · R3F — the camp of Israel in the dunes at dusk, tribe by tribe around the tabernacle under the pillar of fire",
   garden:
     "3D · R3F — the garden on the seventh day in full light: olive trees, still water and a high sun; the work is finished and nothing moves but the clouds",
   sanctuary:
