@@ -12,7 +12,8 @@ import s from "./soon.module.css";
 
 export function ComingSoon({ chapter }: { chapter: number }) {
   const { lang, t } = useLang();
-  const bookName = (n: number) => (lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`);
+  const bookName = (n: number) =>
+    lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`;
   return (
     <>
       <Header chapter={chapter} activeLabel={t.comingSoon} />
@@ -38,13 +39,24 @@ export function ComingSoon({ chapter }: { chapter: number }) {
             </div>
             <div className={s.actions}>
               {chapter - 1 > LATEST_LIVE && (
-                <Link href={chapterHref(chapter - 1)} className={`hb-btn hb-btn-outline ${s.link} ${s.prevNext}`}>
+                <Link
+                  href={chapterHref(chapter - 1)}
+                  className={`hb-btn hb-btn-outline ${s.link} ${s.prevNext}`}
+                >
                   ← {bookName(chapter - 1)}
                 </Link>
               )}
-              <Link href={chapterHref(LATEST_LIVE)} className={`hb-btn hb-btn-gold ${s.link} ${s.back}`}>{t.backTo(bookName(LATEST_LIVE))}</Link>
+              <Link
+                href={chapterHref(LATEST_LIVE)}
+                className={`hb-btn hb-btn-gold ${s.link} ${s.back}`}
+              >
+                {t.backTo(bookName(LATEST_LIVE))}
+              </Link>
               {chapter < CHAPTER_COUNT && (
-                <Link href={chapterHref(chapter + 1)} className={`hb-btn hb-btn-outline ${s.link} ${s.prevNext}`}>
+                <Link
+                  href={chapterHref(chapter + 1)}
+                  className={`hb-btn hb-btn-outline ${s.link} ${s.prevNext}`}
+                >
                   {bookName(chapter + 1)} →
                 </Link>
               )}

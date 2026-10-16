@@ -17,7 +17,12 @@ export function ResumePill({ chapter, movements, onGo }: ResumePillProps) {
   const [target, setTarget] = useState<Movement | null>(null);
 
   useEffect(() => {
-    if (window.location.hash && (parseWordHash(window.location.hash) || window.location.hash.startsWith("#hb-"))) return;
+    if (
+      window.location.hash &&
+      (parseWordHash(window.location.hash) ||
+        window.location.hash.startsWith("#hb-"))
+    )
+      return;
     try {
       const stored = window.localStorage.getItem(resumeKey(chapter));
       const m = movements.find((mv) => mv.id === stored);
@@ -42,7 +47,14 @@ export function ResumePill({ chapter, movements, onGo }: ResumePillProps) {
         <span className={s.num}>{target.num}</span>
         <span className={s.title}>{target[lang].title} →</span>
       </a>
-      <button type="button" className={s.dismiss} aria-label={t.dismiss} onClick={() => setTarget(null)}>×</button>
+      <button
+        type="button"
+        className={s.dismiss}
+        aria-label={t.dismiss}
+        onClick={() => setTarget(null)}
+      >
+        ×
+      </button>
     </div>
   );
 }

@@ -12,7 +12,12 @@ interface GlossAsideProps {
   onToggle: (key: string) => void;
 }
 
-export function GlossAside({ keys, words, openKey, onToggle }: GlossAsideProps) {
+export function GlossAside({
+  keys,
+  words,
+  openKey,
+  onToggle,
+}: GlossAsideProps) {
   const { t } = useLang();
   const onKey = (key: string) => (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -40,7 +45,9 @@ export function GlossAside({ keys, words, openKey, onToggle }: GlossAsideProps) 
             <div className={s.noteRef}>{w.v}</div>
             <div className={s.noteTitle}>{w.t}</div>
             <div className={s.noteGloss}>{w.s}</div>
-            <div className={`${s.noteDef} hb-print-only`}>{w.g} — {w.d}</div>
+            <div className={`${s.noteDef} hb-print-only`}>
+              {w.g} — {w.d}
+            </div>
           </div>
         );
       })}

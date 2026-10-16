@@ -2,7 +2,16 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { AddEquation, CustomBlending, OneFactor, BufferAttribute, BufferGeometry, Color, Points, ShaderMaterial } from "three";
+import {
+  AddEquation,
+  CustomBlending,
+  OneFactor,
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  Points,
+  ShaderMaterial,
+} from "three";
 
 const VERT = /* glsl */ `
 attribute float aSize;
@@ -50,7 +59,13 @@ interface StarfieldProps {
 const DEFAULT_SPREAD: [number, number] = [20, 12];
 const DEFAULT_DEPTH: [number, number] = [-25, -6];
 
-export function Starfield({ count, spread = DEFAULT_SPREAD, depth = DEFAULT_DEPTH, alpha = 0.75, size = 1.1 }: StarfieldProps) {
+export function Starfield({
+  count,
+  spread = DEFAULT_SPREAD,
+  depth = DEFAULT_DEPTH,
+  alpha = 0.75,
+  size = 1.1,
+}: StarfieldProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const canvasHeight = useThree((s) => s.size.height);
   const heightScale = Math.min(1, Math.max(0.5, canvasHeight / 520));
@@ -114,5 +129,13 @@ export function Starfield({ count, spread = DEFAULT_SPREAD, depth = DEFAULT_DEPT
     m.uniforms.uPixelRatio.value = pixelRatio * heightScale;
   });
 
-  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} renderOrder={0} />;
+  return (
+    <points
+      ref={ref}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={0}
+    />
+  );
 }

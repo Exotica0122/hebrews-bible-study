@@ -5,9 +5,20 @@ import { MeshBasicMaterial, type Group, type ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
-import { Embers, Hills, figureGeometry, type HillLayer } from "../primitives/Earth";
+import {
+  Embers,
+  Hills,
+  figureGeometry,
+  type HillLayer,
+} from "../primitives/Earth";
 import { DuskSky, Sand } from "../primitives/Wilderness";
-import { easeInOutCubic, easeOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  easeOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setOpacity } from "../primitives/mutate";
 
@@ -22,9 +33,18 @@ const CROSS = 3;
 const SCALE = 0.34;
 /** Formation offsets (x, z) and when each one falls (s); the first two are Joshua and Caleb, who never do. */
 const PEOPLE: [number, number, number][] = [
-  [-0.22, -0.3, Infinity], [0.24, -0.4, Infinity],
-  [-0.6, 0.3, 3.2], [0.05, 0.2, 8.2], [0.62, 0.35, 5.1], [-0.3, 0.8, 9.8],
-  [0.35, 0.9, 4.1], [-0.85, 1.0, 7.0], [0.9, 1.1, 9.1], [-0.05, 1.4, 6.1], [0.5, 1.6, 10.4], [-0.5, 1.7, 3.8],
+  [-0.22, -0.3, Infinity],
+  [0.24, -0.4, Infinity],
+  [-0.6, 0.3, 3.2],
+  [0.05, 0.2, 8.2],
+  [0.62, 0.35, 5.1],
+  [-0.3, 0.8, 9.8],
+  [0.35, 0.9, 4.1],
+  [-0.85, 1.0, 7.0],
+  [0.9, 1.1, 9.1],
+  [-0.05, 1.4, 6.1],
+  [0.5, 1.6, 10.4],
+  [-0.5, 1.7, 3.8],
 ];
 const LAND: HillLayer[] = [
   { y: -0.95, z: -16, amp: 0.45, freq: 0.3, seed: 1.9, color: "#7A6236" },
@@ -41,7 +61,13 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
   const halos = useRef<(ShaderMaterial | null)[]>([]);
   const landGlow = useRef<ShaderMaterial>(null);
   const figure = useMemo(() => figureGeometry(), []);
-  const inks = useMemo(() => PEOPLE.map(() => new MeshBasicMaterial({ color: "#120D0C", transparent: true })), []);
+  const inks = useMemo(
+    () =>
+      PEOPLE.map(
+        () => new MeshBasicMaterial({ color: "#120D0C", transparent: true }),
+      ),
+    [],
+  );
   useEffect(
     () => () => {
       figure.dispose();
@@ -68,30 +94,78 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
       const down = faithful ? 0 : easeOutCubic((p - falls) / 0.9);
       g.position.set(dx * spread, GROUND + Math.abs(step) * 0.012, z);
       g.rotation.set(-down * Math.PI * 0.5, 0, step * 0.03);
-      setOpacity(inks[i], faithful ? fade : fade * (1 - smoothstep(falls + 1.2, falls + 3, p)));
+      setOpacity(
+        inks[i],
+        faithful ? fade : fade * (1 - smoothstep(falls + 1.2, falls + 3, p)),
+      );
       const h = halos.current[i];
-      if (h) h.uniforms.uAlpha.value = faithful ? 0.85 * smoothstep(MARCH + 0.8, MARCH + CROSS, p) * fade : 0;
+      if (h)
+        h.uniforms.uAlpha.value = faithful
+          ? 0.85 * smoothstep(MARCH + 0.8, MARCH + CROSS, p) * fade
+          : 0;
     });
-    if (landGlow.current) landGlow.current.uniforms.uAlpha.value = (0.45 + 0.25 * smoothstep(MARCH + 1, MARCH + CROSS, p)) * fade;
+    if (landGlow.current)
+      landGlow.current.uniforms.uAlpha.value =
+        (0.45 + 0.25 * smoothstep(MARCH + 1, MARCH + CROSS, p)) * fade;
   });
 
   return (
     <>
       <DuskSky horizonY={-1.1} glowStrength={0.9} stars={mobile ? 90 : 180} />
-      <Glow position={[0, -0.7, -16.5]} size={mobile ? 12 : 16} scaleY={0.5} color="#D9A24A" inner="#FFE3B0" alpha={0} power={1.8} renderOrder={-11} onMaterial={(m) => { landGlow.current = m; }} />
+      <Glow
+        position={[0, -0.7, -16.5]}
+        size={mobile ? 12 : 16}
+        scaleY={0.5}
+        color="#D9A24A"
+        inner="#FFE3B0"
+        alpha={0}
+        power={1.8}
+        renderOrder={-11}
+        onMaterial={(m) => {
+          landGlow.current = m;
+        }}
+      />
       <Hills layers={LAND} />
       <Sand y={GROUND} far={RIVER_Z} color="#231A1C" />
       <Sand y={GROUND} far={-13} near={RIVER_Z} color="#4E3E26" />
-      <Glow position={[0, GROUND + 0.01, RIVER_Z]} size={1} scaleX={34} scaleY={0.3} color="#5E7A80" inner="#C9D9DA" alpha={0.55} power={1.2} renderOrder={3} />
+      <Glow
+        position={[0, GROUND + 0.01, RIVER_Z]}
+        size={1}
+        scaleX={34}
+        scaleY={0.3}
+        color="#5E7A80"
+        inner="#C9D9DA"
+        alpha={0.55}
+        power={1.2}
+        renderOrder={3}
+      />
       <group ref={people}>
         {PEOPLE.map((_, i) => (
           <group key={i} scale={SCALE}>
-            <Glow position={[0, 0.9, -0.1]} size={3.4} color="#F3D38A" inner="#FFF8E8" alpha={0} power={1.8} renderOrder={4} onMaterial={(m) => { halos.current[i] = m; }} />
+            <Glow
+              position={[0, 0.9, -0.1]}
+              size={3.4}
+              color="#F3D38A"
+              inner="#FFF8E8"
+              alpha={0}
+              power={1.8}
+              renderOrder={4}
+              onMaterial={(m) => {
+                halos.current[i] = m;
+              }}
+            />
             <mesh geometry={figure} material={inks[i]} renderOrder={5} />
           </group>
         ))}
       </group>
-      <Embers count={mobile ? 16 : 30} box={EMBER_BOX} position={[0, GROUND, -4]} rise={0.03} size={1.8} alpha={0.4} />
+      <Embers
+        count={mobile ? 16 : 30}
+        box={EMBER_BOX}
+        position={[0, GROUND, -4]}
+        rise={0.03}
+        size={1.8}
+        alpha={0.4}
+      />
       {effects && <SceneEffects bloom={0.5} />}
     </>
   );

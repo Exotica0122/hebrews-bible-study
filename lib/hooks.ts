@@ -1,11 +1,20 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState, useSyncExternalStore, type RefObject } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useState,
+  useSyncExternalStore,
+  type RefObject,
+} from "react";
 
 export const MOBILE_QUERY = "(max-width: 859px)";
 const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
 
-const mediaSubscribers = new Map<string, (onChange: () => void) => () => void>();
+const mediaSubscribers = new Map<
+  string,
+  (onChange: () => void) => () => void
+>();
 
 function subscribeMedia(query: string) {
   let sub = mediaSubscribers.get(query);
@@ -52,7 +61,10 @@ export const SPY_OFFSET = 120;
 export const SCROLL_OFFSET = 63;
 
 /** Tracks the active section in state and writes scroll progress straight to `barRef` to avoid re-rendering per tick. */
-export function useScrollSpy(ids: string[], barRef: RefObject<HTMLElement | null>) {
+export function useScrollSpy(
+  ids: string[],
+  barRef: RefObject<HTMLElement | null>,
+) {
   const [active, setActive] = useState(ids[0] ?? "");
   const key = ids.join("|");
 

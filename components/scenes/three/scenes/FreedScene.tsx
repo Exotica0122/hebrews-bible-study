@@ -2,11 +2,28 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { Environment, Lightformer } from "@react-three/drei";
-import { Color, DoubleSide, Group, InstancedMesh, Matrix4, MeshStandardMaterial, PlaneGeometry, Quaternion, ShaderMaterial, TorusGeometry, Vector3, type PointLight } from "three";
+import {
+  Color,
+  DoubleSide,
+  Group,
+  InstancedMesh,
+  Matrix4,
+  MeshStandardMaterial,
+  PlaneGeometry,
+  Quaternion,
+  ShaderMaterial,
+  TorusGeometry,
+  Vector3,
+  type PointLight,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
-import { easeInOutCubic, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setOpacity, setUniform } from "../primitives/mutate";
 
@@ -64,10 +81,14 @@ function swing(target: number, s: number) {
 
 /** Links for one half of the chain, laid from its anchor toward the centre along a sagging curve. */
 function linkMatrices(side: 1 | -1, span: number, sag: number) {
-  const curve = (x: number) => -sag * Math.sin((Math.min(1, x / span) * Math.PI) / 2) ** 1.4;
+  const curve = (x: number) =>
+    -sag * Math.sin((Math.min(1, x / span) * Math.PI) / 2) ** 1.4;
   const m = new Matrix4();
   const q = new Quaternion();
-  const turn = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+  const turn = new Quaternion().setFromAxisAngle(
+    new Vector3(1, 0, 0),
+    Math.PI / 2,
+  );
   const z = new Vector3(0, 0, 1);
   const one = new Vector3(1, 1, 1);
   return Array.from({ length: LINKS_PER_SIDE }, (_, i) => {
@@ -92,9 +113,28 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   const anchorX = LINKS_PER_SIDE * PITCH;
   const anchorY = 1.55;
   const sag = 1.1;
-  const link = useMemo(() => new TorusGeometry(0.12, 0.036, 8, 20).scale(1.45, 1, 1), []);
-  const iron = useMemo(() => new MeshStandardMaterial({ color: "#4A433B", metalness: 0.85, roughness: 0.42, envMapIntensity: 1.1, transparent: true }), []);
-  const matrices = useMemo(() => ({ l: linkMatrices(1, anchorX, sag), r: linkMatrices(-1, anchorX, sag) }), [anchorX]);
+  const link = useMemo(
+    () => new TorusGeometry(0.12, 0.036, 8, 20).scale(1.45, 1, 1),
+    [],
+  );
+  const iron = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: "#4A433B",
+        metalness: 0.85,
+        roughness: 0.42,
+        envMapIntensity: 1.1,
+        transparent: true,
+      }),
+    [],
+  );
+  const matrices = useMemo(
+    () => ({
+      l: linkMatrices(1, anchorX, sag),
+      r: linkMatrices(-1, anchorX, sag),
+    }),
+    [anchorX],
+  );
 
   const veil = useMemo(() => {
     const g = new PlaneGeometry(9, 8, mobile ? 40 : 70, 30);
@@ -129,7 +169,10 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   );
 
   useEffect(() => {
-    for (const [mesh, list] of [[leftMesh.current, matrices.l], [rightMesh.current, matrices.r]] as const) {
+    for (const [mesh, list] of [
+      [leftMesh.current, matrices.l],
+      [rightMesh.current, matrices.r],
+    ] as const) {
       if (!mesh) continue;
       list.forEach((m, i) => mesh.setMatrixAt(i, m));
       mesh.instanceMatrix.needsUpdate = true;
@@ -143,7 +186,9 @@ export function FreedScene({ mobile, effects }: SceneProps) {
     const dim = smoothstep(0, 0.9, p) * (1 - smoothstep(12.8, 13.8, p));
     const tension = smoothstep(0.5, BREAK, p);
     const s = p - BREAK;
-    const sway = Math.sin(t * 1.3) * 0.015 * (1 - tension) + (p < BREAK ? Math.sin(t * 17) * 0.004 * tension : 0);
+    const sway =
+      Math.sin(t * 1.3) * 0.015 * (1 - tension) +
+      (p < BREAK ? Math.sin(t * 17) * 0.004 * tension : 0);
     if (left.current) left.current.rotation.z = sway - swing(1.2, s);
     if (right.current) right.current.rotation.z = -sway + swing(1.2, s);
     setOpacity(iron, dim * (1 - smoothstep(BREAK + 3.4, BREAK + 5, p)));
@@ -156,39 +201,111 @@ export function FreedScene({ mobile, effects }: SceneProps) {
       setUniform(m, "uBack", backLit);
       setUniform(m, "uDim", 0.25 + 0.75 * dim);
     }
-    if (back.current) back.current.uniforms.uAlpha.value = (0.25 + 0.95 * open) * dim;
-    const burst = smoothstep(BREAK - 0.15, BREAK, p) * (1 - smoothstep(BREAK, BREAK + 1.2, p));
+    if (back.current)
+      back.current.uniforms.uAlpha.value = (0.25 + 0.95 * open) * dim;
+    const burst =
+      smoothstep(BREAK - 0.15, BREAK, p) *
+      (1 - smoothstep(BREAK, BREAK + 1.2, p));
     if (flash.current) flash.current.uniforms.uAlpha.value = 0.7 * burst;
-    if (backLight.current) backLight.current.intensity = (4 + 30 * open + 40 * burst) * dim;
+    if (backLight.current)
+      backLight.current.intensity = (4 + 30 * open + 40 * burst) * dim;
   });
 
   return (
     <>
       <color attach="background" args={["#0B0908"]} />
       <hemisphereLight args={["#3A3028", "#050403", 0.4]} />
-      <pointLight ref={backLight} position={[0, 0.6, 1.6]} intensity={4} distance={10} decay={1.8} color="#F3C77A" />
+      <pointLight
+        ref={backLight}
+        position={[0, 0.6, 1.6]}
+        intensity={4}
+        distance={10}
+        decay={1.8}
+        color="#F3C77A"
+      />
       <Environment resolution={64} frames={1}>
-        <Lightformer form="rect" intensity={2.5} color="#F3D38A" position={[0, 2, -3]} scale={[3, 5, 1]} target={[0, 0.5, 0]} />
-        <Lightformer form="rect" intensity={0.8} color="#EEE4CF" position={[-3, 3, 3]} scale={[4, 2, 1]} target={[0, 0.5, 0]} />
+        <Lightformer
+          form="rect"
+          intensity={2.5}
+          color="#F3D38A"
+          position={[0, 2, -3]}
+          scale={[3, 5, 1]}
+          target={[0, 0.5, 0]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={0.8}
+          color="#EEE4CF"
+          position={[-3, 3, 3]}
+          scale={[4, 2, 1]}
+          target={[0, 0.5, 0]}
+        />
       </Environment>
 
-      <Glow position={[0, 0.3, -2.4]} size={1} scaleX={mobile ? 3.2 : 4} scaleY={7} color="#F3C77A" inner="#FFF8E8" alpha={0} power={1.4} renderOrder={1} onMaterial={(m) => { back.current = m; }} />
-      <mesh geometry={veil.g} material={veil.l} position={[-4.5, 0.3, -1.6]} renderOrder={2} />
-      <mesh geometry={veil.g} material={veil.r} position={[4.5, 0.3, -1.6]} renderOrder={2} />
+      <Glow
+        position={[0, 0.3, -2.4]}
+        size={1}
+        scaleX={mobile ? 3.2 : 4}
+        scaleY={7}
+        color="#F3C77A"
+        inner="#FFF8E8"
+        alpha={0}
+        power={1.4}
+        renderOrder={1}
+        onMaterial={(m) => {
+          back.current = m;
+        }}
+      />
+      <mesh
+        geometry={veil.g}
+        material={veil.l}
+        position={[-4.5, 0.3, -1.6]}
+        renderOrder={2}
+      />
+      <mesh
+        geometry={veil.g}
+        material={veil.r}
+        position={[4.5, 0.3, -1.6]}
+        renderOrder={2}
+      />
 
       <group ref={left} position={[-anchorX, anchorY, 0]}>
-        <instancedMesh ref={leftMesh} args={[link, iron, LINKS_PER_SIDE]} frustumCulled={false} />
+        <instancedMesh
+          ref={leftMesh}
+          args={[link, iron, LINKS_PER_SIDE]}
+          frustumCulled={false}
+        />
       </group>
       <group ref={right} position={[anchorX, anchorY, 0]}>
-        <instancedMesh ref={rightMesh} args={[link, iron, LINKS_PER_SIDE]} frustumCulled={false} />
+        <instancedMesh
+          ref={rightMesh}
+          args={[link, iron, LINKS_PER_SIDE]}
+          frustumCulled={false}
+        />
       </group>
       {[-anchorX, anchorX].map((x) => (
         <mesh key={x} position={[x, anchorY, -0.1]}>
           <torusGeometry args={[0.16, 0.05, 10, 24]} />
-          <meshStandardMaterial color="#3A332C" metalness={0.85} roughness={0.45} envMapIntensity={1.1} />
+          <meshStandardMaterial
+            color="#3A332C"
+            metalness={0.85}
+            roughness={0.45}
+            envMapIntensity={1.1}
+          />
         </mesh>
       ))}
-      <Glow position={[0, anchorY - sag, 0.3]} size={mobile ? 3 : 4} color="#FFF8E8" inner="#FFFFFF" alpha={0} power={1.5} renderOrder={12} onMaterial={(m) => { flash.current = m; }} />
+      <Glow
+        position={[0, anchorY - sag, 0.3]}
+        size={mobile ? 3 : 4}
+        color="#FFF8E8"
+        inner="#FFFFFF"
+        alpha={0}
+        power={1.5}
+        renderOrder={12}
+        onMaterial={(m) => {
+          flash.current = m;
+        }}
+      />
       {effects && <SceneEffects bloom={0.6} />}
     </>
   );

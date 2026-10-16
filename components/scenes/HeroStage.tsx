@@ -2,12 +2,21 @@
 
 import dynamic from "next/dynamic";
 import { useMove } from "@use-gesture/react";
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { useSceneGate } from "./SceneFrame";
 import type { SceneId } from "./types";
 import s from "./scene.module.css";
 
-const SceneCanvas = dynamic(() => import("./three/SceneCanvas"), { ssr: false, loading: () => null });
+const SceneCanvas = dynamic(() => import("./three/SceneCanvas"), {
+  ssr: false,
+  loading: () => null,
+});
 
 interface HeroStageProps {
   scene: SceneId;
@@ -17,7 +26,13 @@ interface HeroStageProps {
   onReadyChange?: (ready: boolean) => void;
 }
 
-export function HeroStage({ scene, hostRef, captionRefs, reduceMotion = false, onReadyChange }: HeroStageProps) {
+export function HeroStage({
+  scene,
+  hostRef,
+  captionRefs,
+  reduceMotion = false,
+  onReadyChange,
+}: HeroStageProps) {
   const gate = useSceneGate("hero", hostRef, reduceMotion);
   const [idle, setIdle] = useState(false);
   const [ready, setReady] = useState(false);
@@ -25,7 +40,10 @@ export function HeroStage({ scene, hostRef, captionRefs, reduceMotion = false, o
   useMove(
     ({ xy: [px, py], currentTarget }) => {
       const r = (currentTarget as HTMLElement).getBoundingClientRect();
-      pointer.current = { x: (px - r.left) / r.width - 0.5, y: (py - r.top) / r.height - 0.5 };
+      pointer.current = {
+        x: (px - r.left) / r.width - 0.5,
+        y: (py - r.top) / r.height - 0.5,
+      };
     },
     { target: hostRef },
   );

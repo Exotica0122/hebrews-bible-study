@@ -16,7 +16,12 @@ export function CopyLinkButton({ className = "" }: { className?: string }) {
     timer.current = window.setTimeout(() => setCopied(false), 1800);
   };
   return (
-    <button type="button" className={className} onClick={onClick} aria-live="polite">
+    <button
+      type="button"
+      className={className}
+      onClick={onClick}
+      aria-live="polite"
+    >
       {copied ? t.copied : t.link}
     </button>
   );

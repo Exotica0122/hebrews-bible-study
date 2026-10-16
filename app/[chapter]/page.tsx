@@ -11,10 +11,14 @@ function parseChapter(raw: string): number | null {
 }
 
 export function generateStaticParams() {
-  return Array.from({ length: CHAPTER_COUNT - 1 }, (_, i) => ({ chapter: String(i + 2) }));
+  return Array.from({ length: CHAPTER_COUNT - 1 }, (_, i) => ({
+    chapter: String(i + 2),
+  }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/[chapter]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[chapter]">): Promise<Metadata> {
   const { chapter } = await params;
   const n = parseChapter(chapter);
   if (!n) return { title: "Not found" };

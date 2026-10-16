@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 import type { Lang } from "@/content/types";
 import { UI, type UiStrings } from "@/content/ui";
 import { LANG_COOKIE, setCookie } from "./cookies";
@@ -52,7 +58,13 @@ interface LangContextValue {
 
 const LangContext = createContext<LangContextValue | null>(null);
 
-export function LangProvider({ initial, children }: { initial: Lang; children: React.ReactNode }) {
+export function LangProvider({
+  initial,
+  children,
+}: {
+  initial: Lang;
+  children: React.ReactNode;
+}) {
   adopt(initial);
   const lang = useSyncExternalStore(subscribe, getSnapshot, () => initial);
 

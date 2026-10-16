@@ -23,7 +23,12 @@ import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import { DUSK, DuskSky, Dunes, Sand } from "../primitives/Wilderness";
-import { easeOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setEmissive, setOpacity } from "../primitives/mutate";
 
@@ -99,16 +104,59 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
   );
   const mat = useMemo(
     () => ({
-      post: new MeshStandardMaterial({ color: "#B08A58", roughness: 0.5, metalness: 0.3, transparent: true }),
-      linen: new MeshStandardMaterial({ color: DUSK.linen, roughness: 0.9, emissive: "#F3D38A", emissiveIntensity: 0.05, side: DoubleSide, transparent: true }),
-      screen: new MeshStandardMaterial({ color: "#3A3470", roughness: 0.85, emissive: "#6E2A4E", emissiveIntensity: 0.15, side: DoubleSide, transparent: true }),
-      skins: new MeshStandardMaterial({ color: "#5A3028", roughness: 0.95, transparent: true }),
-      gold: new MeshStandardMaterial({ color: "#D9B45E", roughness: 0.4, metalness: 0.3, emissive: "#F09A3E", emissiveIntensity: 0.1, transparent: true }),
-      bronze: new MeshStandardMaterial({ color: "#8A5A2E", roughness: 0.6, metalness: 0.3, transparent: true }),
+      post: new MeshStandardMaterial({
+        color: "#B08A58",
+        roughness: 0.5,
+        metalness: 0.3,
+        transparent: true,
+      }),
+      linen: new MeshStandardMaterial({
+        color: DUSK.linen,
+        roughness: 0.9,
+        emissive: "#F3D38A",
+        emissiveIntensity: 0.05,
+        side: DoubleSide,
+        transparent: true,
+      }),
+      screen: new MeshStandardMaterial({
+        color: "#3A3470",
+        roughness: 0.85,
+        emissive: "#6E2A4E",
+        emissiveIntensity: 0.15,
+        side: DoubleSide,
+        transparent: true,
+      }),
+      skins: new MeshStandardMaterial({
+        color: "#5A3028",
+        roughness: 0.95,
+        transparent: true,
+      }),
+      gold: new MeshStandardMaterial({
+        color: "#D9B45E",
+        roughness: 0.4,
+        metalness: 0.3,
+        emissive: "#F09A3E",
+        emissiveIntensity: 0.1,
+        transparent: true,
+      }),
+      bronze: new MeshStandardMaterial({
+        color: "#8A5A2E",
+        roughness: 0.6,
+        metalness: 0.3,
+        transparent: true,
+      }),
     }),
     [],
   );
-  const scratch = useMemo(() => ({ m: new Matrix4(), p: new Vector3(), q: new Quaternion(), s: new Vector3() }), []);
+  const scratch = useMemo(
+    () => ({
+      m: new Matrix4(),
+      p: new Vector3(),
+      q: new Quaternion(),
+      s: new Vector3(),
+    }),
+    [],
+  );
   useEffect(
     () => () => {
       Object.values(geo).forEach((g) => g.dispose());
@@ -126,7 +174,8 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
     const pitched = easeOutCubic((p - TENT_AT) / 0.9);
     const lit = smoothstep(GLORY_AT, GLORY_AT + 1.4, p);
 
-    if (site.current) site.current.rotation.y = -0.55 + Math.sin(t * 0.2) * 0.08;
+    if (site.current)
+      site.current.rotation.y = -0.55 + Math.sin(t * 0.2) * 0.08;
     const m = postsMesh.current;
     if (m) {
       spots.forEach(([x, z], i) => {
@@ -152,9 +201,16 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
     setEmissive(mat.linen, (0.05 + 0.12 * lit) * fade);
     setEmissive(mat.gold, (0.1 + 0.3 * lit) * fade);
     if (key.current) key.current.intensity = (4 + lit * 6) * fade;
-    if (glory.current) glory.current.uniforms.uAlpha.value = 0.7 * lit * fade * (0.92 + Math.sin(t * 1.2) * 0.08);
+    if (glory.current)
+      glory.current.uniforms.uAlpha.value =
+        0.7 * lit * fade * (0.92 + Math.sin(t * 1.2) * 0.08);
     if (door.current) door.current.uniforms.uAlpha.value = 0.6 * lit * fade;
-    if (fire.current) fire.current.uniforms.uAlpha.value = 0.5 * hung * fade * (0.85 + Math.sin(t * 7) * 0.1 + Math.sin(t * 11) * 0.05);
+    if (fire.current)
+      fire.current.uniforms.uAlpha.value =
+        0.5 *
+        hung *
+        fade *
+        (0.85 + Math.sin(t * 7) * 0.1 + Math.sin(t * 11) * 0.05);
   });
 
   const top = GROUND + POST_H;
@@ -166,29 +222,133 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
       <Sand y={GROUND} far={-10} />
       <hemisphereLight args={["#6E74B8", "#2B2022", 0.9]} />
       <directionalLight position={[-3, 4, 3]} intensity={0.7} color="#C9C3E0" />
-      <pointLight ref={key} position={[0.9, GROUND + 0.8, 0.8]} intensity={4} distance={6} decay={1.6} color={DUSK.fire} />
+      <pointLight
+        ref={key}
+        position={[0.9, GROUND + 0.8, 0.8]}
+        intensity={4}
+        distance={6}
+        decay={1.6}
+        color={DUSK.fire}
+      />
       <group ref={site} position={[0.25, 0, -0.4]} scale={mobile ? 0.8 : 1}>
-        <instancedMesh ref={postsMesh} args={[geo.post, mat.post, spots.length]} frustumCulled={false} />
+        <instancedMesh
+          ref={postsMesh}
+          args={[geo.post, mat.post, spots.length]}
+          frustumCulled={false}
+        />
         <group ref={linen}>
-          <mesh geometry={geo.panelLong} material={mat.linen} position={[0, top, -CW]} />
-          <mesh geometry={geo.panelLong} material={mat.linen} position={[0, top, CW]} />
-          <mesh geometry={geo.panelShort} material={mat.linen} position={[-CL, top, 0]} rotation={[0, Math.PI / 2, 0]} />
-          <mesh geometry={geo.panelSide} material={mat.linen} position={[CL, top, -(CW + GATE) / 2]} rotation={[0, Math.PI / 2, 0]} />
-          <mesh geometry={geo.panelSide} material={mat.linen} position={[CL, top, (CW + GATE) / 2]} rotation={[0, Math.PI / 2, 0]} />
-          <mesh geometry={geo.gate} material={mat.screen} position={[CL + 0.12, top, 0]} rotation={[0, Math.PI / 2, 0]} />
+          <mesh
+            geometry={geo.panelLong}
+            material={mat.linen}
+            position={[0, top, -CW]}
+          />
+          <mesh
+            geometry={geo.panelLong}
+            material={mat.linen}
+            position={[0, top, CW]}
+          />
+          <mesh
+            geometry={geo.panelShort}
+            material={mat.linen}
+            position={[-CL, top, 0]}
+            rotation={[0, Math.PI / 2, 0]}
+          />
+          <mesh
+            geometry={geo.panelSide}
+            material={mat.linen}
+            position={[CL, top, -(CW + GATE) / 2]}
+            rotation={[0, Math.PI / 2, 0]}
+          />
+          <mesh
+            geometry={geo.panelSide}
+            material={mat.linen}
+            position={[CL, top, (CW + GATE) / 2]}
+            rotation={[0, Math.PI / 2, 0]}
+          />
+          <mesh
+            geometry={geo.gate}
+            material={mat.screen}
+            position={[CL + 0.12, top, 0]}
+            rotation={[0, Math.PI / 2, 0]}
+          />
         </group>
-        <mesh ref={altar} geometry={geo.altar} material={mat.bronze} position={[ALTAR_X, GROUND + 0.085, 0]} />
-        <Glow position={[ALTAR_X, GROUND + 0.25, 0]} size={0.5} color={DUSK.fire} inner="#FFE3B0" alpha={0} power={1.6} renderOrder={5} billboard onMaterial={(g) => { fire.current = g; }} />
-        <Embers count={mobile ? 8 : 14} box={[0.2, 1.4, 0.2]} position={[ALTAR_X, GROUND + 0.2, 0]} rise={0.12} size={1.4} alpha={0.55} />
+        <mesh
+          ref={altar}
+          geometry={geo.altar}
+          material={mat.bronze}
+          position={[ALTAR_X, GROUND + 0.085, 0]}
+        />
+        <Glow
+          position={[ALTAR_X, GROUND + 0.25, 0]}
+          size={0.5}
+          color={DUSK.fire}
+          inner="#FFE3B0"
+          alpha={0}
+          power={1.6}
+          renderOrder={5}
+          billboard
+          onMaterial={(g) => {
+            fire.current = g;
+          }}
+        />
+        <Embers
+          count={mobile ? 8 : 14}
+          box={[0.2, 1.4, 0.2]}
+          position={[ALTAR_X, GROUND + 0.2, 0]}
+          rise={0.12}
+          size={1.4}
+          alpha={0.55}
+        />
         <group ref={tent}>
-          <mesh geometry={geo.tent} material={mat.skins} position={[TENT_X, GROUND, 0]} rotation={[0, Math.PI / 2, 0]} />
+          <mesh
+            geometry={geo.tent}
+            material={mat.skins}
+            position={[TENT_X, GROUND, 0]}
+            rotation={[0, Math.PI / 2, 0]}
+          />
           {[-0.24, -0.12, 0, 0.12, 0.24].map((z) => (
-            <mesh key={z} geometry={geo.pillar} material={mat.gold} position={[tentFront + 0.03, GROUND + 0.25, z]} />
+            <mesh
+              key={z}
+              geometry={geo.pillar}
+              material={mat.gold}
+              position={[tentFront + 0.03, GROUND + 0.25, z]}
+            />
           ))}
-          <mesh geometry={geo.veil} material={mat.screen} position={[tentFront + 0.01, GROUND + 0.25, 0]} rotation={[0, Math.PI / 2, 0]} />
+          <mesh
+            geometry={geo.veil}
+            material={mat.screen}
+            position={[tentFront + 0.01, GROUND + 0.25, 0]}
+            rotation={[0, Math.PI / 2, 0]}
+          />
         </group>
-        <Glow position={[tentFront + 0.1, GROUND + 0.3, 0]} size={0.9} color="#F3D38A" inner="#FFF8E8" alpha={0} power={1.8} renderOrder={6} billboard onMaterial={(g) => { door.current = g; }} />
-        <Glow position={[TENT_X, GROUND + 1.05, 0]} size={1} scaleX={2.8} scaleY={1.5} color="#E8DFCB" inner="#FFF8E8" alpha={0} power={1.6} renderOrder={7} billboard onMaterial={(g) => { glory.current = g; }} />
+        <Glow
+          position={[tentFront + 0.1, GROUND + 0.3, 0]}
+          size={0.9}
+          color="#F3D38A"
+          inner="#FFF8E8"
+          alpha={0}
+          power={1.8}
+          renderOrder={6}
+          billboard
+          onMaterial={(g) => {
+            door.current = g;
+          }}
+        />
+        <Glow
+          position={[TENT_X, GROUND + 1.05, 0]}
+          size={1}
+          scaleX={2.8}
+          scaleY={1.5}
+          color="#E8DFCB"
+          inner="#FFF8E8"
+          alpha={0}
+          power={1.6}
+          renderOrder={7}
+          billboard
+          onMaterial={(g) => {
+            glory.current = g;
+          }}
+        />
       </group>
       {effects && <SceneEffects bloom={0.45} />}
     </>

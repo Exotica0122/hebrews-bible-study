@@ -15,7 +15,9 @@ describe("parseMarked", () => {
   });
 
   it("interleaves plain and keyed segments in source order", () => {
-    expect(parseMarked("He is the [radiance|radiance] of the [glory|glory of God].")).toEqual([
+    expect(
+      parseMarked("He is the [radiance|radiance] of the [glory|glory of God]."),
+    ).toEqual([
       { text: "He is the " },
       { key: "radiance", text: "radiance" },
       { text: " of the " },

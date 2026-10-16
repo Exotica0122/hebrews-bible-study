@@ -58,8 +58,23 @@ export const HEADLANDS: HillLayer[] = [
 ];
 
 /** Overcast sky, pale low down where the rain is clearing, with a faint warm break rather than a sunset band. */
-export function StormSky({ horizonY = -0.8, warmth = 0.22 }: { horizonY?: number; warmth?: number }) {
-  return <Sky top={COAST.top} horizon={COAST.horizon} glow={COAST.break} horizonY={horizonY} glowStrength={warmth} z={-48} />;
+export function StormSky({
+  horizonY = -0.8,
+  warmth = 0.22,
+}: {
+  horizonY?: number;
+  warmth?: number;
+}) {
+  return (
+    <Sky
+      top={COAST.top}
+      horizon={COAST.horizon}
+      glow={COAST.break}
+      horizonY={horizonY}
+      glowStrength={warmth}
+      z={-48}
+    />
+  );
 }
 
 export function Headlands({ layers = HEADLANDS }: { layers?: HillLayer[] }) {
@@ -67,7 +82,13 @@ export function Headlands({ layers = HEADLANDS }: { layers?: HillLayer[] }) {
 }
 
 /** Cool light from the cloud and a low warm key from the break. */
-export function CoastLights({ sun = [-6, 4, -6], intensity = 1.6 }: { sun?: [number, number, number]; intensity?: number }) {
+export function CoastLights({
+  sun = [-6, 4, -6],
+  intensity = 1.6,
+}: {
+  sun?: [number, number, number];
+  intensity?: number;
+}) {
   return (
     <>
       <hemisphereLight args={["#C9D3D6", "#4A5A48", 1.2]} />
@@ -87,11 +108,15 @@ const WAVES: [number, number, number, number, number][] = [
 /** Height of the sea surface at (x, z), relative to its rest level, for floating things on it. */
 export function swell(x: number, z: number, t: number, amp = 1) {
   let h = 0;
-  for (const [dx, dz, f, a, s] of WAVES) h += a * Math.sin((dx * x + dz * z) * f + t * s);
+  for (const [dx, dz, f, a, s] of WAVES)
+    h += a * Math.sin((dx * x + dz * z) * f + t * s);
   return h * amp;
 }
 
-const waveGlsl = WAVES.map(([dx, dz, f, a, s]) => `r += wave(p, vec2(${dx.toFixed(3)}, ${dz.toFixed(3)}), ${f.toFixed(2)}, ${a.toFixed(3)}, ${s.toFixed(2)}, t);`).join("\n  ");
+const waveGlsl = WAVES.map(
+  ([dx, dz, f, a, s]) =>
+    `r += wave(p, vec2(${dx.toFixed(3)}, ${dz.toFixed(3)}), ${f.toFixed(2)}, ${a.toFixed(3)}, ${s.toFixed(2)}, t);`,
+).join("\n  ");
 
 const SEA_VERT = /* glsl */ `
 uniform float uTime;
@@ -172,7 +197,22 @@ interface SeaProps {
 }
 
 /** A lit swell running to the horizon, shaded by its own shader so it can fade into the mist and catch the break of light. */
-export function Sea({ y = -1, near = 6, far = -70, width = 140, amp = 1, breakAt = [-8, -30], breakStrength = 1, light = [-6, 4, -6], fog = [12, 60], segments = [180, 120], tint, side = FrontSide, speed = 1, onMaterial }: SeaProps) {
+export function Sea({
+  y = -1,
+  near = 6,
+  far = -70,
+  width = 140,
+  amp = 1,
+  breakAt = [-8, -30],
+  breakStrength = 1,
+  light = [-6, 4, -6],
+  fog = [12, 60],
+  segments = [180, 120],
+  tint,
+  side = FrontSide,
+  speed = 1,
+  onMaterial,
+}: SeaProps) {
   const geometry = useMemo(() => {
     const g = new PlaneGeometry(width, near - far, segments[0], segments[1]);
     g.rotateX(-Math.PI / 2);
@@ -214,8 +254,22 @@ export function Sea({ y = -1, near = 6, far = -70, width = 140, amp = 1, breakAt
     },
     [geometry, material],
   );
-  useFrame((_, dt) => setUniform(material, "uTime", material.uniforms.uTime.value + Math.min(dt, 0.05) * speed));
-  return <mesh geometry={geometry} material={material} position={[0, y, 0]} renderOrder={-6} frustumCulled={false} />;
+  useFrame((_, dt) =>
+    setUniform(
+      material,
+      "uTime",
+      material.uniforms.uTime.value + Math.min(dt, 0.05) * speed,
+    ),
+  );
+  return (
+    <mesh
+      geometry={geometry}
+      material={material}
+      position={[0, y, 0]}
+      renderOrder={-6}
+      frustumCulled={false}
+    />
+  );
 }
 
 export function hash(n: number) {
@@ -262,7 +316,15 @@ interface RainProps {
 }
 
 /** Rain as falling streaks inside a box. */
-export function Rain({ position = [0, 0, 0], box, count, size = 9, slant = 0.18, color = "#E4EAEA", strength }: RainProps) {
+export function Rain({
+  position = [0, 0, 0],
+  box,
+  count,
+  size = 9,
+  slant = 0.18,
+  color = "#E4EAEA",
+  strength,
+}: RainProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const ref = useRef<Points>(null);
   const geometry = useMemo(() => {
@@ -273,7 +335,10 @@ export function Rain({ position = [0, 0, 0], box, count, size = 9, slant = 0.18,
       seed[i * 3 + 2] = hash(i + 0.71);
     }
     const g = new BufferGeometry();
-    g.setAttribute("position", new BufferAttribute(new Float32Array(count * 3), 3));
+    g.setAttribute(
+      "position",
+      new BufferAttribute(new Float32Array(count * 3), 3),
+    );
     g.setAttribute("aSeed", new BufferAttribute(seed, 3));
     return g;
   }, [count]);
@@ -310,7 +375,16 @@ export function Rain({ position = [0, 0, 0], box, count, size = 9, slant = 0.18,
     setUniform(m, "uPixelRatio", pixelRatio);
     setUniform(m, "uAlpha", strength?.current ?? 1);
   });
-  return <points ref={ref} position={position} geometry={geometry} material={material} frustumCulled={false} renderOrder={15} />;
+  return (
+    <points
+      ref={ref}
+      position={position}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={15}
+    />
+  );
 }
 
 const furrows = new Map<string, CanvasTexture>();
@@ -343,7 +417,19 @@ function furrowTexture(soil: string, ridge: string) {
 }
 
 /** A ploughed plot lying flat at `position`, furrows running away from the viewer. */
-export function Plot({ position, size, rows = 6, soil = "#4A3A2E", ridge = "#9A7A5A" }: { position: [number, number, number]; size: [number, number]; rows?: number; soil?: string; ridge?: string }) {
+export function Plot({
+  position,
+  size,
+  rows = 6,
+  soil = "#4A3A2E",
+  ridge = "#9A7A5A",
+}: {
+  position: [number, number, number];
+  size: [number, number];
+  rows?: number;
+  soil?: string;
+  ridge?: string;
+}) {
   const material = useMemo(() => {
     const map = furrowTexture(soil, ridge).clone();
     map.repeat.set(rows, 1);
@@ -358,30 +444,60 @@ export function Plot({ position, size, rows = 6, soil = "#4A3A2E", ridge = "#9A7
     [material],
   );
   return (
-    <mesh position={position} rotation={[-Math.PI / 2, 0, 0]} material={material}>
+    <mesh
+      position={position}
+      rotation={[-Math.PI / 2, 0, 0]}
+      material={material}
+    >
       <planeGeometry args={size} />
     </mesh>
   );
 }
 
 /** A headland seen from the sea side: a turf top over a rock face that slopes down to the water. Its seaward foot is at x = 0, extending to +x. */
-export function Cliff({ position, width, height, depth = 0, turf = COAST.turf, rock = "#5E5A50", flip = false }: { position: [number, number, number]; width: number; height: number; depth?: number; turf?: string; rock?: string; flip?: boolean }) {
+export function Cliff({
+  position,
+  width,
+  height,
+  depth = 0,
+  turf = COAST.turf,
+  rock = "#5E5A50",
+  flip = false,
+}: {
+  position: [number, number, number];
+  width: number;
+  height: number;
+  depth?: number;
+  turf?: string;
+  rock?: string;
+  flip?: boolean;
+}) {
   const parts = useMemo(() => {
-    const top = (x: number) => height + Math.sin(x * 1.3) * 0.08 + Math.sin(x * 3.1) * 0.04;
+    const top = (x: number) =>
+      height + Math.sin(x * 1.3) * 0.08 + Math.sin(x * 3.1) * 0.04;
     const face = new Shape();
     face.moveTo(0, -3);
     for (let i = 0; i <= 12; i++) {
       const k = i / 12;
-      face.lineTo(width * 0.22 * k + Math.sin(i * 2.7) * 0.06, -3 + (height + 3) * Math.pow(k, 0.7));
+      face.lineTo(
+        width * 0.22 * k + Math.sin(i * 2.7) * 0.06,
+        -3 + (height + 3) * Math.pow(k, 0.7),
+      );
     }
-    for (let i = 0; i <= 24; i++) face.lineTo(width * 0.22 + (width * 0.78 * i) / 24, top(i));
+    for (let i = 0; i <= 24; i++)
+      face.lineTo(width * 0.22 + (width * 0.78 * i) / 24, top(i));
     face.lineTo(width, -3);
     face.closePath();
     const grass = new Shape();
     grass.moveTo(width * 0.2, top(0) - 0.12);
-    for (let i = 0; i <= 24; i++) grass.lineTo(width * 0.22 + (width * 0.78 * i) / 24, top(i) + 0.01);
+    for (let i = 0; i <= 24; i++)
+      grass.lineTo(width * 0.22 + (width * 0.78 * i) / 24, top(i) + 0.01);
     grass.lineTo(width, top(24) - 0.22);
-    for (let i = 24; i >= 0; i--) grass.lineTo(width * 0.22 + (width * 0.78 * i) / 24, top(i) - 0.16 - Math.sin(i * 1.9) * 0.05);
+    for (let i = 24; i >= 0; i--)
+      grass.lineTo(
+        width * 0.22 + (width * 0.78 * i) / 24,
+        top(i) - 0.16 - Math.sin(i * 1.9) * 0.05,
+      );
     grass.closePath();
     return {
       face: new ShapeGeometry(face),
@@ -402,23 +518,47 @@ export function Cliff({ position, width, height, depth = 0, turf = COAST.turf, r
   return (
     <group position={position} scale={[flip ? -1 : 1, 1, 1]}>
       <mesh geometry={parts.face} material={parts.rock} />
-      <mesh geometry={parts.grass} material={parts.turf} position={[0, 0, depth + 0.01]} />
+      <mesh
+        geometry={parts.grass}
+        material={parts.turf}
+        position={[0, 0, depth + 0.01]}
+      />
     </group>
   );
 }
 
 /** A small open boat with a mast and furled sail, bow toward +x, waterline at the group origin. */
-export function Boat({ scale = 1, hull = "#5A4334" }: { scale?: number; hull?: string }) {
+export function Boat({
+  scale = 1,
+  hull = "#5A4334",
+}: {
+  scale?: number;
+  hull?: string;
+}) {
   const parts = useMemo(
     () => ({
-      hull: new SphereGeometry(1, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2),
+      hull: new SphereGeometry(
+        1,
+        24,
+        12,
+        0,
+        Math.PI * 2,
+        Math.PI / 2,
+        Math.PI / 2,
+      ),
       mast: new CylinderGeometry(0.02, 0.025, 1.5, 6),
       boom: new CylinderGeometry(0.035, 0.035, 0.9, 8),
     }),
     [],
   );
-  const wood = useMemo(() => new MeshStandardMaterial({ color: hull, roughness: 0.85 }), [hull]);
-  const sail = useMemo(() => new MeshStandardMaterial({ color: "#D8D0BC", roughness: 1 }), []);
+  const wood = useMemo(
+    () => new MeshStandardMaterial({ color: hull, roughness: 0.85 }),
+    [hull],
+  );
+  const sail = useMemo(
+    () => new MeshStandardMaterial({ color: "#D8D0BC", roughness: 1 }),
+    [],
+  );
   useEffect(
     () => () => {
       Object.values(parts).forEach((g) => g.dispose());
@@ -429,9 +569,19 @@ export function Boat({ scale = 1, hull = "#5A4334" }: { scale?: number; hull?: s
   );
   return (
     <group scale={scale}>
-      <mesh geometry={parts.hull} material={wood} position={[0, 0.12, 0]} scale={[0.9, 0.32, 0.3]} />
+      <mesh
+        geometry={parts.hull}
+        material={wood}
+        position={[0, 0.12, 0]}
+        scale={[0.9, 0.32, 0.3]}
+      />
       <mesh geometry={parts.mast} material={wood} position={[-0.05, 0.85, 0]} />
-      <mesh geometry={parts.boom} material={sail} position={[-0.3, 0.32, 0]} rotation={[0, 0, Math.PI / 2 - 0.08]} />
+      <mesh
+        geometry={parts.boom}
+        material={sail}
+        position={[-0.3, 0.32, 0]}
+        rotation={[0, 0, Math.PI / 2 - 0.08]}
+      />
     </group>
   );
 }
@@ -448,7 +598,10 @@ export function Anchor({ color = COAST.iron }: { color?: string }) {
     }),
     [],
   );
-  const iron = useMemo(() => new MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.6 }), [color]);
+  const iron = useMemo(
+    () => new MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.6 }),
+    [color],
+  );
   useEffect(
     () => () => {
       Object.values(parts).forEach((g) => g.dispose());
@@ -460,19 +613,57 @@ export function Anchor({ color = COAST.iron }: { color?: string }) {
     <group>
       <mesh geometry={parts.ring} material={iron} position={[0, -0.08, 0]} />
       <mesh geometry={parts.shank} material={iron} position={[0, -0.78, 0]} />
-      <mesh geometry={parts.stock} material={iron} position={[0, -0.3, 0]} rotation={[Math.PI / 2, 0, 0]} />
-      <mesh geometry={parts.arms} material={iron} position={[0, -0.96, 0]} rotation={[0, 0, Math.PI]} />
-      <mesh geometry={parts.fluke} material={iron} position={[-0.42, -0.86, 0]} rotation={[0, 0, 0.5]} scale={[1, 1, 0.4]} />
-      <mesh geometry={parts.fluke} material={iron} position={[0.42, -0.86, 0]} rotation={[0, 0, -0.5]} scale={[1, 1, 0.4]} />
+      <mesh
+        geometry={parts.stock}
+        material={iron}
+        position={[0, -0.3, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
+      />
+      <mesh
+        geometry={parts.arms}
+        material={iron}
+        position={[0, -0.96, 0]}
+        rotation={[0, 0, Math.PI]}
+      />
+      <mesh
+        geometry={parts.fluke}
+        material={iron}
+        position={[-0.42, -0.86, 0]}
+        rotation={[0, 0, 0.5]}
+        scale={[1, 1, 0.4]}
+      />
+      <mesh
+        geometry={parts.fluke}
+        material={iron}
+        position={[0.42, -0.86, 0]}
+        rotation={[0, 0, -0.5]}
+        scale={[1, 1, 0.4]}
+      />
     </group>
   );
 }
 
 /** A rope between two points, as a thin cylinder. */
-export function Rope({ from, to, color = "#7A6A52", radius = 0.012 }: { from: [number, number, number]; to: [number, number, number]; color?: string; radius?: number }) {
+export function Rope({
+  from,
+  to,
+  color = "#7A6A52",
+  radius = 0.012,
+}: {
+  from: [number, number, number];
+  to: [number, number, number];
+  color?: string;
+  radius?: number;
+}) {
   const ref = useRef<Group>(null);
-  const geometry = useMemo(() => new CylinderGeometry(radius, radius, 1, 6), [radius]);
-  const material = useMemo(() => new MeshStandardMaterial({ color, roughness: 1 }), [color]);
+  const geometry = useMemo(
+    () => new CylinderGeometry(radius, radius, 1, 6),
+    [radius],
+  );
+  const material = useMemo(
+    () => new MeshStandardMaterial({ color, roughness: 1 }),
+    [color],
+  );
   useEffect(
     () => () => {
       geometry.dispose();
@@ -488,15 +679,38 @@ export function Rope({ from, to, color = "#7A6A52", radius = 0.012 }: { from: [n
   }, [bx, by, bz]);
   return (
     <group ref={ref} position={from}>
-      <mesh geometry={geometry} material={material} position={[0, 0, len / 2]} rotation={[Math.PI / 2, 0, 0]} scale={[1, len, 1]} />
+      <mesh
+        geometry={geometry}
+        material={material}
+        position={[0, 0, len / 2]}
+        rotation={[Math.PI / 2, 0, 0]}
+        scale={[1, len, 1]}
+      />
     </group>
   );
 }
 
 /** A squall of mist across the whole view, held just in front of the camera; covers the loop's reset. */
-export function Squall({ opacity, color = COAST.mist }: { opacity: RefObject<number>; color?: string }) {
+export function Squall({
+  opacity,
+  color = COAST.mist,
+}: {
+  opacity: RefObject<number>;
+  color?: string;
+}) {
   const ref = useRef<Mesh>(null);
-  const material = useMemo(() => new MeshBasicMaterial({ color, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false }), [color]);
+  const material = useMemo(
+    () =>
+      new MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        fog: false,
+      }),
+    [color],
+  );
   useEffect(() => () => material.dispose(), [material]);
   useFrame(({ camera }) => {
     const m = ref.current;
@@ -549,7 +763,12 @@ interface CountlessProps {
 }
 
 /** Points that appear one after another until they cannot be counted, each twinkling: stars overhead, or glints in the sand. */
-export function Countless({ points, reveal, size = 2.4, color = "#F4F1E6" }: CountlessProps) {
+export function Countless({
+  points,
+  reveal,
+  size = 2.4,
+  color = "#F4F1E6",
+}: CountlessProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const ref = useRef<Points>(null);
   const geometry = useMemo(() => {
@@ -566,7 +785,13 @@ export function Countless({ points, reveal, size = 2.4, color = "#F4F1E6" }: Cou
       new ShaderMaterial({
         vertexShader: COUNTLESS_VERT,
         fragmentShader: COUNTLESS_FRAG,
-        uniforms: { uTime: { value: 0 }, uPixelRatio: { value: 1 }, uReveal: { value: 0 }, uSize: { value: size }, uColor: { value: new Color(color) } },
+        uniforms: {
+          uTime: { value: 0 },
+          uPixelRatio: { value: 1 },
+          uReveal: { value: 0 },
+          uSize: { value: size },
+          uColor: { value: new Color(color) },
+        },
         transparent: true,
         depthWrite: false,
         blending: AdditiveBlending,
@@ -587,5 +812,13 @@ export function Countless({ points, reveal, size = 2.4, color = "#F4F1E6" }: Cou
     setUniform(m, "uPixelRatio", pixelRatio);
     setUniform(m, "uReveal", reveal.current);
   });
-  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} renderOrder={-5} />;
+  return (
+    <points
+      ref={ref}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={-5}
+    />
+  );
 }

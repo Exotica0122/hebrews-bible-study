@@ -34,7 +34,12 @@
   height: 700px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  background: radial-gradient(circle, rgba(243, 211, 138, 0.16) 0, rgba(183, 137, 44, 0.05) 22%, rgba(20, 17, 13, 0) 50%);
+  background: radial-gradient(
+    circle,
+    rgba(243, 211, 138, 0.16) 0,
+    rgba(183, 137, 44, 0.05) 22%,
+    rgba(20, 17, 13, 0) 50%
+  );
 }
 .ring {
   position: absolute;

@@ -10,7 +10,10 @@
   justify-content: center;
   background: var(--vellum-deep);
   border: 1px solid var(--gold);
-  box-shadow: 0 0 0 3px var(--vellum), 0 0 0 4px rgba(183, 137, 44, 0.45), 0 10px 24px rgba(43, 34, 24, 0.18);
+  box-shadow:
+    0 0 0 3px var(--vellum),
+    0 0 0 4px rgba(183, 137, 44, 0.45),
+    0 10px 24px rgba(43, 34, 24, 0.18);
   color: var(--gold-text);
   cursor: pointer;
   opacity: 0;

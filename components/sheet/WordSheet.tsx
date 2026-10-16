@@ -16,9 +16,17 @@ interface WordSheetProps {
   onClose: () => void;
 }
 
-const FOCUSABLE = "button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])";
+const FOCUSABLE =
+  "button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])";
 
-export function WordSheet({ word, prev, next, onPrev, onNext, onClose }: WordSheetProps) {
+export function WordSheet({
+  word,
+  prev,
+  next,
+  onPrev,
+  onNext,
+  onClose,
+}: WordSheetProps) {
   const { t } = useLang();
   const sheet = useRef<HTMLDivElement>(null);
   const close = useRef<HTMLButtonElement>(null);
@@ -53,13 +61,30 @@ export function WordSheet({ word, prev, next, onPrev, onNext, onClose }: WordShe
   return (
     <>
       <div className={s.backdrop} onClick={onClose} />
-      <div ref={sheet} role="dialog" aria-modal="true" aria-label={word.t} className={s.sheet} onKeyDown={trapTab}>
+      <div
+        ref={sheet}
+        role="dialog"
+        aria-modal="true"
+        aria-label={word.t}
+        className={s.sheet}
+        onKeyDown={trapTab}
+      >
         <div className={s.handle} />
         <div className={s.head}>
-          <span className={`hb-eyebrow ${s.label}`}>{t.wordStudy} · {word.v}</span>
+          <span className={`hb-eyebrow ${s.label}`}>
+            {t.wordStudy} · {word.v}
+          </span>
           <span className={s.actions}>
             <CopyLinkButton className={m.sheetLink} />
-            <button ref={close} type="button" className={s.close} aria-label={t.close} onClick={onClose}>×</button>
+            <button
+              ref={close}
+              type="button"
+              className={s.close}
+              aria-label={t.close}
+              onClick={onClose}
+            >
+              ×
+            </button>
           </span>
         </div>
         <div className={s.title}>{word.t}</div>
@@ -68,8 +93,16 @@ export function WordSheet({ word, prev, next, onPrev, onNext, onClose }: WordShe
         <p className={s.def}>{word.d}</p>
         {(prev || next) && (
           <div className={s.nav}>
-            {prev && <button type="button" className={s.navBtn} onClick={onPrev}>← {prev.t}</button>}
-            {next && <button type="button" className={s.navBtn} onClick={onNext}>{next.t} →</button>}
+            {prev && (
+              <button type="button" className={s.navBtn} onClick={onPrev}>
+                ← {prev.t}
+              </button>
+            )}
+            {next && (
+              <button type="button" className={s.navBtn} onClick={onNext}>
+                {next.t} →
+              </button>
+            )}
           </div>
         )}
       </div>

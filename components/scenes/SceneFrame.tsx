@@ -14,7 +14,10 @@ import s from "./scene.module.css";
 
 export const SHIMMER_MS = 1800;
 
-const SceneCanvas = dynamic(() => import("./three/SceneCanvas"), { ssr: false, loading: () => null });
+const SceneCanvas = dynamic(() => import("./three/SceneCanvas"), {
+  ssr: false,
+  loading: () => null,
+});
 
 export interface SceneLabels {
   loading: string;
@@ -30,19 +33,42 @@ interface SceneFrameProps {
   children?: React.ReactNode;
 }
 
-export function useSceneGate(id: string, ref: React.RefObject<HTMLElement | null>, reduceMotion: boolean) {
+export function useSceneGate(
+  id: string,
+  ref: React.RefObject<HTMLElement | null>,
+  reduceMotion: boolean,
+) {
   const reduced = useReducedMotion(reduceMotion);
   const mobile = useIsMobile();
   const webgl = useWebGLSupport();
   const tier = useGpuTier();
   const { near, visible } = useSceneVisibility(ref);
   const [lost, setLost] = useState(false);
-  const wants = near && webgl === true && tier !== null && tier >= 1 && !reduced && !lost;
+  const wants =
+    near && webgl === true && tier !== null && tier >= 1 && !reduced && !lost;
   const held = useSceneSlot(id, wants, ref, mobile ? 2 : 3, visible ? 1 : 0);
-  return { reduced, mobile, webgl, tier, effects: effectsForTier(tier), near, visible, lost, setLost, mount: wants && held };
+  return {
+    reduced,
+    mobile,
+    webgl,
+    tier,
+    effects: effectsForTier(tier),
+    near,
+    visible,
+    lost,
+    setLost,
+    mount: wants && held,
+  };
 }
 
-export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, children }: SceneFrameProps) {
+export function SceneFrame({
+  id,
+  scene,
+  labels,
+  artNote,
+  reduceMotion = false,
+  children,
+}: SceneFrameProps) {
   const ref = useRef<HTMLDivElement>(null);
   const gate = useSceneGate(id, ref, reduceMotion);
   const [shimmerDone, setShimmerDone] = useState(false);
@@ -79,10 +105,21 @@ export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, c
   const showCanvas = gate.mount && canvasReady;
 
   return (
-    <div ref={ref} className={s.panel} data-scene={id} data-effects={gate.effects ? "on" : "off"} {...bindDrag()}>
-      <CssScene scene={scene} className={`${s.cssLayer} ${showCanvas ? s.cssHidden : ""}`} />
+    <div
+      ref={ref}
+      className={s.panel}
+      data-scene={id}
+      data-effects={gate.effects ? "on" : "off"}
+      {...bindDrag()}
+    >
+      <CssScene
+        scene={scene}
+        className={`${s.cssLayer} ${showCanvas ? s.cssHidden : ""}`}
+      />
       {gate.mount && (
-        <div className={`${s.canvasWrap} ${showCanvas ? s.canvasReady : ""} ${swapping ? s.canvasSwap : ""}`}>
+        <div
+          className={`${s.canvasWrap} ${showCanvas ? s.canvasReady : ""} ${swapping ? s.canvasSwap : ""}`}
+        >
           <SceneCanvas
             scene={scene}
             active={gate.visible}
@@ -100,7 +137,9 @@ export function SceneFrame({ id, scene, labels, artNote, reduceMotion = false, c
         <div className={s.shimmer}>
           <div className={s.shimmerSweep} />
           <div className={s.loading}>
-            <span className={s.loadingBar}><span /></span>
+            <span className={s.loadingBar}>
+              <span />
+            </span>
             {labels.loading}
           </div>
         </div>

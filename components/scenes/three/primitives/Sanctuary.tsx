@@ -41,8 +41,22 @@ export const HOLY = {
 export const FLOOR = -1.6;
 
 /** Thread bands across the weave, as [colour, width in px of a 256px tile]. */
-const CURTAIN_BANDS: [string, number][] = [[HOLY.linen, 70], [HOLY.blue, 26], [HOLY.linen, 8], [HOLY.purple, 22], [HOLY.linen, 8], [HOLY.scarlet, 22], [HOLY.linen, 100]];
-const VEIL_BANDS: [string, number][] = [[HOLY.blue, 64], [HOLY.purple, 52], [HOLY.scarlet, 26], [HOLY.purple, 52], [HOLY.blue, 62]];
+const CURTAIN_BANDS: [string, number][] = [
+  [HOLY.linen, 70],
+  [HOLY.blue, 26],
+  [HOLY.linen, 8],
+  [HOLY.purple, 22],
+  [HOLY.linen, 8],
+  [HOLY.scarlet, 22],
+  [HOLY.linen, 100],
+];
+const VEIL_BANDS: [string, number][] = [
+  [HOLY.blue, 64],
+  [HOLY.purple, 52],
+  [HOLY.scarlet, 26],
+  [HOLY.purple, 52],
+  [HOLY.blue, 62],
+];
 
 const textures = new Map<string, CanvasTexture>();
 /** A woven cloth tile: vertical thread bands, a gold thread at each seam, and a fine over-under weave. */
@@ -87,13 +101,26 @@ interface ClothProps {
 }
 
 /** Hanging woven cloth with soft vertical folds, lit by the lamps. Bottom edge at `position.y`. */
-export function Cloth({ width, height, position, rotationY = 0, kind = "curtain", folds = 9, depth = 0.08, repeat = 3 }: ClothProps) {
+export function Cloth({
+  width,
+  height,
+  position,
+  rotationY = 0,
+  kind = "curtain",
+  folds = 9,
+  depth = 0.08,
+  repeat = 3,
+}: ClothProps) {
   const geometry = useMemo(() => {
     const g = new PlaneGeometry(width, height, 96, 1);
     const p = g.attributes.position;
     for (let i = 0; i < p.count; i++) {
       const u = p.getX(i) / width;
-      p.setZ(i, Math.sin(u * folds * Math.PI * 2) * depth + Math.sin(u * folds * 4.7) * depth * 0.3);
+      p.setZ(
+        i,
+        Math.sin(u * folds * Math.PI * 2) * depth +
+          Math.sin(u * folds * 4.7) * depth * 0.3,
+      );
     }
     g.translate(0, height / 2, 0);
     g.computeVertexNormals();
@@ -113,29 +140,62 @@ export function Cloth({ width, height, position, rotationY = 0, kind = "curtain"
     },
     [geometry, material],
   );
-  return <mesh geometry={geometry} material={material} position={position} rotation={[0, rotationY, 0]} />;
+  return (
+    <mesh
+      geometry={geometry}
+      material={material}
+      position={position}
+      rotation={[0, rotationY, 0]}
+    />
+  );
 }
 
 /** The earthen floor of the tent, with a dark ceiling far overhead. */
-export function Floor({ y = FLOOR, color = HOLY.floor }: { y?: number; color?: string }) {
-  const material = useMemo(() => new MeshStandardMaterial({ color, roughness: 1 }), [color]);
+export function Floor({
+  y = FLOOR,
+  color = HOLY.floor,
+}: {
+  y?: number;
+  color?: string;
+}) {
+  const material = useMemo(
+    () => new MeshStandardMaterial({ color, roughness: 1 }),
+    [color],
+  );
   useEffect(() => () => material.dispose(), [material]);
   return (
-    <mesh position={[0, y, -4]} rotation={[-Math.PI / 2, 0, 0]} material={material}>
+    <mesh
+      position={[0, y, -4]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      material={material}
+    >
       <planeGeometry args={[30, 30]} />
     </mesh>
   );
 }
 
 export function useGold(roughness = 0.35) {
-  const m = useMemo(() => new MeshStandardMaterial({ color: HOLY.gold, roughness, metalness: 0.75 }), [roughness]);
+  const m = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: HOLY.gold,
+        roughness,
+        metalness: 0.75,
+      }),
+    [roughness],
+  );
   useEffect(() => () => m.dispose(), [m]);
   return m;
 }
 
 /** Steady with a small living flicker, scaled by `level`. */
 function flicker(t: number, seed: number) {
-  return 0.88 + Math.sin(t * 9 + seed * 7) * 0.05 + Math.sin(t * 23 + seed * 3) * 0.04 + Math.sin(t * 2.1 + seed) * 0.03;
+  return (
+    0.88 +
+    Math.sin(t * 9 + seed * 7) * 0.05 +
+    Math.sin(t * 23 + seed * 3) * 0.04 +
+    Math.sin(t * 2.1 + seed) * 0.03
+  );
 }
 
 interface FlameProps {
@@ -149,7 +209,14 @@ interface FlameProps {
 }
 
 /** One oil-lamp flame: a tall core in a warm halo, with a point light that flickers with it. */
-export function Flame({ position, size = 0.1, seed = 0, level, light = 0, distance = 9 }: FlameProps) {
+export function Flame({
+  position,
+  size = 0.1,
+  seed = 0,
+  level,
+  light = 0,
+  distance = 9,
+}: FlameProps) {
   const core = useRef<ShaderMaterial | null>(null);
   const halo = useRef<ShaderMaterial | null>(null);
   const lamp = useRef<PointLight>(null);
@@ -161,16 +228,58 @@ export function Flame({ position, size = 0.1, seed = 0, level, light = 0, distan
   });
   return (
     <group position={position}>
-      <Glow size={size * 7} color="#B8652A" inner={HOLY.flame} alpha={0.32} power={2.2} renderOrder={11} billboard onMaterial={(m) => { halo.current = m; }} />
-      <Glow position={[0, size * 0.5, 0]} size={size} scaleY={1.9} color={HOLY.flame} inner={HOLY.core} alpha={1} power={0.9} renderOrder={12} billboard onMaterial={(m) => { core.current = m; }} />
-      {light > 0 && <pointLight ref={lamp} color="#FFC27A" intensity={light} distance={distance} decay={1.6} />}
+      <Glow
+        size={size * 7}
+        color="#B8652A"
+        inner={HOLY.flame}
+        alpha={0.32}
+        power={2.2}
+        renderOrder={11}
+        billboard
+        onMaterial={(m) => {
+          halo.current = m;
+        }}
+      />
+      <Glow
+        position={[0, size * 0.5, 0]}
+        size={size}
+        scaleY={1.9}
+        color={HOLY.flame}
+        inner={HOLY.core}
+        alpha={1}
+        power={0.9}
+        renderOrder={12}
+        billboard
+        onMaterial={(m) => {
+          core.current = m;
+        }}
+      />
+      {light > 0 && (
+        <pointLight
+          ref={lamp}
+          color="#FFC27A"
+          intensity={light}
+          distance={distance}
+          decay={1.6}
+        />
+      )}
     </group>
   );
 }
 
 const ARMS = [0.17, 0.32, 0.47];
 /** The golden lampstand: a stem on a stepped foot, three arms each side, seven lamps along the top. Base at the origin. */
-export function Lampstand({ position, scale = 1, level, light = 7 }: { position: [number, number, number]; scale?: number; level?: RefObject<number>; light?: number }) {
+export function Lampstand({
+  position,
+  scale = 1,
+  level,
+  light = 7,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  level?: RefObject<number>;
+  light?: number;
+}) {
   const gold = useGold();
   const parts = useMemo(
     () => ({
@@ -197,30 +306,75 @@ export function Lampstand({ position, scale = 1, level, light = 7 }: { position:
       <mesh geometry={parts.foot} material={gold} position={[0, 0.06, 0]} />
       <mesh geometry={parts.stem} material={gold} position={[0, 0.8, 0]} />
       {parts.arms.map((g, i) => (
-        <mesh key={i} geometry={g} material={gold} position={[0, top, 0]} rotation={[0, 0, Math.PI]} />
+        <mesh
+          key={i}
+          geometry={g}
+          material={gold}
+          position={[0, top, 0]}
+          rotation={[0, 0, Math.PI]}
+        />
       ))}
       {lamps.map((x) => (
-        <mesh key={x} geometry={parts.cup} material={gold} position={[x, top + 0.03, 0]} />
+        <mesh
+          key={x}
+          geometry={parts.cup}
+          material={gold}
+          position={[x, top + 0.03, 0]}
+        />
       ))}
       {lamps.map((x, i) => (
-        <Flame key={x} position={[x, top + 0.09, 0]} size={0.055} seed={i} level={level} light={x === 0 ? light : 0} />
+        <Flame
+          key={x}
+          position={[x, top + 0.09, 0]}
+          size={0.055}
+          seed={i}
+          level={level}
+          light={x === 0 ? light : 0}
+        />
       ))}
     </group>
   );
 }
 
 /** The gold-covered altar of incense, with a horn at each corner. Base at the origin. */
-export function Altar({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+export function Altar({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
   const gold = useGold(0.5);
   const box = useMemo(() => new BoxGeometry(1, 1, 1), []);
   useEffect(() => () => box.dispose(), [box]);
-  const horns: [number, number][] = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+  const horns: [number, number][] = [
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+  ];
   return (
     <group position={position} scale={scale}>
-      <mesh geometry={box} material={gold} position={[0, 0.45, 0]} scale={[0.5, 0.9, 0.5]} />
-      <mesh geometry={box} material={gold} position={[0, 0.92, 0]} scale={[0.58, 0.05, 0.58]} />
+      <mesh
+        geometry={box}
+        material={gold}
+        position={[0, 0.45, 0]}
+        scale={[0.5, 0.9, 0.5]}
+      />
+      <mesh
+        geometry={box}
+        material={gold}
+        position={[0, 0.92, 0]}
+        scale={[0.58, 0.05, 0.58]}
+      />
       {horns.map(([x, z]) => (
-        <mesh key={`${x}${z}`} geometry={box} material={gold} position={[x * 0.24, 1.0, z * 0.24]} scale={0.07} />
+        <mesh
+          key={`${x}${z}`}
+          geometry={box}
+          material={gold}
+          position={[x * 0.24, 1.0, z * 0.24]}
+          scale={0.07}
+        />
       ))}
     </group>
   );
@@ -228,31 +382,92 @@ export function Altar({ position, scale = 1 }: { position: [number, number, numb
 
 /** The table of the bread of the Presence: a gold top on four legs. Top surface at `TABLE_TOP` above its base. */
 export const TABLE_TOP = 0.75;
-export function Table({ position, width = 1.1, depth = 0.55 }: { position: [number, number, number]; width?: number; depth?: number }) {
+export function Table({
+  position,
+  width = 1.1,
+  depth = 0.55,
+}: {
+  position: [number, number, number];
+  width?: number;
+  depth?: number;
+}) {
   const gold = useGold(0.45);
   const box = useMemo(() => new BoxGeometry(1, 1, 1), []);
   useEffect(() => () => box.dispose(), [box]);
-  const legs: [number, number][] = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+  const legs: [number, number][] = [
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+  ];
   return (
     <group position={position}>
-      <mesh geometry={box} material={gold} position={[0, TABLE_TOP - 0.03, 0]} scale={[width, 0.06, depth]} />
-      <mesh geometry={box} material={gold} position={[0, TABLE_TOP - 0.1, 0]} scale={[width * 0.94, 0.08, depth * 0.9]} />
+      <mesh
+        geometry={box}
+        material={gold}
+        position={[0, TABLE_TOP - 0.03, 0]}
+        scale={[width, 0.06, depth]}
+      />
+      <mesh
+        geometry={box}
+        material={gold}
+        position={[0, TABLE_TOP - 0.1, 0]}
+        scale={[width * 0.94, 0.08, depth * 0.9]}
+      />
       {legs.map(([x, z]) => (
-        <mesh key={`${x}${z}`} geometry={box} material={gold} position={[x * (width / 2 - 0.05), (TABLE_TOP - 0.06) / 2, z * (depth / 2 - 0.05)]} scale={[0.05, TABLE_TOP - 0.06, 0.05]} />
+        <mesh
+          key={`${x}${z}`}
+          geometry={box}
+          material={gold}
+          position={[
+            x * (width / 2 - 0.05),
+            (TABLE_TOP - 0.06) / 2,
+            z * (depth / 2 - 0.05),
+          ]}
+          scale={[0.05, TABLE_TOP - 0.06, 0.05]}
+        />
       ))}
     </group>
   );
 }
 
-const STANDING: [number, number][] = [[0, 0], [0.3, 0], [0.27, 0.5], [0.22, 0.95], [0.26, 1.24], [0.2, 1.38], [0.07, 1.45], [0, 1.46]];
-const KNEELING: [number, number][] = [[0, 0], [0.36, 0], [0.34, 0.2], [0.26, 0.5], [0.22, 0.75], [0.16, 0.86], [0.06, 0.9], [0, 0.91]];
+const STANDING: [number, number][] = [
+  [0, 0],
+  [0.3, 0],
+  [0.27, 0.5],
+  [0.22, 0.95],
+  [0.26, 1.24],
+  [0.2, 1.38],
+  [0.07, 1.45],
+  [0, 1.46],
+];
+const KNEELING: [number, number][] = [
+  [0, 0],
+  [0.36, 0],
+  [0.34, 0.2],
+  [0.26, 0.5],
+  [0.22, 0.75],
+  [0.16, 0.86],
+  [0.06, 0.9],
+  [0, 0.91],
+];
 
 /** A robed figure turned on a lathe, about 1.75 tall standing or 1.1 kneeling, feet at the origin. */
 export function useFigure(pose: "standing" | "kneeling" = "standing") {
   return useMemo(() => {
-    const body = new LatheGeometry((pose === "standing" ? STANDING : KNEELING).map(([r, y]) => new Vector2(r, y)), 20);
+    const body = new LatheGeometry(
+      (pose === "standing" ? STANDING : KNEELING).map(
+        ([r, y]) => new Vector2(r, y),
+      ),
+      20,
+    );
     const head = new SphereGeometry(0.105, 16, 12);
-    return { body, head, headY: pose === "standing" ? 1.6 : 1.03, headZ: pose === "standing" ? 0 : 0.08 };
+    return {
+      body,
+      head,
+      headY: pose === "standing" ? 1.6 : 1.03,
+      headZ: pose === "standing" ? 0 : 0.08,
+    };
   }, [pose]);
 }
 
@@ -266,11 +481,27 @@ interface FigureProps {
   turban?: boolean;
 }
 
-export function Figure({ position, robe, pose = "standing", scale = 1, rotationY = 0, turban = false }: FigureProps) {
+export function Figure({
+  position,
+  robe,
+  pose = "standing",
+  scale = 1,
+  rotationY = 0,
+  turban = false,
+}: FigureProps) {
   const f = useFigure(pose);
-  const cloth = useMemo(() => new MeshStandardMaterial({ color: robe, roughness: 0.9 }), [robe]);
-  const skin = useMemo(() => new MeshStandardMaterial({ color: "#6E4E3A", roughness: 0.8 }), []);
-  const linen = useMemo(() => new MeshStandardMaterial({ color: HOLY.linen, roughness: 0.9 }), []);
+  const cloth = useMemo(
+    () => new MeshStandardMaterial({ color: robe, roughness: 0.9 }),
+    [robe],
+  );
+  const skin = useMemo(
+    () => new MeshStandardMaterial({ color: "#6E4E3A", roughness: 0.8 }),
+    [],
+  );
+  const linen = useMemo(
+    () => new MeshStandardMaterial({ color: HOLY.linen, roughness: 0.9 }),
+    [],
+  );
   const wrap = useMemo(() => new CylinderGeometry(0.13, 0.12, 0.12, 16), []);
   useEffect(
     () => () => {
@@ -286,8 +517,18 @@ export function Figure({ position, robe, pose = "standing", scale = 1, rotationY
   return (
     <group position={position} scale={scale} rotation={[0, rotationY, 0]}>
       <mesh geometry={f.body} material={cloth} />
-      <mesh geometry={f.head} material={skin} position={[0, f.headY, f.headZ]} />
-      {turban && <mesh geometry={wrap} material={linen} position={[0, f.headY + 0.09, f.headZ]} />}
+      <mesh
+        geometry={f.head}
+        material={skin}
+        position={[0, f.headY, f.headZ]}
+      />
+      {turban && (
+        <mesh
+          geometry={wrap}
+          material={linen}
+          position={[0, f.headY + 0.09, f.headZ]}
+        />
+      )}
     </group>
   );
 }
@@ -336,14 +577,25 @@ interface SmokeProps {
 }
 
 /** Incense smoke: soft puffs that rise, curl and widen from one point. */
-export function Smoke({ position, count = 160, rise = 3, spread = 0.35, size = 4.5, color = HOLY.smoke, strength }: SmokeProps) {
+export function Smoke({
+  position,
+  count = 160,
+  rise = 3,
+  spread = 0.35,
+  size = 4.5,
+  color = HOLY.smoke,
+  strength,
+}: SmokeProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const ref = useRef<Points>(null);
   const geometry = useMemo(() => {
     const seed = new Float32Array(count);
     for (let i = 0; i < count; i++) seed[i] = (i * 0.618033) % 1;
     const g = new BufferGeometry();
-    g.setAttribute("position", new BufferAttribute(new Float32Array(count * 3), 3));
+    g.setAttribute(
+      "position",
+      new BufferAttribute(new Float32Array(count * 3), 3),
+    );
     g.setAttribute("aSeed", new BufferAttribute(seed, 1));
     return g;
   }, [count]);
@@ -380,17 +632,56 @@ export function Smoke({ position, count = 160, rise = 3, spread = 0.35, size = 4
     m.uniforms.uPixelRatio.value = pixelRatio;
     m.uniforms.uAlpha.value = strength?.current ?? 1;
   });
-  return <points ref={ref} position={position} geometry={geometry} material={material} frustumCulled={false} renderOrder={14} />;
+  return (
+    <points
+      ref={ref}
+      position={position}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={14}
+    />
+  );
 }
 
 /** The Holy Place: woven curtains down both sides and the veil across the back. */
-export function HolyPlace({ veilZ = -6, halfWidth = 3.4, near = 2 }: { veilZ?: number; halfWidth?: number; near?: number }) {
+export function HolyPlace({
+  veilZ = -6,
+  halfWidth = 3.4,
+  near = 2,
+}: {
+  veilZ?: number;
+  halfWidth?: number;
+  near?: number;
+}) {
   const len = near - veilZ;
   return (
     <>
-      <Cloth kind="veil" width={halfWidth * 2} height={5} position={[0, FLOOR, veilZ]} folds={11} depth={0.1} repeat={2} />
-      <Cloth width={len} height={5} position={[-halfWidth, FLOOR, veilZ + len / 2]} rotationY={Math.PI / 2} folds={8} repeat={2} />
-      <Cloth width={len} height={5} position={[halfWidth, FLOOR, veilZ + len / 2]} rotationY={-Math.PI / 2} folds={8} repeat={2} />
+      <Cloth
+        kind="veil"
+        width={halfWidth * 2}
+        height={5}
+        position={[0, FLOOR, veilZ]}
+        folds={11}
+        depth={0.1}
+        repeat={2}
+      />
+      <Cloth
+        width={len}
+        height={5}
+        position={[-halfWidth, FLOOR, veilZ + len / 2]}
+        rotationY={Math.PI / 2}
+        folds={8}
+        repeat={2}
+      />
+      <Cloth
+        width={len}
+        height={5}
+        position={[halfWidth, FLOOR, veilZ + len / 2]}
+        rotationY={-Math.PI / 2}
+        folds={8}
+        repeat={2}
+      />
       <Floor />
       <hemisphereLight args={["#3A2A20", "#120D0A", 0.6]} />
     </>

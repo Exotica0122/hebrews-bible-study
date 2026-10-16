@@ -60,7 +60,7 @@ Update `content/hebrews/index.test.ts` (live count, latest chapter, verse covera
 
 ## 7. Verify
 
-Reuse the user's dev server on :3000. Run `pnpm typecheck`, `pnpm lint` and `pnpm test`, then shoot the chapter:
+Reuse the user's dev server on :3000. Run `pnpm typecheck`, `pnpm lint`, `pnpm format` and `pnpm test`, then shoot the chapter:
 
 ```bash
 node e2e/tools/chapter-shots.mjs 5 <scratch>/shots

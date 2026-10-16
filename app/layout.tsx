@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
-import { Cormorant_Garamond, EB_Garamond, Noto_Serif_KR } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  EB_Garamond,
+  Noto_Serif_KR,
+} from "next/font/google";
 import { LangProvider } from "@/lib/lang";
 import { INTRO_COOKIE, LANG_COOKIE } from "@/lib/cookies";
 import { IntroVeil } from "@/components/intro/IntroVeil";

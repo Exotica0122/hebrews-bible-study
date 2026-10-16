@@ -20,7 +20,9 @@ export function BackToTop({ visible, onClick }: BackToTopProps) {
       tabIndex={visible ? 0 : -1}
       onClick={onClick}
     >
-      <span aria-hidden="true" className={s.arrow}>↑</span>
+      <span aria-hidden="true" className={s.arrow}>
+        ↑
+      </span>
     </button>
   );
 }

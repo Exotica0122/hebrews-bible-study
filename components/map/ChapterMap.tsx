@@ -12,7 +12,12 @@ interface ChapterMapProps {
   onGo: (id: string) => void;
 }
 
-export function ChapterMap({ copy, movements, summary, onGo }: ChapterMapProps) {
+export function ChapterMap({
+  copy,
+  movements,
+  summary,
+  onGo,
+}: ChapterMapProps) {
   const { lang, t } = useLang();
   return (
     <section id="hb-map" className="hb-section">
@@ -28,12 +33,21 @@ export function ChapterMap({ copy, movements, summary, onGo }: ChapterMapProps) 
         <div className={s.list}>
           {movements.map((m) => {
             const c = m[lang];
-            const studyLabel = lang === "ko" ? `${m.range}절 공부하기 →` : `Study vv. ${m.range} →`;
+            const studyLabel =
+              lang === "ko"
+                ? `${m.range}절 공부하기 →`
+                : `Study vv. ${m.range} →`;
             return (
               <div key={m.id} className={s.row}>
                 <div className={s.num}>{m.num}</div>
                 <div style={{ minWidth: 0 }}>
-                  <button type="button" className={s.title} onClick={() => onGo(m.id)}>{c.title}</button>
+                  <button
+                    type="button"
+                    className={s.title}
+                    onClick={() => onGo(m.id)}
+                  >
+                    {c.title}
+                  </button>
                   <div className={s.snips}>
                     {c.verses.map(([n], i) => (
                       <div key={n} className={s.snip}>
@@ -43,7 +57,13 @@ export function ChapterMap({ copy, movements, summary, onGo }: ChapterMapProps) 
                     ))}
                   </div>
                 </div>
-                <button type="button" className={s.study} onClick={() => onGo(m.id)}>{studyLabel}</button>
+                <button
+                  type="button"
+                  className={s.study}
+                  onClick={() => onGo(m.id)}
+                >
+                  {studyLabel}
+                </button>
               </div>
             );
           })}

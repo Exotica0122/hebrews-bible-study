@@ -4,7 +4,13 @@ import type { Summary as SummaryData } from "@/content/types";
 import { useLang } from "@/lib/lang";
 import s from "./summary.module.css";
 
-export function Summary({ summary, title }: { summary: SummaryData; title: string }) {
+export function Summary({
+  summary,
+  title,
+}: {
+  summary: SummaryData;
+  title: string;
+}) {
   const { t } = useLang();
   return (
     <section id="hb-summary" className={s.section}>
@@ -27,7 +33,9 @@ export function Summary({ summary, title }: { summary: SummaryData; title: strin
         <div className={s.intent}>
           <div className="hb-eyebrow">{summary.intentH}</div>
           {summary.intent.map((p) => (
-            <p key={p} className={s.intentP}>{p}</p>
+            <p key={p} className={s.intentP}>
+              {p}
+            </p>
           ))}
         </div>
       </div>

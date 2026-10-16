@@ -53,7 +53,14 @@ interface SkyProps {
 }
 
 /** Night sky backdrop: dark overhead, warmer toward a horizon band (an afterglow, not a sun). */
-export function Sky({ top = "#0E0C0A", horizon = "#2A2017", glow = "#5A3A1C", horizonY = -1, glowStrength = 0.55, z = -22 }: SkyProps) {
+export function Sky({
+  top = "#0E0C0A",
+  horizon = "#2A2017",
+  glow = "#5A3A1C",
+  horizonY = -1,
+  glowStrength = 0.55,
+  z = -22,
+}: SkyProps) {
   const material = useMemo(
     () =>
       new ShaderMaterial({
@@ -78,7 +85,15 @@ export function Sky({ top = "#0E0C0A", horizon = "#2A2017", glow = "#5A3A1C", ho
     },
     [material, geometry],
   );
-  return <mesh position={[0, 0, z]} geometry={geometry} material={material} renderOrder={-10} frustumCulled={false} />;
+  return (
+    <mesh
+      position={[0, 0, z]}
+      geometry={geometry}
+      material={material}
+      renderOrder={-10}
+      frustumCulled={false}
+    />
+  );
 }
 
 /** Height of a hill layer's crest at `x`, for placing things on the ridge line. */
@@ -104,7 +119,13 @@ export interface HillLayer {
 }
 
 /** Layered hill silhouettes that occlude what lies behind them; nearer layers darker. */
-export function Hills({ layers, span = 60 }: { layers: HillLayer[]; span?: number }) {
+export function Hills({
+  layers,
+  span = 60,
+}: {
+  layers: HillLayer[];
+  span?: number;
+}) {
   const parts = useMemo(
     () =>
       layers.map((l) => {
@@ -117,7 +138,11 @@ export function Hills({ layers, span = 60 }: { layers: HillLayer[]; span?: numbe
         }
         shape.lineTo(span / 2, l.y - 20);
         shape.closePath();
-        return { geometry: new ShapeGeometry(shape), material: new MeshBasicMaterial({ color: l.color }), z: l.z };
+        return {
+          geometry: new ShapeGeometry(shape),
+          material: new MeshBasicMaterial({ color: l.color }),
+          z: l.z,
+        };
       }),
     [layers, span],
   );
@@ -132,7 +157,14 @@ export function Hills({ layers, span = 60 }: { layers: HillLayer[]; span?: numbe
   return (
     <>
       {parts.map((p, i) => (
-        <mesh key={i} position={[0, 0, p.z]} geometry={p.geometry} material={p.material} renderOrder={-9 + i} frustumCulled={false} />
+        <mesh
+          key={i}
+          position={[0, 0, p.z]}
+          geometry={p.geometry}
+          material={p.material}
+          renderOrder={-9 + i}
+          frustumCulled={false}
+        />
       ))}
     </>
   );
@@ -180,7 +212,15 @@ interface EmbersProps {
 }
 
 /** Slow warm motes drifting upward: fireflies, lamp sparks, dust in lamplight. */
-export function Embers({ count, box, position = [0, 0, 0], color = "#F3D38A", rise = 0.05, size = 2.2, alpha = 0.8 }: EmbersProps) {
+export function Embers({
+  count,
+  box,
+  position = [0, 0, 0],
+  color = "#F3D38A",
+  rise = 0.05,
+  size = 2.2,
+  alpha = 0.8,
+}: EmbersProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const ref = useRef<Points>(null);
   const geometry = useMemo(() => {
@@ -238,7 +278,16 @@ export function Embers({ count, box, position = [0, 0, 0], color = "#F3D38A", ri
     m.uniforms.uTime.value += Math.min(delta, 0.05);
     m.uniforms.uPixelRatio.value = pixelRatio;
   });
-  return <points ref={ref} position={position} geometry={geometry} material={material} frustumCulled={false} renderOrder={20} />;
+  return (
+    <points
+      ref={ref}
+      position={position}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={20}
+    />
+  );
 }
 
 /** A robed standing figure facing us, feet at y = 0, about 1.75 units tall. */

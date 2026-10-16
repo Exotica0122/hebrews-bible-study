@@ -2,7 +2,17 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { AddEquation, CustomBlending, OneFactor, BufferAttribute, BufferGeometry, Color, Points, ShaderMaterial, Vector3 } from "three";
+import {
+  AddEquation,
+  CustomBlending,
+  OneFactor,
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  Points,
+  ShaderMaterial,
+  Vector3,
+} from "three";
 
 const VERT = /* glsl */ `
 attribute float aSeed;
@@ -55,7 +65,14 @@ interface FlamesProps {
 }
 
 /** GPU-driven ember particles rising from up to four emitters, bent sideways by `gust`. */
-export function Flames({ emitters, count, rise = 1.4, size = 4, gust, fade }: FlamesProps) {
+export function Flames({
+  emitters,
+  count,
+  rise = 1.4,
+  size = 4,
+  gust,
+  fade,
+}: FlamesProps) {
   const pixelRatio = useThree((s) => s.viewport.dpr);
   const canvasHeight = useThree((s) => s.size.height);
   const heightScale = Math.min(1, Math.max(0.5, canvasHeight / 520));
@@ -77,7 +94,9 @@ export function Flames({ emitters, count, rise = 1.4, size = 4, gust, fade }: Fl
   }, [count, emitters.length]);
 
   const material = useMemo(() => {
-    const list = [0, 1, 2, 3].map((i) => new Vector3(...(emitters[i] ?? emitters[0])));
+    const list = [0, 1, 2, 3].map(
+      (i) => new Vector3(...(emitters[i] ?? emitters[0])),
+    );
     return new ShaderMaterial({
       vertexShader: VERT,
       fragmentShader: FRAG,
@@ -96,9 +115,9 @@ export function Flames({ emitters, count, rise = 1.4, size = 4, gust, fade }: Fl
       depthWrite: false,
       depthTest: false,
       blending: CustomBlending,
-        blendEquation: AddEquation,
-        blendSrc: OneFactor,
-        blendDst: OneFactor,
+      blendEquation: AddEquation,
+      blendSrc: OneFactor,
+      blendDst: OneFactor,
     });
   }, [emitters, pixelRatio, heightScale, rise, size]);
 
@@ -118,5 +137,13 @@ export function Flames({ emitters, count, rise = 1.4, size = 4, gust, fade }: Fl
     m.uniforms.uFade.value = fade?.current ?? 1;
   });
 
-  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} renderOrder={8} />;
+  return (
+    <points
+      ref={ref}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={8}
+    />
+  );
 }

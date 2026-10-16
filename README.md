@@ -26,13 +26,16 @@ pnpm install
 pnpm dev          # http://localhost:3000
 ```
 
-| Command          | What it does                            |
-| ---------------- | --------------------------------------- |
-| `pnpm test`      | Unit tests (Vitest)                     |
+| Command                     | What it does                             |
+| --------------------------- | ---------------------------------------- |
+| `pnpm test`                 | Unit tests (Vitest)                      |
 | `pnpm exec playwright test` | End-to-end tests (starts the dev server) |
-| `pnpm lint`      | ESLint                                  |
-| `pnpm typecheck` | TypeScript                              |
-| `pnpm build`     | Production build                        |
+| `pnpm lint`                 | ESLint, fixing what it can               |
+| `pnpm lint:check`           | ESLint, report only (CI)                 |
+| `pnpm format`               | Prettier, rewriting files                |
+| `pnpm format:check`         | Prettier, report only (CI)               |
+| `pnpm typecheck`            | TypeScript                               |
+| `pnpm build`                | Production build                         |
 
 ### Debug query flags
 
@@ -69,7 +72,7 @@ Claude Code users can run the `add-chapter` skill in `.claude/skills/`, which wa
 ## Contributing
 
 Issues and pull requests are welcome, whether for corrections to the text, translation fixes, or bugs.
-Please run `pnpm lint && pnpm typecheck && pnpm test` before opening a PR.
+Please run `pnpm lint:check && pnpm format:check && pnpm typecheck && pnpm test` before opening a PR.
 
 ## License
 

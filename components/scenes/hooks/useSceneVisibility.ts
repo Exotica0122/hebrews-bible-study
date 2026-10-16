@@ -7,18 +7,31 @@ export interface SceneVisibility {
   visible: boolean;
 }
 
-export function useSceneVisibility(ref: RefObject<HTMLElement | null>): SceneVisibility {
-  const [state, setState] = useState<SceneVisibility>({ near: false, visible: false });
+export function useSceneVisibility(
+  ref: RefObject<HTMLElement | null>,
+): SceneVisibility {
+  const [state, setState] = useState<SceneVisibility>({
+    near: false,
+    visible: false,
+  });
 
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const nearObs = new IntersectionObserver(
-      ([e]) => setState((s) => (s.near === e.isIntersecting ? s : { ...s, near: e.isIntersecting })),
+      ([e]) =>
+        setState((s) =>
+          s.near === e.isIntersecting ? s : { ...s, near: e.isIntersecting },
+        ),
       { rootMargin: "100% 0px" },
     );
     const visObs = new IntersectionObserver(
-      ([e]) => setState((s) => (s.visible === e.isIntersecting ? s : { ...s, visible: e.isIntersecting })),
+      ([e]) =>
+        setState((s) =>
+          s.visible === e.isIntersecting
+            ? s
+            : { ...s, visible: e.isIntersecting },
+        ),
       { rootMargin: "0px" },
     );
     nearObs.observe(el);

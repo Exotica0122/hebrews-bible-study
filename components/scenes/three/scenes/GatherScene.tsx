@@ -1,11 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { Color, Group, MeshBasicMaterial, PlaneGeometry, ShaderMaterial } from "three";
+import {
+  Color,
+  Group,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  ShaderMaterial,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Embers, figureGeometry } from "../primitives/Earth";
-import { easeInOutCubic, lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setUniform } from "../primitives/mutate";
 
@@ -13,7 +24,12 @@ const PERIOD = 15;
 const FLOOR_Y = -1.25;
 /** The children: final x beside him, height scale, and when they set out (s). */
 const CHILDREN: [number, number, number][] = [
-  [-0.62, 0.66, 1.2], [0.64, 0.62, 1.8], [-1.12, 0.74, 2.6], [1.16, 0.7, 3.1], [-1.6, 0.6, 3.9], [1.62, 0.76, 4.4],
+  [-0.62, 0.66, 1.2],
+  [0.64, 0.62, 1.8],
+  [-1.12, 0.74, 2.6],
+  [1.16, 0.7, 3.1],
+  [-1.6, 0.6, 3.9],
+  [1.62, 0.76, 4.4],
 ];
 const WALK = 4.2;
 const EMBER_BOX: [number, number, number] = [3, 2.6, 1];
@@ -55,7 +71,6 @@ void main() {
   gl_FragColor = vec4(c, 1.0);
 }`;
 
-
 /** “Behold, I and the children God has given me”: one figure in the lamplight, the children coming out of the dark to stand beside him. */
 export function GatherScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
@@ -94,9 +109,20 @@ export function GatherScene({ mobile, effects }: SceneProps) {
     camera.position.set(0, 0.1, mobile ? 9.5 : 7.4);
     camera.lookAt(0, -0.05, 0);
     const p = t % PERIOD;
-    const arrived = CHILDREN.reduce((n, [, , start]) => n + smoothstep(start + WALK - 0.8, start + WALK, p), 0) / CHILDREN.length;
-    const light = (0.55 + 0.45 * arrived) * smoothstep(0, 1.4, p) * (1 - smoothstep(13.2, 15, p));
-    setUniform(wall.m, "uLight", light + Math.sin(t * 7) * 0.012 + Math.sin(t * 11.3) * 0.008);
+    const arrived =
+      CHILDREN.reduce(
+        (n, [, , start]) => n + smoothstep(start + WALK - 0.8, start + WALK, p),
+        0,
+      ) / CHILDREN.length;
+    const light =
+      (0.55 + 0.45 * arrived) *
+      smoothstep(0, 1.4, p) *
+      (1 - smoothstep(13.2, 15, p));
+    setUniform(
+      wall.m,
+      "uLight",
+      light + Math.sin(t * 7) * 0.012 + Math.sin(t * 11.3) * 0.008,
+    );
 
     children.current?.children.forEach((g, i) => {
       const [x, , start] = CHILDREN[i];
@@ -111,14 +137,32 @@ export function GatherScene({ mobile, effects }: SceneProps) {
 
   return (
     <>
-      <mesh geometry={wall.g} material={wall.m} position={[0, 0, -1.2]} renderOrder={-10} />
+      <mesh
+        geometry={wall.g}
+        material={wall.m}
+        position={[0, 0, -1.2]}
+        renderOrder={-10}
+      />
       <mesh geometry={figure} material={ink} position={[0, FLOOR_Y, 0]} />
       <group ref={children}>
         {CHILDREN.map(([x, h]) => (
-          <mesh key={x} geometry={figure} material={ink} position={[Math.sign(x) * edge, FLOOR_Y, 0.05]} scale={[h * 1.05, h, 1]} />
+          <mesh
+            key={x}
+            geometry={figure}
+            material={ink}
+            position={[Math.sign(x) * edge, FLOOR_Y, 0.05]}
+            scale={[h * 1.05, h, 1]}
+          />
         ))}
       </group>
-      <Embers count={mobile ? 12 : 22} box={EMBER_BOX} position={[0, -0.9, -0.6]} rise={0.05} size={1.6} alpha={0.45} />
+      <Embers
+        count={mobile ? 12 : 22}
+        box={EMBER_BOX}
+        position={[0, -0.9, -0.6]}
+        rise={0.05}
+        size={1.6}
+        alpha={0.45}
+      />
       {effects && <SceneEffects bloom={0.4} />}
     </>
   );

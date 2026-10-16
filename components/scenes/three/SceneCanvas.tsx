@@ -19,7 +19,13 @@ interface SceneCanvasProps {
   onContextLost: () => void;
 }
 
-function SceneLoop({ active, children }: { active: boolean; children: React.ReactNode }) {
+function SceneLoop({
+  active,
+  children,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+}) {
   const activeRef = useRef(active);
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
@@ -33,7 +39,13 @@ function SceneLoop({ active, children }: { active: boolean; children: React.Reac
 }
 
 /** Reports ready on the first frame after each (re)mount; Suspense inside the canvas can hide and reveal the tree, which re-runs the effect. */
-function ReadyProbe({ onReady, onUnmount }: { onReady: () => void; onUnmount: () => void }) {
+function ReadyProbe({
+  onReady,
+  onUnmount,
+}: {
+  onReady: () => void;
+  onUnmount: () => void;
+}) {
   const armed = useRef(false);
   useEffect(() => {
     armed.current = true;
@@ -64,18 +76,53 @@ function ContextWatch({ onLost }: { onLost: () => void }) {
   return null;
 }
 
-const testMode = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("scenetest");
+const testMode =
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).has("scenetest");
 
-export default function SceneCanvas({ scene, active, mobile, effects, captions, drag, pointer, onReady, onUnmount, onContextLost }: SceneCanvasProps) {
+export default function SceneCanvas({
+  scene,
+  active,
+  mobile,
+  effects,
+  captions,
+  drag,
+  pointer,
+  onReady,
+  onUnmount,
+  onContextLost,
+}: SceneCanvasProps) {
   const Scene = registry[scene];
   const maxDpr = mobile ? 1.5 : 2;
-  const [dpr, setDpr] = useState(() => Math.min(maxDpr, typeof window === "undefined" ? 1 : window.devicePixelRatio || 1));
-  const sceneElement = useMemo(() => <Scene mobile={mobile} effects={effects} captions={captions} drag={drag} pointer={pointer} />, [Scene, mobile, effects, captions, drag, pointer]);
+  const [dpr, setDpr] = useState(() =>
+    Math.min(
+      maxDpr,
+      typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
+    ),
+  );
+  const sceneElement = useMemo(
+    () => (
+      <Scene
+        mobile={mobile}
+        effects={effects}
+        captions={captions}
+        drag={drag}
+        pointer={pointer}
+      />
+    ),
+    [Scene, mobile, effects, captions, drag, pointer],
+  );
   return (
     <Canvas
       frameloop="demand"
       dpr={dpr}
-      gl={{ alpha: true, antialias: false, powerPreference: "low-power", stencil: false, preserveDrawingBuffer: testMode }}
+      gl={{
+        alpha: true,
+        antialias: false,
+        powerPreference: "low-power",
+        stencil: false,
+        preserveDrawingBuffer: testMode,
+      }}
       camera={{ fov: 40, position: [0, 0, 8], near: 0.1, far: 80 }}
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       style={{ position: "absolute", inset: 0 }}
