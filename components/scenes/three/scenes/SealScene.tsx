@@ -4,103 +4,197 @@ import { useEffect, useMemo, useRef } from "react";
 import { ContactShadows, Environment, Lightformer } from "@react-three/drei";
 import { damp } from "maath/easing";
 import {
-  CanvasTexture,
+  BufferAttribute,
   Group,
-  Mesh,
-  MeshStandardMaterial,
+  LatheGeometry,
+  RingGeometry,
+  Vector2,
   type ShaderMaterial,
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { CloudFloor, HEAVEN, HeavenSky } from "../primitives/Heavens";
-import { smoothstep, useSceneTime } from "../primitives/Timeline";
+import {
+  easeInOutCubic,
+  lerp,
+  smoothstep,
+  useSceneTime,
+} from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { setUniform } from "../primitives/mutate";
 
-const HOVER_Y = 2.6;
-const CONTACT_Y = 0.46;
-const REST_Y = 1.5;
+/** Radius of the seal's face, the device cut into it, and the wax pool. */
+const FACE_R = 0.9;
+const WAX_R = 1.3;
+const RELIEF = 0.07;
+const WAX_H = 0.16;
+const TOP = 0.02;
+const HOVER_Y = 2.4;
+const PRESS_AT = 1.5;
+const PRESS_END = 2.3;
+const LIFT_END = 3.6;
+const SHOW_END = 5;
+const RAYS = 16;
 
-function drawImprint(): CanvasTexture {
-  const c = document.createElement("canvas");
-  c.width = c.height = 256;
-  const ctx = c.getContext("2d")!;
-  ctx.clearRect(0, 0, 256, 256);
-  ctx.strokeStyle = "rgba(90, 58, 12, 0.9)";
-  ctx.fillStyle = "rgba(90, 58, 12, 0.9)";
-  ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.arc(128, 128, 104, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(128, 128, 92, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(128, 128, 26, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.lineCap = "round";
-  for (let i = 0; i < 16; i++) {
-    const a = (i / 16) * Math.PI * 2;
-    const r1 = 36;
-    const r2 = i % 2 ? 66 : 80;
-    ctx.lineWidth = i % 2 ? 4 : 7;
-    ctx.beginPath();
-    ctx.moveTo(128 + Math.cos(a) * r1, 128 + Math.sin(a) * r1);
-    ctx.lineTo(128 + Math.cos(a) * r2, 128 + Math.sin(a) * r2);
-    ctx.stroke();
-  }
-  const tex = new CanvasTexture(c);
-  tex.anisotropy = 4;
-  return tex;
+/** The seal's device, a sun in glory: rim, inner ring, rays and a central boss, as relief height 0–1 at radius `u` (0–1 of the face) and angle `a`. */
+function device(u: number, a: number) {
+  const band = (lo: number, hi: number, soft = 0.015) =>
+    smoothstep(lo - soft, lo + soft, u) *
+    (1 - smoothstep(hi - soft, hi + soft, u));
+  const rim = band(0.9, 0.99);
+  const ring = band(0.8, 0.84);
+  const boss = 1 - smoothstep(0.17, 0.2, u);
+  const sector = (a / (Math.PI * 2)) * RAYS;
+  const i = Math.round(sector);
+  const long = i % 2 === 0;
+  const off = Math.abs(sector - i) * ((Math.PI * 2) / RAYS) * u;
+  const width = long ? 0.045 : 0.028;
+  const ray =
+    (1 - smoothstep(width - 0.01, width + 0.01, off)) *
+    band(0.27, long ? 0.72 : 0.6, 0.02);
+  return Math.max(rim, ring, boss, ray);
 }
 
-/** “The exact imprint of his nature”: on a stone above the clouds a gold signet comes down into warm wax and lifts away, leaving its device, the sun in glory, pressed clear. */
+/** A disc meshed in rings so its surface can carry the device: the seal's face (relief standing out) or the wax (the same device pressed in). */
+function discGeometry(radius: number, rings: number) {
+  const g = new RingGeometry(0.0001, radius, 160, rings);
+  g.rotateX(-Math.PI / 2);
+  return g;
+}
+
+/** Shape the wax pool: a soft puddle with an uneven rim, the device pressed `k` deep into its middle and a lip squeezed up round the seal's edge. */
+function pressWax(g: RingGeometry, k: number) {
+  const pos = g.getAttribute("position") as BufferAttribute;
+  const arr = pos.array as Float32Array;
+  for (let i = 0; i < pos.count; i++) {
+    const x = arr[i * 3];
+    const z = arr[i * 3 + 2];
+    const r = Math.hypot(x, z);
+    const a = Math.atan2(z, x);
+    const edge =
+      WAX_R * (0.94 + 0.04 * Math.sin(a * 5 + 1) + 0.025 * Math.sin(a * 11));
+    const dome = Math.pow(1 - smoothstep(edge * 0.72, edge, r), 0.6);
+    const u = r / FACE_R;
+    const well =
+      u < 1
+        ? 0.035 + RELIEF * (1 - device(u, (a + Math.PI * 2) % (Math.PI * 2)))
+        : 0;
+    const lip = Math.exp(-Math.pow((u - 1.06) * 9, 2)) * 0.03;
+    arr[i * 3 + 1] = WAX_H * dome + k * (lip - (u < 1 ? well : 0));
+  }
+  pos.needsUpdate = true;
+  g.computeVertexNormals();
+}
+
+/** Raise the device on the seal's face, pointing down. */
+function cutFace(g: RingGeometry) {
+  const pos = g.getAttribute("position") as BufferAttribute;
+  const arr = pos.array as Float32Array;
+  for (let i = 0; i < pos.count; i++) {
+    const x = arr[i * 3];
+    const z = arr[i * 3 + 2];
+    const u = Math.hypot(x, z) / FACE_R;
+    const a = (Math.atan2(z, x) + Math.PI * 2) % (Math.PI * 2);
+    arr[i * 3 + 1] = RELIEF * device(Math.min(u, 0.999), a);
+  }
+  g.rotateX(Math.PI);
+  g.computeVertexNormals();
+}
+
+/** The seal's handle, turned on a lathe: a knob, a waisted grip and a flared collar onto the brass head. */
+const HANDLE: [number, number][] = [
+  [0, 2.35],
+  [0.2, 2.32],
+  [0.3, 2.2],
+  [0.28, 2.05],
+  [0.16, 1.92],
+  [0.13, 1.6],
+  [0.16, 1.2],
+  [0.24, 0.9],
+  [0.36, 0.72],
+  [0.42, 0.62],
+  [0, 0.62],
+];
+const HEAD: [number, number][] = [
+  [0, 0],
+  [FACE_R, 0],
+  [FACE_R + 0.03, 0.04],
+  [FACE_R + 0.03, 0.22],
+  [FACE_R - 0.05, 0.3],
+  [0.62, 0.42],
+  [0.5, 0.56],
+  [0.44, 0.64],
+  [0, 0.64],
+];
+
+/** “The exact imprint of his nature”: on a stone above the clouds a gold signet comes down into warm wax and lifts away, then turns its face to show the sun in glory it has pressed there, line for line. */
 export function SealScene({ mobile, effects, drag }: SceneProps) {
   const seal = useRef<Group>(null);
   const turntable = useRef<Group>(null);
   const spin = useRef(0);
-  const wax = useRef<Mesh>(null);
-  const imprint = useRef<Mesh>(null);
-  const underGlow = useRef<ShaderMaterial>(null);
+  const pressed = useRef(0);
+  const glow = useRef<ShaderMaterial | null>(null);
   useResetCameraOnUnmount();
 
-  const texture = useMemo(() => drawImprint(), []);
-  useEffect(() => () => texture.dispose(), [texture]);
+  const geo = useMemo(() => {
+    const wax = discGeometry(WAX_R, 90);
+    pressWax(wax, 0);
+    const face = discGeometry(FACE_R, 70);
+    cutFace(face);
+    return {
+      wax,
+      face,
+      handle: new LatheGeometry(
+        HANDLE.map(([r, y]) => new Vector2(r, y)),
+        40,
+      ),
+      head: new LatheGeometry(
+        HEAD.map(([r, y]) => new Vector2(r, y)),
+        64,
+      ),
+    };
+  }, []);
+  useEffect(() => () => Object.values(geo).forEach((g) => g.dispose()), [geo]);
 
   useSceneTime((t, dt, { camera }) => {
-    camera.position.set(0, 3.6, mobile ? 11.5 : 9.6);
-    camera.lookAt(0, 0.8, 0);
+    camera.position.set(0, mobile ? 4 : 3.2, mobile ? 9.5 : 7.2);
+    camera.lookAt(0, mobile ? -0.4 : 0.6, 0);
 
-    const target =
-      t < 0.2
-        ? HOVER_Y
-        : t < 2.0
-          ? CONTACT_Y
-          : REST_Y + Math.sin((t - 2) * 0.9) * 0.05;
-    const press = t >= 1.2 && t < 2.0 ? 1 : 0;
-    if (seal.current)
-      damp(seal.current.position, "y", target, t < 2 ? 0.35 : 0.5, dt);
+    const down = easeInOutCubic((t - 0.4) / (PRESS_AT - 0.4));
+    const press = smoothstep(PRESS_AT - 0.15, PRESS_END - 0.3, t);
+    const lift = easeInOutCubic((t - PRESS_END) / (LIFT_END - PRESS_END));
+    const show = easeInOutCubic(
+      (t - LIFT_END + 0.4) / (SHOW_END - LIFT_END + 0.4),
+    );
+    const away = mobile ? 1.05 : 1.55;
+    if (seal.current) {
+      const contact = TOP - press * 0.05;
+      seal.current.position.y =
+        lerp(lerp(HOVER_Y, contact, down), 1.45, lift) +
+        Math.sin(t * 0.9) * 0.04 * show;
+      seal.current.position.x = away * show;
+      seal.current.position.z = 0.4 * show;
+      seal.current.rotation.x = -1.05 * show;
+      seal.current.rotation.z = -0.25 * show;
+    }
+
+    const k = press;
+    if (Math.abs(k - pressed.current) > 0.002) {
+      pressed.current = k;
+      pressWax(geo.wax, k);
+    }
 
     const d = drag?.current;
-    const spinTarget = (d?.active ? d.dx * 0.01 : 0) + t * 0.12;
-    spin.current = d?.active ? d.dx * 0.01 + t * 0.12 : spin.current;
+    if (d?.active) spin.current = d.dx * 0.01;
     if (turntable.current)
-      damp(
-        turntable.current.rotation,
-        "y",
-        d?.active ? spinTarget : spin.current + (t * 0.12 - spin.current) * 0,
-        0.3,
-        dt,
+      damp(turntable.current.rotation, "y", spin.current + t * 0.05, 0.3, dt);
+    if (glow.current)
+      setUniform(
+        glow.current,
+        "uAlpha",
+        0.1 + 0.35 * press * (1 - lift) + 0.18 * show,
       );
-    if (wax.current) wax.current.scale.y = 1 - 0.08 * press;
-    const reveal = smoothstep(1.5, 2.3, t);
-    const imprintMat = imprint.current?.material as
-      MeshStandardMaterial | undefined;
-    if (imprintMat) imprintMat.opacity = reveal;
-    if (underGlow.current)
-      underGlow.current.uniforms.uAlpha.value =
-        0.12 + press * (0.5 + 0.3 * Math.sin(t * 12));
   });
 
   return (
@@ -110,17 +204,16 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         <HeavenSky horizonY={-1} stars={mobile ? 260 : 500} />
       </group>
       <CloudFloor y={-2.6} warm={[0, 0]} />
-      <mesh position={[0, -1.25, 0]}>
-        <cylinderGeometry args={[2.3, 2.6, 2.2, 10]} />
-        <meshStandardMaterial color="#C9B48E" roughness={0.9} flatShading />
+      <mesh position={[0, -0.9, 0]}>
+        <cylinderGeometry args={[2.1, 2.3, 1.8, 24]} />
+        <meshStandardMaterial color="#8E7C66" roughness={0.95} flatShading />
+      </mesh>
+      <mesh position={[0, -0.02, 0]}>
+        <cylinderGeometry args={[2.15, 2.1, 0.06, 24]} />
+        <meshStandardMaterial color="#A8957A" roughness={0.9} flatShading />
       </mesh>
       <hemisphereLight args={["#F3D38A", "#241E17", 0.5]} />
-      <pointLight
-        position={[-2.5, 3.5, 3]}
-        intensity={45}
-        color="#F3D38A"
-        decay={2}
-      />
+      <directionalLight position={[-3, 5, 3]} intensity={2.2} color="#FFE4B0" />
       <pointLight
         position={[2.5, 1.5, -2]}
         intensity={10}
@@ -146,7 +239,7 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         />
         <Lightformer
           form="rect"
-          intensity={0.5}
+          intensity={0.6}
           color="#EEE4CF"
           position={[0, 6, 0]}
           rotation-x={Math.PI / 2}
@@ -154,15 +247,14 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         />
       </Environment>
       <ContactShadows
-        position={[0, -0.13, 0]}
-        opacity={0.7}
-        scale={9}
-        blur={2.4}
+        position={[0, 0.011, 0]}
+        opacity={0.55}
+        scale={6}
+        blur={2.2}
         far={3}
         color="#120d06"
-        frames={1}
+        frames={Infinity}
       />
-
       <Glow
         position={[0, 0.3, -3]}
         size={12}
@@ -175,83 +267,76 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         position={[0, 0.25, 0.4]}
         size={3.4}
         color="#F3D38A"
-        alpha={0.12}
+        alpha={0.1}
         power={2}
         renderOrder={3}
-        onMaterial={(m) => {
-          underGlow.current = m;
-        }}
         billboard
+        onMaterial={(m) => {
+          glow.current = m;
+        }}
       />
 
       <group ref={turntable}>
-        <mesh ref={wax} position={[0, 0, 0]}>
-          <cylinderGeometry args={[1.6, 1.75, 0.22, 64]} />
+        <mesh geometry={geo.wax} position={[0, TOP, 0]}>
+          <meshPhysicalMaterial
+            color="#C98A26"
+            emissive="#5A3208"
+            emissiveIntensity={0.25}
+            roughness={0.35}
+            clearcoat={0.6}
+            clearcoatRoughness={0.25}
+            envMapIntensity={0.9}
+          />
+        </mesh>
+      </group>
+
+      <group ref={seal} position={[0, HOVER_Y, 0]}>
+        <mesh geometry={geo.face} position={[0, RELIEF, 0]}>
           <meshStandardMaterial
-            color="#C9902A"
-            emissive="#6E4A10"
-            emissiveIntensity={0.2}
+            color="#D4AA52"
+            metalness={0.75}
             roughness={0.32}
-            metalness={0.15}
+            emissive="#5A3E12"
+            emissiveIntensity={0.35}
+            envMapIntensity={1.6}
+          />
+        </mesh>
+        <mesh geometry={geo.head} position={[0, RELIEF, 0]}>
+          <meshStandardMaterial
+            color="#B88A36"
+            metalness={0.95}
+            roughness={0.25}
+            envMapIntensity={1.5}
+          />
+        </mesh>
+        <mesh position={[0, RELIEF + 0.13, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[FACE_R + 0.035, 0.022, 10, 64]} />
+          <meshStandardMaterial
+            color="#E2BC62"
+            metalness={0.95}
+            roughness={0.18}
+            envMapIntensity={1.7}
+          />
+        </mesh>
+        <mesh geometry={geo.handle} position={[0, RELIEF, 0]}>
+          <meshStandardMaterial
+            color="#3A2418"
+            roughness={0.45}
+            metalness={0.05}
             envMapIntensity={0.8}
           />
         </mesh>
-        <mesh
-          ref={imprint}
-          position={[0, 0.115, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <circleGeometry args={[1.35, 64]} />
+        <mesh position={[0, RELIEF + 0.92, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.245, 0.03, 10, 40]} />
           <meshStandardMaterial
-            map={texture}
-            bumpMap={texture}
-            bumpScale={0.6}
-            transparent
-            opacity={0}
-            roughness={0.5}
+            color="#D9AE4E"
+            metalness={0.95}
+            roughness={0.2}
+            envMapIntensity={1.6}
           />
         </mesh>
-
-        <group ref={seal} position={[0, HOVER_Y, 0]}>
-          <mesh position={[0, 0.18, 0]}>
-            <cylinderGeometry args={[1.15, 1.15, 0.36, 48]} />
-            <meshStandardMaterial
-              color="#8A6528"
-              metalness={0.9}
-              roughness={0.28}
-              envMapIntensity={1.4}
-            />
-          </mesh>
-          <mesh position={[0, 0.2, 0]}>
-            <torusGeometry args={[1.0, 0.05, 12, 48]} />
-            <meshStandardMaterial
-              color="#D9AE4E"
-              metalness={0.95}
-              roughness={0.2}
-              envMapIntensity={1.6}
-            />
-          </mesh>
-          <mesh position={[0, 1.4, 0]}>
-            <cylinderGeometry args={[0.26, 0.42, 2.1, 24]} />
-            <meshStandardMaterial
-              color="#38302A"
-              roughness={0.55}
-              metalness={0.25}
-              envMapIntensity={0.9}
-            />
-          </mesh>
-          <mesh position={[0, 2.5, 0]}>
-            <sphereGeometry args={[0.36, 24, 16]} />
-            <meshStandardMaterial
-              color="#2E2820"
-              roughness={0.45}
-              metalness={0.35}
-              envMapIntensity={0.9}
-            />
-          </mesh>
-        </group>
       </group>
-      {effects && <SceneEffects bloom={0.5} />}
+      {effects && <SceneEffects bloom={0.45} />}
     </>
   );
 }

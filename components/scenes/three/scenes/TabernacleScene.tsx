@@ -1,17 +1,11 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import type {
-  Group,
-  MeshBasicMaterial,
-  PointLight,
-  ShaderMaterial,
-} from "three";
+import type { Group, PointLight, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
-import { Soft } from "../primitives/Garden";
 import { Squall } from "../primitives/Coast";
 import {
   ALTAR_TOP,
@@ -19,6 +13,7 @@ import {
   DuneField,
   DuskLights,
   DuskSky,
+  GloryCloud,
   Tabernacle,
   TENT_CENTRE,
   TENT_DOOR,
@@ -28,7 +23,7 @@ import {
 } from "../primitives/Wilderness";
 import { easeOutCubic, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setOpacity, setUniform } from "../primitives/mutate";
+import { setUniform } from "../primitives/mutate";
 
 const PERIOD = 14;
 const GROUND = -1.2;
@@ -37,15 +32,6 @@ const LINEN_AT = 2.1;
 const TENT_AT = 3;
 const GLORY_AT = 4.4;
 const CLEAR: Clearing = [0, -0.5, 4];
-/** The cloud as puffs around the tent, relative to its centre: x, y, z, size. */
-const PUFFS: [number, number, number, number][] = [
-  [0, 0.25, 0, 1.3],
-  [-0.45, 0.15, 0.1, 0.95],
-  [0.45, 0.2, -0.05, 1],
-  [0.15, 0.55, 0.05, 1.1],
-  [-0.25, 0.6, -0.1, 0.85],
-  [0.05, 0.95, 0, 0.9],
-];
 
 function hash(n: number) {
   const x = Math.sin(n * 12.9898) * 43758.5453;
@@ -74,7 +60,7 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
   const tent = useRef(0);
   const site = useRef<Group>(null);
   const cloud = useRef<Group>(null);
-  const puffs = useRef<MeshBasicMaterial[]>([]);
+  const glory = useRef(0);
   const inside = useRef<PointLight>(null);
   const door = useRef<ShaderMaterial | null>(null);
   const fire = useRef<ShaderMaterial | null>(null);
@@ -104,9 +90,7 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
       cloud.current.position.y = tentTop[1] + 0.12 + (1 - down) * 1.6;
       cloud.current.visible = down > 0;
     }
-    puffs.current.forEach((m, i) =>
-      setOpacity(m, 0.7 * down * (0.9 + 0.1 * Math.sin(t * 0.7 + i))),
-    );
+    glory.current = 0.88 * down;
     if (inside.current)
       inside.current.intensity = lit * (5 + Math.sin(t * 1.3) * 0.4);
     if (door.current) setUniform(door.current, "uAlpha", 0.7 * lit);
@@ -124,7 +108,7 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
     <>
       <fog attach="fog" args={[DUSK.haze, 7, 30]} />
       <DuskSky horizonY={-0.6} glowStrength={0.75} stars={mobile ? 90 : 180} />
-      <DuskLights sun={[-8, 2.4, -6]} intensity={2.2} />
+      <DuskLights sun={[-7, 2.6, 3]} intensity={2.2} />
       <DuneField y={GROUND} clear={CLEAR} amp={0.9} near={8} far={-36} />
       <Tents spots={CAMP} y={GROUND} />
       <group ref={site} position={[0.1, 0, -0.5]} scale={mobile ? 0.85 : 1}>
@@ -181,20 +165,7 @@ export function TabernacleScene({ mobile, effects }: SceneProps) {
           }}
         />
         <group ref={cloud} position={[tentTop[0], tentTop[1] + 2, 0]}>
-          {PUFFS.map(([x, y, z, s], i) => (
-            <Soft
-              key={i}
-              position={[x, y, z]}
-              size={s}
-              scaleY={0.75}
-              color="#F6E4C8"
-              opacity={0}
-              renderOrder={8}
-              onMaterial={(m) => {
-                puffs.current[i] = m;
-              }}
-            />
-          ))}
+          <GloryCloud position={[0, 0, 0]} size={0.7} opacity={glory} />
         </group>
       </group>
       <Squall opacity={haze} color="#1E1A2A" />

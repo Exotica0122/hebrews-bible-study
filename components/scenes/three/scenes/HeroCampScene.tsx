@@ -96,7 +96,7 @@ export function HeroCampScene({ mobile, effects, pointer }: SceneProps) {
     <>
       <fog attach="fog" args={[DUSK.haze, 14, 58]} />
       <DuskSky horizonY={-1.2} glowStrength={0.8} stars={mobile ? 110 : 220} />
-      <DuskLights />
+      <DuskLights sun={[-9, 3, 2]} />
       <pointLight
         position={[pillarX, pillarY + 1.6, cz + 0.6]}
         intensity={10}
