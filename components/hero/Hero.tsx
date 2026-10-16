@@ -4,7 +4,7 @@ import { useRef, useState, type ComponentType } from "react";
 import type { ChapterCopy, Setting } from "@/content/types";
 import { Fleuron, DoubleFrame } from "@/components/ornaments/Ornaments";
 import { CssStarfield } from "@/components/scenes/fallback/CssStarfield";
-import { CssEarthBackdrop, CssGardenBackdrop, CssWildernessBackdrop, HeroHalo } from "@/components/scenes/fallback/CssScene";
+import { CssEarthBackdrop, CssGardenBackdrop, CssSanctuaryBackdrop, CssWildernessBackdrop, HeroHalo } from "@/components/scenes/fallback/CssScene";
 import { HeroStage } from "@/components/scenes/HeroStage";
 import type { SceneId } from "@/components/scenes/types";
 import { useLang } from "@/lib/lang";
@@ -27,6 +27,7 @@ const STAGES: Record<Setting, { scene: SceneId; Backdrop: ComponentType; scrim?:
   earth: { scene: "heroEarth", Backdrop: CssEarthBackdrop },
   wilderness: { scene: "heroCamp", Backdrop: CssWildernessBackdrop },
   garden: { scene: "heroGarden", Backdrop: CssGardenBackdrop, scrim: true },
+  sanctuary: { scene: "heroSanctuary", Backdrop: CssSanctuaryBackdrop, scrim: true },
 };
 
 export function Hero({ copy, setting, onBegin, onMap, artNote, reduceMotion }: HeroProps) {

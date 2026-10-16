@@ -759,3 +759,181 @@
   top: 46%;
   height: 22%;
 }
+
+/* sanctuary: Hebrews 5, the Holy Place by lamplight */
+.sa_veil {
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0 2px, rgba(0, 0, 0, 0) 2px 34px),
+    linear-gradient(90deg, #2e4c7e 0 22%, #c9a24a 22% 22.4%, #5e3b6e 22.4% 40%, #c9a24a 40% 40.4%, #a3302c 40.4% 59.6%, #c9a24a 59.6% 60%, #5e3b6e 60% 77.6%, #c9a24a 77.6% 78%, #2e4c7e 78%);
+  filter: brightness(0.55);
+}
+.sa_side {
+  top: 0;
+  bottom: 0;
+  width: 22%;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.25) 0 6px, rgba(0, 0, 0, 0) 6px 22px),
+    linear-gradient(90deg, #e6dcc6 0 30%, #2e4c7e 30% 40%, #5e3b6e 40% 48%, #a3302c 48% 56%, #e6dcc6 56%);
+  filter: brightness(0.5);
+}
+.sa_left {
+  left: 0;
+  clip-path: polygon(0 0, 100% 14%, 100% 76%, 0 100%);
+}
+.sa_right {
+  right: 0;
+  clip-path: polygon(0 14%, 100% 0, 100% 100%, 0 76%);
+}
+.sa_floor {
+  left: 0;
+  right: 0;
+  top: 76%;
+  bottom: 0;
+  background: linear-gradient(#2e231c, #3a2c22);
+  clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%);
+}
+.sa_altar {
+  left: 50%;
+  top: 60%;
+  width: 52px;
+  height: 64px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #8a6a2c, #e0be6a 45%, #a07c34);
+  box-shadow: 0 -6px 18px 2px rgba(200, 85, 61, 0.45);
+}
+.sa_smoke {
+  left: 50%;
+  top: 18%;
+  width: 90px;
+  height: 44%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse 40% 50% at 50% 60%, rgba(214, 202, 180, 0.4), rgba(214, 202, 180, 0) 70%);
+  filter: blur(6px);
+}
+.sa_lampstand {
+  left: 24%;
+  top: 38%;
+  width: 70px;
+  height: 120px;
+  transform: translateX(-50%);
+  border: 3px solid #c9a24a;
+  border-top: 0;
+  border-radius: 0 0 50% 50%;
+  box-shadow: inset 0 0 0 14px rgba(0, 0, 0, 0), 0 -4px 0 -1px #f3b45a;
+}
+.sa_glow {
+  width: 260px;
+  height: 220px;
+  background: radial-gradient(ellipse, rgba(255, 244, 214, 0.5), rgba(243, 180, 90, 0.2) 40%, rgba(0, 0, 0, 0) 70%);
+}
+.sa_table {
+  left: 76%;
+  top: 60%;
+  width: 90px;
+  height: 46px;
+  transform: translateX(-50%);
+  border-top: 8px solid #b98552;
+  background: linear-gradient(90deg, #c9a24a 0 6px, transparent 6px calc(100% - 6px), #c9a24a calc(100% - 6px));
+}
+.sa_shade {
+  background: radial-gradient(ellipse 70% 60% at 50% 55%, rgba(18, 13, 10, 0) 30%, rgba(18, 13, 10, 0.75));
+}
+.sa_flame {
+  width: 8px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  background: #fff4d6;
+  box-shadow: 0 0 22px 10px rgba(243, 180, 90, 0.7), 0 0 80px 40px rgba(243, 180, 90, 0.18);
+}
+.sa_people {
+  left: 0;
+  width: 100%;
+  top: 40%;
+  height: 60%;
+}
+.of_wide {
+  width: 240px;
+}
+.di_halo {
+  left: 50%;
+  top: 46%;
+  width: 360px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(255, 244, 214, 0.55), rgba(184, 101, 42, 0.2) 45%, rgba(0, 0, 0, 0) 70%);
+}
+.di_stand {
+  left: 50%;
+  top: 56%;
+  width: 26px;
+  height: 44%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #2a1d15, #4a3426 50%, #2a1d15);
+}
+.di_turban {
+  left: 50%;
+  top: 44%;
+  width: 96px;
+  height: 64px;
+  transform: translateX(-50%);
+  border-radius: 46% 46% 12% 12%;
+  background: repeating-linear-gradient(#e6dcc6 0 9px, #c9bea8 9px 11px);
+}
+.di_crown {
+  left: 50%;
+  top: 41%;
+  width: 112px;
+  height: 34px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #8a6a2c, #f0d58a 45%, #a07c34);
+  clip-path: polygon(0 100%, 0 30%, 8% 0, 16% 30%, 30% 30%, 38% 0, 46% 30%, 54% 30%, 62% 0, 70% 30%, 84% 30%, 92% 0, 100% 30%, 100% 100%);
+  filter: drop-shadow(0 0 10px rgba(243, 199, 122, 0.6));
+}
+.cr_dark {
+  background: radial-gradient(ellipse 60% 70% at 50% 60%, #2a2018, #0e0a08 75%);
+}
+.cr_shaft {
+  left: 50%;
+  top: 0;
+  width: 90px;
+  height: 78%;
+  transform: translateX(-50%);
+  background: linear-gradient(rgba(255, 232, 194, 0), rgba(255, 232, 194, 0.45));
+  filter: blur(10px);
+}
+.cr_pool {
+  left: 50%;
+  top: 74%;
+  width: 70%;
+  height: 16%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(255, 232, 194, 0.45), rgba(184, 101, 42, 0.15) 45%, rgba(0, 0, 0, 0) 70%);
+}
+.br_table {
+  left: 10%;
+  right: 10%;
+  top: 58%;
+  height: 10%;
+  background: linear-gradient(#e0be6a, #8a6a2c);
+}
+.br_cup {
+  left: 30%;
+  top: 46%;
+  width: 46px;
+  height: 52px;
+  border-radius: 6px 6px 18px 18px;
+  border-top: 8px solid #f4eee2;
+  background: linear-gradient(90deg, #6e3f27, #a8663f 45%, #6e3f27);
+}
+.br_loaf {
+  left: 56%;
+  width: 150px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 45% 30%, #d9a56a, #9a6638 70%);
+}
+@media (max-width: 859px) {
+  .sa_lampstand,
+  .sa_table {
+    display: none;
+  }
+}

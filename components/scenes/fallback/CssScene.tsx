@@ -30,6 +30,8 @@ const BED: [number, number, number][] = Array.from({ length: 16 }, (_, i) => {
 const EARTH_SCENES: SceneId[] = ["drift", "crowned", "gather", "freed", "heroEarth"];
 const WILDERNESS_SCENES: SceneId[] = ["tabernacle", "rock", "coals", "threshold", "heroCamp"];
 const GARDEN_SCENES: SceneId[] = ["seventh", "jordan", "sword", "mercy", "heroGarden"];
+const SANCTUARY_SCENES: SceneId[] = ["offering", "diadem", "cries", "bread", "heroSanctuary"];
+const CROWD: [number, number][] = [[38, 0.5], [44, 0.55], [57, 0.53], [63, 0.48], [50.5, 0.58]];
 const STONES: [number, number, number][] = [[30, 70, 26], [35, 71, 24], [40, 70, 26], [32, 66, 22], [37, 66, 24], [34.5, 62, 20]];
 
 function Scene({ scene }: { scene: SceneId }) {
@@ -243,6 +245,54 @@ function Scene({ scene }: { scene: SceneId }) {
           </svg>
         </>
       );
+    case "offering":
+      return (
+        <>
+          <CssSanctuaryBackdrop lampstand={false} table={false} />
+          <div className={`${A} ${s.sa_smoke} ${s.of_wide}`} />
+          <svg className={`${A} ${s.sa_people}`} viewBox="30 22 40 22" preserveAspectRatio="xMidYMax meet">
+            <path d={FIGURE} fill="#2E4C7E" transform="translate(50 37) scale(0.42)" />
+            {CROWD.map(([x, h]) => (
+              <path key={x} d={FIGURE} fill="#3A2C22" transform={`translate(${x} 44) scale(${h})`} />
+            ))}
+          </svg>
+        </>
+      );
+    case "diadem":
+      return (
+        <>
+          <CssSanctuaryBackdrop lampstand={false} table={false} altar={false} />
+          <div className={`${C} ${s.di_halo}`} />
+          <div className={`${A} ${s.di_stand}`} />
+          <div className={`${A} ${s.di_turban}`} />
+          <div className={`${A} ${s.di_crown}`} />
+        </>
+      );
+    case "cries":
+      return (
+        <>
+          <div className={`${s.layer} ${s.cr_dark}`} />
+          <div className={`${A} ${s.cr_shaft}`} />
+          <div className={`${A} ${s.cr_pool}`} />
+          <span className={`${A} ${s.round} ${s.sa_flame}`} style={{ left: "36%", top: "74%" }} />
+          <svg className={`${A} ${s.sa_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
+            <path d={FIGURE} fill="#B9A88C" transform="translate(50 37) scale(0.6)" />
+          </svg>
+        </>
+      );
+    case "bread":
+      return (
+        <>
+          <CssSanctuaryBackdrop lampstand={false} table={false} altar={false} />
+          <div className={`${A} ${s.br_table}`} />
+          <div className={`${A} ${s.br_cup}`} />
+          <div className={`${A} ${s.br_loaf}`} style={{ top: "54%" }} />
+          <div className={`${A} ${s.br_loaf}`} style={{ top: "51%", transform: "scale(0.94)" }} />
+          <span className={`${A} ${s.round} ${s.sa_flame}`} style={{ left: "62%", top: "30%" }} />
+        </>
+      );
+    case "heroSanctuary":
+      return <CssSanctuaryBackdrop />;
     case "heroGarden":
       return <CssGardenBackdrop />;
     case "heroEarth":
@@ -257,7 +307,7 @@ function Scene({ scene }: { scene: SceneId }) {
 export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
+      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && !SANCTUARY_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
       <Scene scene={scene} />
     </div>
   );
@@ -296,6 +346,24 @@ export function CssGardenBackdrop({ sun = true, water = true, sunTop = 20 }: { s
       <div className={`${s.layer} ${s.gd_far}`} />
       <div className={`${s.layer} ${s.gd_near}`} />
       {water && <div className={`${A} ${s.gd_water}`} />}
+    </div>
+  );
+}
+
+/** The Holy Place by lamplight: the woven veil at the back, curtains down both sides, the lampstand, the incense altar and the table. */
+export function CssSanctuaryBackdrop({ lampstand = true, altar = true, table = true }: { lampstand?: boolean; altar?: boolean; table?: boolean }) {
+  return (
+    <div aria-hidden="true" className={s.layer}>
+      <div className={`${s.layer} ${s.sa_veil}`} />
+      <div className={`${A} ${s.sa_side} ${s.sa_left}`} />
+      <div className={`${A} ${s.sa_side} ${s.sa_right}`} />
+      <div className={`${A} ${s.sa_floor}`} />
+      {altar && <div className={`${A} ${s.sa_altar}`} />}
+      {altar && <div className={`${A} ${s.sa_smoke}`} />}
+      {lampstand && <div className={`${A} ${s.sa_lampstand}`} />}
+      {lampstand && <div className={`${C} ${s.sa_glow}`} style={{ left: "24%", top: "40%" }} />}
+      {table && <div className={`${A} ${s.sa_table}`} />}
+      <div className={`${s.layer} ${s.sa_shade}`} />
     </div>
   );
 }
