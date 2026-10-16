@@ -605,3 +605,157 @@
   background: #110e0a;
   clip-path: polygon(0 30%, 16% 14%, 30% 28%, 46% 16%, 62% 30%, 78% 12%, 100% 26%, 100% 100%, 0 100%);
 }
+
+/* garden: Hebrews 4, the seventh day in full light */
+.gd_sky {
+  background: linear-gradient(#4d7fb4 0, #6e9ccb 30%, #c9d7dc 52%, #e4e6dd 60%);
+}
+.gd_sun {
+  left: 34%;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #fff 0, #fff8e8 55%, #f3e3c0 75%);
+  box-shadow: 0 0 50px 22px rgba(255, 241, 214, 0.55);
+}
+.gd_far {
+  top: 54%;
+  background: #a9b7b4;
+  clip-path: polygon(0 12%, 16% 4%, 32% 10%, 50% 2%, 66% 9%, 82% 3%, 100% 10%, 100% 100%, 0 100%);
+}
+.gd_near {
+  top: 62%;
+  background: linear-gradient(#8fa27e, #6e8559 30%, #4f6440);
+  clip-path: polygon(0 18%, 18% 8%, 40% 16%, 62% 6%, 84% 18%, 100% 10%, 100% 100%, 0 100%);
+}
+.gd_water {
+  left: 0;
+  right: 0;
+  top: 72%;
+  height: 2.4%;
+  background: linear-gradient(90deg, rgba(127, 160, 170, 0), rgba(214, 230, 234, 0.8) 50%, rgba(127, 160, 170, 0));
+}
+
+/* seventh: six days counted, the seventh golden */
+.ga_days {
+  left: 50%;
+  top: 66%;
+  display: flex;
+  gap: 14px;
+  transform: translateX(-50%);
+}
+.ga_day,
+.ga_dayGold {
+  width: 8px;
+  height: 8px;
+  background: #f4efe2;
+  opacity: 0.85;
+}
+.ga_dayGold {
+  width: 12px;
+  height: 12px;
+  margin-top: -2px;
+  background: #f3c77a;
+  opacity: 1;
+  box-shadow: 0 0 14px 5px rgba(243, 199, 122, 0.7);
+}
+
+/* jordan: Joshua’s stones by the river, a path of light beyond them */
+.jo_river {
+  left: 0;
+  right: 0;
+  top: 66%;
+  height: 2%;
+  background: linear-gradient(90deg, rgba(111, 152, 168, 0), rgba(214, 230, 234, 0.85) 50%, rgba(111, 152, 168, 0));
+}
+.jo_path {
+  left: 50%;
+  top: 58%;
+  width: 10%;
+  height: 42%;
+  transform: translateX(-50%);
+  background: linear-gradient(rgba(255, 248, 232, 0.85), rgba(240, 194, 126, 0.3));
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  filter: blur(3px);
+}
+.jo_stone {
+  transform: translate(-50%, -50%);
+  border-radius: 46% 54% 40% 44%;
+  background: radial-gradient(ellipse at 40% 30%, #ece2cc, #b9ab8e 60%, #7e745f);
+}
+
+/* sword: the shade parted, and the one standing there in plain light */
+.sw_halo {
+  left: 50%;
+  top: 50%;
+  width: 280px;
+  height: 320px;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.6), rgba(158, 195, 232, 0.25) 45%, rgba(0, 0, 0, 0) 70%);
+}
+.sw_figure {
+  left: 0;
+  width: 100%;
+  top: 36%;
+  height: 32%;
+}
+.sw_mist {
+  top: 10%;
+  width: 34%;
+  height: 70%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(43, 51, 36, 0.7), rgba(43, 51, 36, 0.3) 50%, rgba(0, 0, 0, 0) 72%);
+}
+.sw_left {
+  left: -10%;
+}
+.sw_right {
+  right: -10%;
+}
+.sw_seam {
+  left: 50%;
+  top: 6%;
+  width: 2px;
+  height: 22%;
+  transform: translateX(-50%);
+  background: linear-gradient(rgba(255, 255, 255, 0), #fff);
+  box-shadow: 0 0 18px 4px rgba(158, 195, 232, 0.7);
+}
+
+/* mercy: the throne of grace at the top of the steps, one drawing near */
+.me_cloud {
+  left: 14%;
+  right: 14%;
+  height: 10%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 72%);
+}
+.me_halo {
+  left: 50%;
+  top: 42%;
+  width: min(420px, 60%);
+  height: 240px;
+  background: radial-gradient(ellipse, rgba(255, 248, 232, 0.85), rgba(233, 185, 130, 0.35) 40%, rgba(0, 0, 0, 0) 70%);
+}
+.me_steps {
+  left: 50%;
+  top: 56%;
+  width: min(360px, 44%);
+  height: 12%;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(#e6dac2 0 8px, #b9ab8e 8px 11px);
+  clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%);
+}
+.me_throne {
+  left: 50%;
+  top: 40%;
+  width: 54px;
+  height: 64px;
+  transform: translateX(-50%);
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(#f3e3b8, #d9c08a);
+  box-shadow: 0 0 40px 12px rgba(243, 199, 122, 0.55);
+}
+.me_figure {
+  left: 0;
+  width: 100%;
+  top: 46%;
+  height: 22%;
+}

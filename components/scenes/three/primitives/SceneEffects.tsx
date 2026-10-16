@@ -12,16 +12,18 @@ const NIGHT = new Color("#14110D");
 interface SceneEffectsProps {
   sun?: Mesh | null;
   bloom?: number;
+  threshold?: number;
+  vignette?: number;
 }
 
 /** Tier-3 post stack: bloom for the lights, filmic grain and a vignette, plus screen-space god rays when a sun mesh is given. */
-export function SceneEffects({ sun, bloom = 0.6 }: SceneEffectsProps) {
+export function SceneEffects({ sun, bloom = 0.6, threshold = 0.72, vignette = 0.45 }: SceneEffectsProps) {
   const gl = useThree((s) => s.gl);
   const tune = useTune("Post", {
     bloomIntensity: { value: bloom, min: 0, max: 3, step: 0.05 },
-    bloomThreshold: { value: 0.72, min: 0, max: 1, step: 0.01 },
+    bloomThreshold: { value: threshold, min: 0, max: 1, step: 0.01 },
     noise: { value: 0.05, min: 0, max: 0.3, step: 0.01 },
-    vignette: { value: 0.45, min: 0, max: 1, step: 0.05 },
+    vignette: { value: vignette, min: 0, max: 1, step: 0.05 },
     godRayWeight: { value: 0.3, min: 0, max: 1, step: 0.05 },
   });
 

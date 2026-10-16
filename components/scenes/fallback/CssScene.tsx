@@ -29,6 +29,8 @@ const BED: [number, number, number][] = Array.from({ length: 16 }, (_, i) => {
 });
 const EARTH_SCENES: SceneId[] = ["drift", "crowned", "gather", "freed", "heroEarth"];
 const WILDERNESS_SCENES: SceneId[] = ["tabernacle", "rock", "coals", "threshold", "heroCamp"];
+const GARDEN_SCENES: SceneId[] = ["seventh", "jordan", "sword", "mercy", "heroGarden"];
+const STONES: [number, number, number][] = [[30, 70, 26], [35, 71, 24], [40, 70, 26], [32, 66, 22], [37, 66, 24], [34.5, 62, 20]];
 
 function Scene({ scene }: { scene: SceneId }) {
   switch (scene) {
@@ -192,6 +194,57 @@ function Scene({ scene }: { scene: SceneId }) {
           </svg>
         </>
       );
+    case "seventh":
+      return (
+        <>
+          <CssGardenBackdrop />
+          <div className={`${A} ${s.ga_days}`}>
+            {Array.from({ length: 7 }, (_, i) => (
+              <span key={i} className={`${s.round} ${i === 6 ? s.ga_dayGold : s.ga_day}`} />
+            ))}
+          </div>
+        </>
+      );
+    case "jordan":
+      return (
+        <>
+          <CssGardenBackdrop water={false} />
+          <div className={`${A} ${s.jo_river}`} />
+          <div className={`${A} ${s.jo_path}`} />
+          {STONES.map(([l, t, w], i) => (
+            <span key={i} className={`${A} ${s.jo_stone}`} style={{ left: `${l}%`, top: `${t}%`, width: w, height: w * 0.62 }} />
+          ))}
+        </>
+      );
+    case "sword":
+      return (
+        <>
+          <CssGardenBackdrop sun={false} water={false} />
+          <div className={`${C} ${s.sw_halo}`} />
+          <svg className={`${A} ${s.sw_figure}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
+            <path d={FIGURE} fill="#B9A88C" transform="translate(50 43) scale(1)" />
+          </svg>
+          <div className={`${A} ${s.sw_mist} ${s.sw_left}`} />
+          <div className={`${A} ${s.sw_mist} ${s.sw_right}`} />
+          <div className={`${A} ${s.sw_seam}`} />
+        </>
+      );
+    case "mercy":
+      return (
+        <>
+          <CssGardenBackdrop sun={false} water={false} />
+          <div className={`${A} ${s.me_cloud}`} style={{ top: "14%" }} />
+          <div className={`${A} ${s.me_cloud}`} style={{ top: "26%", opacity: 0.7 }} />
+          <div className={`${C} ${s.me_halo}`} />
+          <div className={`${A} ${s.me_steps}`} />
+          <div className={`${A} ${s.me_throne}`} />
+          <svg className={`${A} ${s.me_figure}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
+            <path d={FIGURE} fill="#2E3826" transform="translate(50 43) scale(0.6)" />
+          </svg>
+        </>
+      );
+    case "heroGarden":
+      return <CssGardenBackdrop />;
     case "heroEarth":
       return <CssEarthBackdrop />;
     case "heroCamp":
@@ -204,7 +257,7 @@ function Scene({ scene }: { scene: SceneId }) {
 export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
+      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
       <Scene scene={scene} />
     </div>
   );
@@ -230,6 +283,19 @@ export function CssWildernessBackdrop({ pillar = true }: { pillar?: boolean }) {
       {pillar && <div className={`${A} ${s.wi_pillar}`} />}
       <div className={`${s.layer} ${s.wi_far}`} />
       <div className={`${s.layer} ${s.wi_near}`} />
+    </div>
+  );
+}
+
+/** The garden on the seventh day in full light: clear sky, a high sun, sage hills and still water. */
+export function CssGardenBackdrop({ sun = true, water = true, sunTop = 20 }: { sun?: boolean; water?: boolean; sunTop?: number }) {
+  return (
+    <div aria-hidden="true" className={s.layer}>
+      <div className={`${s.layer} ${s.gd_sky}`} />
+      {sun && <div className={`${A} ${s.round} ${s.gd_sun}`} style={{ top: `${sunTop}%` }} />}
+      <div className={`${s.layer} ${s.gd_far}`} />
+      <div className={`${s.layer} ${s.gd_near}`} />
+      {water && <div className={`${A} ${s.gd_water}`} />}
     </div>
   );
 }

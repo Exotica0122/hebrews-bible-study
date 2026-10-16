@@ -4,7 +4,7 @@ A bilingual (English / 한국어), verse-by-verse study of the letter to the Heb
 working through it one chapter at a time. Each chapter pairs the Scripture text with word studies, commentary,
 Old and New Testament threads, and a 3D scene for each movement of the passage.
 
-Chapters 1 to 3 are live; later chapters appear as the class reaches them.
+Chapters 1 to 4 are live; later chapters appear as the class reaches them.
 
 ## Features
 
@@ -59,7 +59,7 @@ e2e/                     Playwright specs; e2e/tools/ holds screenshot scripts
 
 1. Create `content/hebrews/<n>.ts` exporting a `ChapterContent` (see `content/types.ts` and the existing chapters), including its
    `copy` (hero, map and summary text) and `setting`, which picks the hero and fallback backdrops. Each chapter gets its own
-   setting (`"heavens"`, `"earth"`, `"wilderness"`, ...) rather than reusing an earlier one.
+   setting (`"heavens"`, `"earth"`, `"wilderness"`, `"garden"`, ...) rather than reusing an earlier one.
 2. Mark key words in verses as `[key|display text]`. Each `key` needs an entry in `words.en` and `words.ko`.
 3. Register the loader and a short title in `content/hebrews/index.ts`.
 4. Give each movement a `scene` id; new scenes go in `components/scenes/three/scenes/` and `registry.ts`.

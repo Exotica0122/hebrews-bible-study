@@ -17,6 +17,11 @@ import { TabernacleScene } from "./scenes/TabernacleScene";
 import { RockScene } from "./scenes/RockScene";
 import { CoalsScene } from "./scenes/CoalsScene";
 import { ThresholdScene } from "./scenes/ThresholdScene";
+import { HeroGardenScene } from "./scenes/HeroGardenScene";
+import { SeventhScene } from "./scenes/SeventhScene";
+import { JordanScene } from "./scenes/JordanScene";
+import { SwordScene } from "./scenes/SwordScene";
+import { MercyScene } from "./scenes/MercyScene";
 
 export interface DragState {
   dx: number;
@@ -54,4 +59,9 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   rock: RockScene,
   coals: CoalsScene,
   threshold: ThresholdScene,
+  heroGarden: HeroGardenScene,
+  seventh: SeventhScene,
+  jordan: JordanScene,
+  sword: SwordScene,
+  mercy: MercyScene,
 };
