@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { Group } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
@@ -19,6 +19,7 @@ import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 const PERIOD = 16;
 const FLOOR = -1.4;
 const RING: [number, number] = [2.6, 1.7];
+const BOW_TIME = 0.9;
 /** Angles round the throne, leaving the front open so the throne shows; each angel bows in turn. */
 const ANGELS = [-0.45, -0.95, -1.5, -2.05, -2.6, 0.45, 0.95].map((a, i) => ({
   a: a - Math.PI / 2,
@@ -32,6 +33,9 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
   const glory = useRef(0);
   const standing = useRef<(Group | null)[]>([]);
   const kneeling = useRef<(Group | null)[]>([]);
+  const [fades] = useState(() =>
+    ANGELS.map(() => ({ standing: { current: 1 }, kneeling: { current: 0 } })),
+  );
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(Math.sin(t * 0.07) * 0.5, 1.6, mobile ? 9.8 : 7.2);
@@ -40,11 +44,16 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
     haze.current = 1 - smoothstep(0, 1, p) + smoothstep(14.6, 16, p);
     glory.current = 0.35 + 0.65 * smoothstep(1.4, 4.4, p);
     ANGELS.forEach((g, i) => {
-      const bowed = p > g.bows;
+      const e = smoothstep(g.bows, g.bows + BOW_TIME, p);
+      fades[i].standing.current = 1 - e;
+      fades[i].kneeling.current = e;
       const s = standing.current[i];
       const k = kneeling.current[i];
-      if (s) s.visible = !bowed;
-      if (k) k.visible = bowed;
+      if (s) {
+        s.visible = e < 1;
+        s.position.y = -0.25 * e;
+      }
+      if (k) k.visible = e > 0;
     });
   });
 
@@ -74,6 +83,7 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
                 rotationY={face}
                 scale={0.74}
                 spread={0.9}
+                opacity={fades[i].standing}
               />
             </group>
             <group
@@ -89,6 +99,7 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
                 pose="kneeling"
                 spread={0.35}
                 bow={0.45}
+                opacity={fades[i].kneeling}
               />
             </group>
           </group>
