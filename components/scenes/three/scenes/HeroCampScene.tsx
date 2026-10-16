@@ -1,196 +1,126 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { damp } from "maath/easing";
-import {
-  BoxGeometry,
-  ConeGeometry,
-  Matrix4,
-  MeshStandardMaterial,
-  Quaternion,
-  Vector3,
-} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import {
   DUSK,
+  DuneField,
+  DuskLights,
   DuskSky,
-  Dunes,
   PillarOfFire,
-  Sand,
+  Tabernacle,
+  TENT_CENTRE,
+  Tents,
+  type Clearing,
+  type TentSpot,
 } from "../primitives/Wilderness";
 import { useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
 const GROUND = -1.62;
-const CAMP: [number, number, number] = [4.3, GROUND, -9];
-const TENTS = 90;
-const COURT: [number, number] = [1.4, 0.7];
-const EMBER_BOX: [number, number, number] = [12, 3, 4];
+const CAMP_X = 4.3;
+const CAMP_Z = -8.5;
+const COURT_SCALE = 0.75;
+const EMBER_BOX: [number, number, number] = [14, 3, 6];
 
 function hash(n: number) {
   const x = Math.sin(n * 12.9898) * 43758.5453;
   return x - Math.floor(x);
 }
 
-/** Tents camped in rings around the tabernacle court, tribe by tribe (Num 2). */
-const TENT_SPOTS = Array.from({ length: TENTS }, (_, i) => {
-  const ring = 1.9 + (i % 3) * 0.75 + hash(i) * 0.35;
-  const a = (i / TENTS) * Math.PI * 2 + hash(i + 9) * 0.12;
-  return {
-    x: Math.cos(a) * ring * 1.9,
-    z: Math.sin(a) * ring * 0.8,
-    s: 0.2 + hash(i + 3) * 0.08,
-    r: hash(i + 5) * 6.28,
-    lit: hash(i + 11) > 0.55,
+/** Israel camped by tribes on the four sides of the tabernacle, the Levites nearest it (Num 2–3), relative to the court. */
+function campSpots(): TentSpot[] {
+  const spots: TentSpot[] = [];
+  const block = (
+    cx: number,
+    cz: number,
+    cols: number,
+    rows: number,
+    seed: number,
+  ) => {
+    for (let i = 0; i < cols; i++)
+      for (let j = 0; j < rows; j++) {
+        const n = seed + i * 13 + j * 7;
+        spots.push({
+          x: cx + (i - (cols - 1) / 2) * 0.72 + (hash(n) - 0.5) * 0.22,
+          z: cz + (j - (rows - 1) / 2) * 0.62 + (hash(n + 1) - 0.5) * 0.2,
+          s: 0.3 + hash(n + 2) * 0.08,
+          r: (hash(n + 3) - 0.5) * 0.7,
+          lit: hash(n + 4) > 0.6,
+        });
+      }
   };
-});
+  block(4.2, 0, 4, 6, 1);
+  block(-4.2, 0, 4, 6, 101);
+  block(0, -2.9, 9, 3, 201);
+  block(0, 2.9, 9, 3, 301);
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2;
+    if (Math.abs(Math.cos(a)) > 0.94) continue;
+    spots.push({
+      x: Math.cos(a) * 2.5,
+      z: Math.sin(a) * 1.5,
+      s: 0.26,
+      r: -a + Math.PI / 2,
+      lit: i % 3 === 0,
+    });
+  }
+  return spots;
+}
 
-/** Hebrews 3 opening: the camp of Israel at dusk in the wilderness, the pillar of fire standing over the tabernacle. */
+/** Hebrews 3 opening: the camp of Israel in the dunes at dusk, tribe by tribe around the tabernacle court, the pillar of fire standing over the tent. */
 export function HeroCampScene({ mobile, effects, pointer }: SceneProps) {
   useResetCameraOnUnmount();
-  const shift = mobile ? -2.6 : 0;
-  const cone = useMemo(() => new ConeGeometry(1, 1.1, 4, 1), []);
-  const cloth = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: "#5A4034",
-        roughness: 1,
-        metalness: 0,
-      }),
-    [],
-  );
-  const linen = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: DUSK.linen,
-        roughness: 0.9,
-        emissive: "#F09A3E",
-        emissiveIntensity: 0.12,
-      }),
-    [],
-  );
-  const fence = useMemo(() => new BoxGeometry(1, 1, 1), []);
-  const tentMatrices = useMemo(() => {
-    const m = new Matrix4();
-    const q = new Quaternion();
-    return TENT_SPOTS.map((t) =>
-      m
-        .compose(
-          new Vector3(
-            CAMP[0] + shift + t.x,
-            CAMP[1] + t.s * 0.5,
-            CAMP[2] + t.z,
-          ),
-          q.setFromAxisAngle(new Vector3(0, 1, 0), t.r),
-          new Vector3(t.s * 1.3, t.s, t.s),
-        )
-        .clone(),
-    );
-  }, [shift]);
-  useEffect(
-    () => () => {
-      cone.dispose();
-      cloth.dispose();
-      linen.dispose();
-      fence.dispose();
-    },
-    [cone, cloth, linen, fence],
+  const cx = mobile ? 1.4 : CAMP_X;
+  const cz = mobile ? CAMP_Z - 5 : CAMP_Z;
+  const clear = useMemo<Clearing>(() => [cx, cz, 6], [cx, cz]);
+  const tents = useMemo(
+    () => campSpots().map((t) => ({ ...t, x: t.x + cx, z: t.z + cz })),
+    [cx, cz],
   );
 
   useSceneTime((t, dt, { camera }) => {
     const p = pointer?.current ?? { x: 0, y: 0 };
-    damp(camera.position, "x", Math.sin(t * 0.08) * 0.15 + p.x * 0.4, 0.9, dt);
-    damp(camera.position, "y", 0.2 - p.y * 0.2, 0.9, dt);
-    camera.position.z = mobile ? 9.5 : 8;
-    camera.lookAt(0, -0.2, -8);
+    damp(camera.position, "x", Math.sin(t * 0.06) * 0.2 + p.x * 0.4, 0.9, dt);
+    damp(camera.position, "y", 0.9 - p.y * 0.2, 0.9, dt);
+    camera.position.z = mobile ? 10 : 8;
+    camera.lookAt(0, -0.4, -10);
   });
 
-  const [cx, cy, cz] = [CAMP[0] + shift, CAMP[1], CAMP[2]];
+  const pillarX = cx + TENT_CENTRE[0] * COURT_SCALE;
+  const pillarY = GROUND + TENT_CENTRE[1] * COURT_SCALE;
   return (
     <>
-      <DuskSky horizonY={-1.9} glowStrength={0.75} stars={mobile ? 110 : 220} />
-      <Dunes />
-      <hemisphereLight args={["#3A3F6E", "#1B1413", 0.45]} />
+      <fog attach="fog" args={[DUSK.haze, 14, 58]} />
+      <DuskSky horizonY={-1.2} glowStrength={0.8} stars={mobile ? 110 : 220} />
+      <DuskLights />
       <pointLight
-        position={[cx, cy + 2.2, cz + 0.4]}
-        intensity={14}
-        distance={9}
-        decay={1.6}
+        position={[pillarX, pillarY + 1.6, cz + 0.6]}
+        intensity={10}
+        distance={8}
+        decay={1.4}
         color={DUSK.fire}
       />
-      <Sand y={GROUND} far={-13} />
-      <group>
-        {tentMatrices.map((m, i) => (
-          <mesh
-            key={i}
-            geometry={cone}
-            material={cloth}
-            matrixAutoUpdate={false}
-            matrix={m}
-          />
-        ))}
-      </group>
-      {TENT_SPOTS.filter((t) => t.lit).map((t, i) => (
-        <Glow
-          key={i}
-          position={[cx + t.x, cy + t.s * 0.25, cz + t.z + t.s * 0.6]}
-          size={0.14}
-          color="#F3D38A"
-          inner="#FFF8E8"
-          alpha={0.8}
-          power={1.2}
-          renderOrder={5}
-          billboard
-          depthTest
-        />
-      ))}
-      <group position={[cx, cy, cz]}>
-        <mesh
-          geometry={fence}
-          material={linen}
-          position={[0, 0.12, -COURT[1]]}
-          scale={[COURT[0] * 2, 0.24, 0.03]}
-        />
-        <mesh
-          geometry={fence}
-          material={linen}
-          position={[0, 0.12, COURT[1]]}
-          scale={[COURT[0] * 2, 0.24, 0.03]}
-        />
-        <mesh
-          geometry={fence}
-          material={linen}
-          position={[-COURT[0], 0.12, 0]}
-          scale={[0.03, 0.24, COURT[1] * 2]}
-        />
-        <mesh
-          geometry={fence}
-          material={linen}
-          position={[COURT[0], 0.12, 0]}
-          scale={[0.03, 0.24, COURT[1] * 2]}
-        />
-        <mesh position={[0.4, 0.22, 0]}>
-          <boxGeometry args={[0.9, 0.44, 0.5]} />
-          <meshStandardMaterial color={DUSK.skins} roughness={0.9} />
-        </mesh>
-      </group>
+      <DuneField y={GROUND} clear={clear} amp={1.3} />
+      <Tents spots={tents} y={GROUND} />
+      <Tabernacle position={[cx, GROUND, cz]} scale={COURT_SCALE} />
       <PillarOfFire
-        position={[cx + 0.4, cy + 0.45, cz]}
+        position={[pillarX, pillarY, cz]}
         height={mobile ? 3.4 : 4.2}
         mobile={mobile}
       />
       <Embers
         count={mobile ? 20 : 44}
         box={EMBER_BOX}
-        position={[0, GROUND, -3]}
+        position={[0, GROUND, -4]}
         rise={0.03}
         size={2}
-        alpha={0.45}
+        alpha={0.4}
       />
-      {effects && <SceneEffects bloom={0.5} />}
+      {effects && <SceneEffects bloom={0.45} threshold={0.8} />}
     </>
   );
 }

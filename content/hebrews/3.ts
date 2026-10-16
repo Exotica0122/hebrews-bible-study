@@ -13,7 +13,7 @@ const MV: Movement[] = [
     num: "I",
     range: "1–6",
     scene: "tabernacle",
-    art: "3D · R3F — the tabernacle in the wilderness at dusk: posts and white linen raise the courtyard, the altar is lit, the tent is pitched, and the cloud of glory settles on it.",
+    art: "3D · R3F — the tabernacle in the dunes at dusk, the camp’s tents beyond: bronze posts and white linen raise the courtyard, the altar is lit, the tent is pitched, and the cloud comes down and covers it.",
     en: {
       title: "Consider Jesus",
       quote:
@@ -405,7 +405,7 @@ const MV: Movement[] = [
     num: "II",
     range: "7–11",
     scene: "rock",
-    art: "3D · R3F — dunes under a dusk sky; a cleft rock stands alone. Light breaks from the cleft and water spills down it and spreads across the sand.",
+    art: "3D · R3F — a sandstone crag in the dunes at dusk; Moses raises his staff and strikes it while the people stand back. Light breaks from the cleft and water pours out and spreads across the sand.",
     en: {
       title: "Today, if you hear his voice",
       quote:
@@ -616,7 +616,7 @@ const MV: Movement[] = [
     num: "III",
     range: "12–15",
     scene: "coals",
-    art: "3D · R3F — a bed of glowing coals; one coal rolls out on its own, its glow fading to grey ash, until it is drawn back among the others and catches again.",
+    art: "3D · R3F — a fire in the camp at nightfall with people kneeling round it; one coal rolls out of the bed on its own, its glow fading to grey ash, until it is drawn back among the others and catches again.",
     en: {
       title: "Exhort one another every day",
       quote:
@@ -929,7 +929,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "16–19",
     scene: "threshold",
-    art: "3D · R3F — a line of small lights walks across a dark wilderness toward a lit land beyond a river; one by one they dim and settle in the sand, and only two cross into the light.",
+    art: "3D · R3F — a company of people walks across the dunes toward a green land glowing beyond the Jordan; one by one they fall and settle into the sand, and only two cross into the light.",
     en: {
       title: "Unable to enter because of unbelief",
       quote: "“So we see that they were unable to enter because of unbelief.”",

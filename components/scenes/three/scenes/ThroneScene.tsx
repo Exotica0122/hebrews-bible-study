@@ -1,144 +1,234 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { useThree } from "@react-three/fiber";
-import type { Mesh, ShaderMaterial } from "three";
+import { useEffect, useMemo, useRef } from "react";
+import {
+  AddEquation,
+  CatmullRomCurve3,
+  Color,
+  CustomBlending,
+  DoubleSide,
+  OneFactor,
+  ShaderMaterial,
+  TubeGeometry,
+  Vector3,
+  type Group,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Flames } from "../primitives/Flames";
-import { Starfield } from "../primitives/Starfield";
-import { useSceneTime } from "../primitives/Timeline";
+import { Squall } from "../primitives/Coast";
+import {
+  Angel,
+  CloudFloor,
+  HEAVEN,
+  HeavenLights,
+  HeavenSky,
+  Throne,
+  throneSeat,
+  useHeavenGold,
+} from "../primitives/Heavens";
+import { smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { setUniform } from "../primitives/mutate";
 
-const EMBERS: [number, number][] = [
-  [0.18, 0.62],
-  [0.27, 0.5],
-  [0.13, 0.43],
-  [0.34, 0.68],
-];
+const PERIOD = 15;
+const FLOOR = -1.4;
+const THRONE: [number, number, number] = [1.7, FLOOR - 0.1, -0.4];
+const WIND_ANGEL: [number, number, number] = [-2.6, FLOOR + 0.05, 0.2];
+const FIRE_ANGEL: [number, number, number] = [-1.15, FLOOR + 0.05, -0.3];
 
+const WIND_VERT = /* glsl */ `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`;
+
+const WIND_FRAG = /* glsl */ `
+uniform float uTime;
+uniform float uAlpha;
+uniform float uSeed;
+uniform vec3 uColor;
+varying vec2 vUv;
+void main() {
+  float along = vUv.x;
+  float dash = smoothstep(0.0, 0.25, fract(along * 2.0 - uTime * 0.55 + uSeed)) * smoothstep(1.0, 0.55, fract(along * 2.0 - uTime * 0.55 + uSeed));
+  float ends = smoothstep(0.0, 0.12, along) * (1.0 - smoothstep(0.85, 1.0, along));
+  float a = dash * ends * uAlpha;
+  gl_FragColor = vec4(uColor * a, a);
+}`;
+
+/** Ribbons of wind spiralling up round a point: each is a helix with its own radius, pitch and phase. */
+function windCurves() {
+  return [0, 1, 2, 3, 4].map((i) => {
+    const pts: Vector3[] = [];
+    const r = 0.55 + i * 0.12;
+    for (let k = 0; k <= 40; k++) {
+      const u = k / 40;
+      const a = u * Math.PI * 3.2 + i * 1.3;
+      pts.push(
+        new Vector3(
+          Math.cos(a) * r * (0.6 + u * 0.6),
+          u * 1.9 - 0.1,
+          Math.sin(a) * r * 0.6,
+        ),
+      );
+    }
+    return new CatmullRomCurve3(pts);
+  });
+}
+
+/** “He makes his angels winds, and his ministers a flame of fire … but your throne, O God, is forever and ever”: on the left an angel in a whirl of wind and one wreathed in flame, never still; on the right the throne and the sceptre of uprightness, unmoved. */
 export function ThroneScene({ mobile, effects }: SceneProps) {
-  const { width, height } = useThree((s) => s.viewport);
   useResetCameraOnUnmount();
+  const haze = useRef(1);
   const gust = useRef(0);
-  const windA = useRef<ShaderMaterial>(null);
-  const windB = useRef<ShaderMaterial>(null);
-  const windMeshA = useRef<Mesh>(null);
-  const windMeshB = useRef<Mesh>(null);
-
-  const px = 0.16 * width;
-  const emitters = useMemo(
+  const fireGlow = useRef<ShaderMaterial | null>(null);
+  const gold = useHeavenGold();
+  const curves = useMemo(() => windCurves(), []);
+  const ribbons = useMemo(
     () =>
-      EMBERS.map(
-        ([l, t]) =>
-          [(l - 0.5) * width, (0.5 - t) * height - 0.3, 0] as [
-            number,
-            number,
-            number,
-          ],
+      curves.map(
+        (_, i) =>
+          new ShaderMaterial({
+            vertexShader: WIND_VERT,
+            fragmentShader: WIND_FRAG,
+            uniforms: {
+              uTime: { value: 0 },
+              uAlpha: { value: 0.6 },
+              uSeed: { value: i * 0.37 },
+              uColor: { value: new Color("#DCE4F2") },
+            },
+            transparent: true,
+            depthWrite: false,
+            side: DoubleSide,
+            blending: CustomBlending,
+            blendEquation: AddEquation,
+            blendSrc: OneFactor,
+            blendDst: OneFactor,
+          }),
       ),
-    [width, height],
+    [curves],
+  );
+  const tubes = useMemo(
+    () => curves.map((c) => new TubeGeometry(c, 80, 0.018, 5, false)),
+    [curves],
+  );
+  useEffect(
+    () => () => {
+      ribbons.forEach((m) => m.dispose());
+      tubes.forEach((g) => g.dispose());
+    },
+    [ribbons, tubes],
   );
 
-  useSceneTime((t) => {
-    const g =
-      (0.5 + 0.5 * Math.sin(t * 0.7)) * (0.6 + 0.4 * Math.sin(t * 1.9 + 1.3));
-    gust.current = g * g * 0.9;
-    const a = 0.05 + gust.current * 0.3;
-    if (windA.current) windA.current.uniforms.uAlpha.value = a;
-    if (windB.current) windB.current.uniforms.uAlpha.value = a * 0.7;
-    const drift = ((t * 0.6) % 2) - 1;
-    if (windMeshA.current)
-      windMeshA.current.position.x = -0.3 * width - drift * 0.6;
-    if (windMeshB.current)
-      windMeshB.current.position.x = -0.28 * width - drift * 0.4;
+  const wind = useRef<Group>(null);
+
+  useSceneTime((t, _dt, { camera }) => {
+    camera.position.set(Math.sin(t * 0.06) * 0.3 - 0.3, 1.1, mobile ? 10 : 7.4);
+    camera.lookAt(-0.2, -0.3, -0.2);
+    const p = t % PERIOD;
+    haze.current = 1 - smoothstep(0, 1, p) + smoothstep(13.6, 15, p);
+    gust.current = 0.25 + 0.35 * Math.sin(t * 1.3) + 0.15 * Math.sin(t * 3.1);
+    ribbons.forEach((m, i) => {
+      setUniform(m, "uTime", t * (1 + i * 0.15));
+      setUniform(m, "uAlpha", 0.45 + 0.25 * Math.sin(t * 1.1 + i));
+    });
+    if (wind.current) wind.current.rotation.y = t * 1.4;
+    if (fireGlow.current)
+      setUniform(
+        fireGlow.current,
+        "uAlpha",
+        0.5 + 0.15 * Math.sin(t * 7) + 0.08 * Math.sin(t * 13),
+      );
   });
 
+  const seat = throneSeat(3);
   return (
     <>
-      <Starfield count={mobile ? 400 : 900} />
-      <Glow
-        position={[px, 0.08 * height, -0.5]}
-        size={mobile ? 6 : 9}
-        color="#B7892C"
-        alpha={0.15}
-        power={2.4}
-        renderOrder={2}
+      <fog attach="fog" args={[HEAVEN.haze, 10, 46]} />
+      <HeavenSky horizonY={-0.6} stars={mobile ? 260 : 500} />
+      <HeavenLights sun={[4, 5, 6]} intensity={1.3} />
+      <CloudFloor y={FLOOR - 0.7} warm={[THRONE[0], THRONE[2]]} />
+      <Throne position={THRONE} rotationY={-0.35} mobile={mobile} />
+      <group
+        position={[THRONE[0] + 0.85, THRONE[1] + 0.66, THRONE[2] + 0.45]}
+        rotation={[0, 0, -0.12]}
+      >
+        <mesh material={gold} position={[0, 0.85, 0]}>
+          <cylinderGeometry args={[0.03, 0.035, 1.7, 10]} />
+        </mesh>
+        <mesh material={gold} position={[0, 1.75, 0]}>
+          <sphereGeometry args={[0.1, 16, 12]} />
+        </mesh>
+        <mesh material={gold} position={[0, 1.62, 0]}>
+          <torusGeometry args={[0.08, 0.02, 8, 20]} />
+        </mesh>
+      </group>
+      <Angel
+        position={WIND_ANGEL}
+        rotationY={0.5}
+        scale={0.78}
+        spread={1}
+        robe="#D8DEEA"
       />
-      <Glow
-        position={[px, 0.12 * height, 0]}
-        size={1}
-        scaleX={mobile ? 0.9 : 1.3}
-        scaleY={mobile ? 3.6 : 5.2}
-        color="#F3D38A"
-        alpha={0.25}
-        power={2.2}
-        renderOrder={5}
-      />
-      <Glow
-        position={[px, 0.12 * height, 0]}
-        size={1}
-        scaleX={0.28}
-        scaleY={mobile ? 3.4 : 5}
-        color="#F3D38A"
-        inner="#FFF8E8"
-        alpha={0.95}
-        power={1.1}
-        renderOrder={6}
-      />
-      <Glow
-        position={[px, -0.1 * height, 0]}
-        size={1}
-        scaleX={mobile ? 2.6 : 3.6}
-        scaleY={0.06}
-        color="#F3D38A"
-        alpha={0.8}
-        power={1}
-        renderOrder={7}
+      <group
+        ref={wind}
+        position={[WIND_ANGEL[0], WIND_ANGEL[1], WIND_ANGEL[2]]}
+      >
+        {tubes.map((g, i) => (
+          <mesh key={i} geometry={g} material={ribbons[i]} renderOrder={6} />
+        ))}
+      </group>
+      <Angel
+        position={FIRE_ANGEL}
+        rotationY={0.3}
+        scale={0.78}
+        spread={0.9}
+        robe="#F0CFA0"
       />
       <Flames
-        emitters={emitters}
-        count={mobile ? 60 : 120}
-        rise={mobile ? 1.1 : 1.5}
-        size={mobile ? 7 : 9}
+        emitters={[
+          [FIRE_ANGEL[0] - 0.3, FIRE_ANGEL[1] + 0.05, FIRE_ANGEL[2] + 0.2],
+          [FIRE_ANGEL[0] + 0.3, FIRE_ANGEL[1] + 0.05, FIRE_ANGEL[2] + 0.2],
+          [FIRE_ANGEL[0], FIRE_ANGEL[1] + 0.1, FIRE_ANGEL[2] + 0.35],
+        ]}
+        count={mobile ? 90 : 170}
+        rise={1.4}
+        size={mobile ? 6 : 8}
         gust={gust}
       />
+      <pointLight
+        position={[FIRE_ANGEL[0], FIRE_ANGEL[1] + 0.8, FIRE_ANGEL[2] + 0.8]}
+        intensity={4}
+        distance={4}
+        decay={1.5}
+        color="#F09A3E"
+      />
       <Glow
-        position={[-0.3 * width, 0.05 * height, 0]}
-        size={1}
-        scaleX={mobile ? 2.2 : 3.4}
-        scaleY={0.02}
-        color="#EEE4CF"
-        alpha={0.1}
-        power={1}
-        rotation={0.14}
-        renderOrder={4}
-        onMesh={(m) => {
-          windMeshA.current = m;
-        }}
+        position={[FIRE_ANGEL[0], FIRE_ANGEL[1] + 0.7, FIRE_ANGEL[2] + 0.1]}
+        size={2.6}
+        scaleY={1.3}
+        color="#C2531A"
+        inner="#F3B35A"
+        alpha={0.5}
+        power={2}
+        renderOrder={5}
         onMaterial={(m) => {
-          windA.current = m;
+          fireGlow.current = m;
         }}
       />
       <Glow
-        position={[-0.28 * width, -0.04 * height, 0]}
-        size={1}
-        scaleX={mobile ? 2 : 3}
-        scaleY={0.02}
-        color="#EEE4CF"
-        alpha={0.08}
-        power={1}
-        rotation={0.09}
-        renderOrder={4}
-        onMesh={(m) => {
-          windMeshB.current = m;
-        }}
-        onMaterial={(m) => {
-          windB.current = m;
-        }}
+        position={[THRONE[0], THRONE[1] + seat, THRONE[2] - 1]}
+        size={9}
+        color={HEAVEN.gold}
+        alpha={0.12}
+        power={2.4}
+        renderOrder={1}
       />
-      {effects && <SceneEffects bloom={0.9} />}
+      <Squall opacity={haze} color={HEAVEN.top} />
+      {effects && <SceneEffects bloom={0.45} threshold={0.82} vignette={0.4} />}
     </>
   );
 }

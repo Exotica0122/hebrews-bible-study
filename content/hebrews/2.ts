@@ -13,7 +13,7 @@ const MV: Movement[] = [
     num: "I",
     range: "1–4",
     scene: "drift",
-    art: "3D · R3F — a small light tethered to a steady one by a gold thread; a current streams past and pulls it sideways, the thread thins, then draws it back.",
+    art: "3D · R3F — a boat moored by a rope to a lamp-lit post beside a jetty on moonlit water; the current pulls it out until the rope is taut, then the rope draws it back.",
     en: {
       title: "Do not drift away",
       quote:
@@ -291,7 +291,7 @@ const MV: Movement[] = [
     num: "II",
     range: "5–9",
     scene: "crowned",
-    art: "3D · R3F — one light sinks beneath a row of angel lights and dims, then rises above them as a gold ring settles over it.",
+    art: "3D · R3F — a crown of thorns lies on a stone below a row of carved angels; it rises above them as light gathers, its thorns turn to gold and laurel grows through them.",
     en: {
       title: "Crowned with glory and honour",
       quote: "“But we see him… namely Jesus, crowned with glory and honour.”",
@@ -647,7 +647,7 @@ const MV: Movement[] = [
     num: "III",
     range: "10–13",
     scene: "gather",
-    art: "3D · R3F — shadow play on a lamplit wall: one robed figure stands in the light; smaller figures walk in from the dark on either side to stand beside him.",
+    art: "3D · R3F — a stone courtyard at night: one robed figure stands in the lamplight by a lit doorway; smaller figures walk in from the dark on either side to stand with him.",
     en: {
       title: "Not ashamed to call them brothers",
       quote: "“Behold, I and the children God has given me.”",
@@ -948,7 +948,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "14–18",
     scene: "freed",
-    art: "3D · R3F — a chain of dim links holds a row of lights down; one light descends into it, the links break and scatter, and the captives rise.",
+    art: "3D · R3F — captives kneel chained to a prison wall; one comes down among them in light, the chains break and scatter, and the captives rise with their hands lifted.",
     en: {
       title: "Made like his brothers",
       quote:

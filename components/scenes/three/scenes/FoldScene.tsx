@@ -1,130 +1,115 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useThree } from "@react-three/fiber";
-import {
-  Color,
-  DoubleSide,
-  Mesh,
-  PlaneGeometry,
-  ShaderMaterial,
-  Vector2,
-} from "three";
+import { Color, DoubleSide, PlaneGeometry, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Light } from "../primitives/Glow";
-import { Starfield } from "../primitives/Starfield";
+import { Squall } from "../primitives/Coast";
+import {
+  CloudFloor,
+  HEAVEN,
+  HeavenLights,
+  HeavenSky,
+  Throne,
+} from "../primitives/Heavens";
 import {
   easeInOutCubic,
   smoothstep,
   useSceneTime,
 } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { setUniform } from "../primitives/mutate";
+
+const PERIOD = 16;
+const FLOOR = -1.4;
+const W = 9;
+const H = 5.2;
+const BOTTOM = FLOOR - 0.4;
 
 const VERT = /* glsl */ `
-uniform float uFold;
+uniform float uRoll;
 uniform float uTime;
 varying vec2 vUv;
 varying float vShade;
-varying float vDepth;
+varying float vRolled;
 
-vec3 displace(vec3 p) {
-  float k = 2.7;
-  float pleat = sin(p.x * k) * 1.1 * uFold;
-  float skew = sin(p.x * k) * p.y * 0.14 * uFold;
-  vec3 q = vec3(p.x, p.y + skew, p.z + pleat);
-  float xr = 11.5 - uFold * 11.5;
-  if (q.x > xr) {
-    float R = 0.9 + uFold * 0.9;
-    float a = (q.x - xr) / R;
-    q = vec3(xr + R * sin(a), q.y, q.z + R * (1.0 - cos(a)));
+vec3 roll(vec3 p) {
+  p.z += sin(p.x * 0.9 + uTime * 0.6) * 0.06 + sin(p.y * 1.3 + uTime * 0.4) * 0.04;
+  float yr = uRoll;
+  if (p.y < yr) {
+    float R = 0.18 + (yr + ${(H / 2).toFixed(2)}) * 0.035;
+    float a = (yr - p.y) / R;
+    p = vec3(p.x, yr - R * sin(a), p.z + R * (1.0 - cos(a)));
   }
-  q.z += sin(q.y * 2.0 + uTime * 0.5) * 0.05;
-  return q;
+  return p;
 }
 
 void main() {
   vUv = uv;
-  vec3 p = displace(position);
-  vec3 px = displace(position + vec3(0.08, 0.0, 0.0));
-  vec3 py = displace(position + vec3(0.0, 0.08, 0.0));
+  vec3 p = roll(position);
+  vec3 px = roll(position + vec3(0.05, 0.0, 0.0));
+  vec3 py = roll(position + vec3(0.0, 0.05, 0.0));
   vec3 n = normalize(cross(px - p, py - p));
-  vec3 lightDir = normalize(vec3(0.2, 0.6, 1.0));
-  vShade = 0.15 + 0.85 * max(0.0, dot(n, lightDir));
-  vDepth = p.z;
+  vShade = 0.35 + 0.65 * max(0.0, dot(n, normalize(vec3(-0.3, 0.5, 1.0))));
+  vRolled = step(position.y, uRoll);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
 }`;
 
 const FRAG = /* glsl */ `
 uniform float uTime;
-uniform vec2 uResolution;
+uniform float uAlpha;
 uniform vec3 uNight;
-uniform vec3 uNight2;
+uniform vec3 uDeep;
 uniform vec3 uStar;
-uniform vec3 uStarWarm;
+uniform vec3 uGold;
+uniform vec3 uLining;
 varying vec2 vUv;
 varying float vShade;
-varying float vDepth;
-
+varying float vRolled;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-
 void main() {
-  vec2 grid = vUv * vec2(104.0, 44.0);
-  vec2 cell = floor(grid);
-  vec2 f = fract(grid) - 0.5;
-  float h = hash(cell);
-  vec3 col = mix(uNight, uNight2, vShade) + uStarWarm * 0.04 * vShade;
-  if (h > 0.86) {
-    vec2 off = vec2(hash(cell + 1.7), hash(cell + 9.1)) - 0.5;
-    float d = length(f - off * 0.6);
-    float size = 0.06 + hash(cell + 3.3) * 0.08;
-    float twinkle = 0.7 + 0.3 * sin(uTime * (0.8 + hash(cell + 5.5)) + h * 40.0);
-    float star = smoothstep(size, 0.0, d) * twinkle;
-    vec3 sc = mix(uStar, uStarWarm, step(0.5, hash(cell + 2.2)));
-    col += sc * star * (0.4 + 0.6 * vShade);
+  float border = min(min(vUv.x, 1.0 - vUv.x) * ${(W / H).toFixed(2)}, min(vUv.y, 1.0 - vUv.y));
+  float hem = smoothstep(0.02, 0.028, border) * (1.0 - smoothstep(0.05, 0.058, border));
+  float edge = 1.0 - smoothstep(0.0, 0.012, border);
+  vec3 col;
+  if (gl_FrontFacing) {
+    col = mix(uDeep, uNight, vUv.y * 0.6 + 0.2);
+    vec2 grid = vUv * vec2(90.0, 52.0);
+    vec2 cell = floor(grid);
+    float h = hash(cell);
+    if (h > 0.8) {
+      vec2 off = vec2(hash(cell + 1.7), hash(cell + 9.1)) - 0.5;
+      float d = length(fract(grid) - 0.5 - off * 0.6);
+      float tw = 0.7 + 0.3 * sin(uTime * (1.0 + h * 3.0) + h * 40.0);
+      col += uStar * smoothstep(0.12 + hash(cell + 3.3) * 0.1, 0.0, d) * tw * 1.4;
+    }
+    col = mix(col, uGold, hem + edge * 0.7);
+  } else {
+    col = mix(uLining, uGold, hem + edge);
   }
-  vec2 sc = gl_FragCoord.xy / uResolution;
-  float vig = smoothstep(0.95, 0.35, length((sc - 0.5) * vec2(1.4, 1.2)));
-  col = mix(col * 0.35, col, vig);
-  gl_FragColor = vec4(col, 1.0);
+  col *= vShade;
+  gl_FragColor = vec4(col, uAlpha);
 }`;
 
-const CYCLE = 16;
-const FAR_DEPTH: [number, number] = [-40, -20];
-const FAR_SPREAD: [number, number] = [40, 20];
-
-function foldAt(t: number) {
-  const p = t % CYCLE;
-  const base = 0.3;
-  if (p < 10) return base + (1 - base) * easeInOutCubic(p / 10);
-  if (p < 12) return 1;
-  return 1 - (1 - base) * smoothstep(12, 15.5, p);
-}
-
+/** “They will perish, but you remain … like a robe you will roll them up”: the starry heavens hang like a great cloth over the clouds; they are rolled up from the hem like a garment, and behind them the throne’s light is where it always was. */
 export function FoldScene({ mobile, effects }: SceneProps) {
-  const { height } = useThree((s) => s.viewport);
-  const size = useThree((s) => s.size);
-  const dpr = useThree((s) => s.viewport.dpr);
   useResetCameraOnUnmount();
-  const mesh = useRef<Mesh>(null);
-
-  const geometry = useMemo(
-    () => new PlaneGeometry(26, 11, mobile ? 80 : 160, mobile ? 32 : 56),
-    [mobile],
-  );
+  const haze = useRef(1);
+  const geometry = useMemo(() => new PlaneGeometry(W, H, 120, 160), []);
   const material = useMemo(
     () =>
       new ShaderMaterial({
         vertexShader: VERT,
         fragmentShader: FRAG,
         uniforms: {
-          uFold: { value: 0 },
+          uRoll: { value: -H / 2 - 0.01 },
           uTime: { value: 0 },
-          uResolution: { value: new Vector2(1, 1) },
-          uNight: { value: new Color("#14110D") },
-          uNight2: { value: new Color("#4A3D2E") },
-          uStar: { value: new Color("#EEE4CF") },
-          uStarWarm: { value: new Color("#F3D38A") },
+          uAlpha: { value: 1 },
+          uNight: { value: new Color("#1A1E4A") },
+          uDeep: { value: new Color("#0C0E28") },
+          uStar: { value: new Color("#FFF3D6") },
+          uGold: { value: new Color(HEAVEN.gold) },
+          uLining: { value: new Color("#5A2E4A") },
         },
         side: DoubleSide,
       }),
@@ -138,37 +123,31 @@ export function FoldScene({ mobile, effects }: SceneProps) {
     [geometry, material],
   );
 
-  useSceneTime((t) => {
-    const m = mesh.current?.material as ShaderMaterial | undefined;
-    if (!m) return;
-    m.uniforms.uTime.value = t;
-    m.uniforms.uFold.value = foldAt(t);
-    m.uniforms.uResolution.value.set(size.width * dpr, size.height * dpr);
+  useSceneTime((t, _dt, { camera }) => {
+    camera.position.set(Math.sin(t * 0.07) * 0.3, 0.9, mobile ? 11.5 : 8.6);
+    camera.lookAt(0, 0.1, -1);
+    const p = t % PERIOD;
+    haze.current = 1 - smoothstep(0, 1, p) + smoothstep(14.6, 16, p);
+    const rolled = easeInOutCubic((p - 2.5) / 7);
+    setUniform(material, "uRoll", -H / 2 - 0.01 + rolled * (H + 0.2));
+    setUniform(material, "uTime", t);
   });
 
   return (
     <>
-      <Starfield
-        count={mobile ? 200 : 400}
-        alpha={0.35}
-        depth={FAR_DEPTH}
-        spread={FAR_SPREAD}
-      />
+      <fog attach="fog" args={[HEAVEN.haze, 12, 50]} />
+      <HeavenSky horizonY={-0.6} stars={mobile ? 200 : 380} />
+      <HeavenLights sun={[-3, 5, 7]} intensity={1.3} />
+      <CloudFloor y={FLOOR - 0.7} warm={[0, -4]} />
+      <Throne position={[0, FLOOR - 0.1, -4]} scale={1.2} mobile={mobile} />
       <mesh
-        ref={mesh}
         geometry={geometry}
         material={material}
-        position={[0, 0, -2.5]}
+        position={[0, BOTTOM + H / 2, 0]}
         frustumCulled={false}
-        renderOrder={1}
       />
-      <Light
-        position={[0, 0.1 * height, 1]}
-        size={mobile ? 0.5 : 0.6}
-        coronaScale={mobile ? 5 : 7}
-        renderOrder={20}
-      />
-      {effects && <SceneEffects bloom={0.8} />}
+      <Squall opacity={haze} color={HEAVEN.top} />
+      {effects && <SceneEffects bloom={0.45} threshold={0.82} vignette={0.4} />}
     </>
   );
 }

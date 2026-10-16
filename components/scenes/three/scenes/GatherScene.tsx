@@ -2,15 +2,23 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import {
+  BoxGeometry,
   Color,
-  Group,
-  MeshBasicMaterial,
-  PlaneGeometry,
-  ShaderMaterial,
+  Matrix4,
+  MeshStandardMaterial,
+  Quaternion,
+  Vector3,
+  type Group,
+  type InstancedMesh,
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Embers, figureGeometry } from "../primitives/Earth";
+import { Glow } from "../primitives/Glow";
+import { Embers } from "../primitives/Earth";
+import { Squall } from "../primitives/Coast";
+import { Carved } from "../primitives/Salem";
+import { Flame } from "../primitives/Sanctuary";
+import { MoonLights, NIGHT, NightSky } from "../primitives/Road";
 import {
   easeInOutCubic,
   lerp,
@@ -18,152 +26,192 @@ import {
   useSceneTime,
 } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
-import { setUniform } from "../primitives/mutate";
 
-const PERIOD = 15;
-const FLOOR_Y = -1.25;
-/** The children: final x beside him, height scale, and when they set out (s). */
-const CHILDREN: [number, number, number][] = [
-  [-0.62, 0.66, 1.2],
-  [0.64, 0.62, 1.8],
-  [-1.12, 0.74, 2.6],
-  [1.16, 0.7, 3.1],
-  [-1.6, 0.6, 3.9],
-  [1.62, 0.76, 4.4],
-];
+const PERIOD = 16;
+const WALL_Z = -2.2;
+const DOOR = 1.1;
 const WALK = 4.2;
-const EMBER_BOX: [number, number, number] = [3, 2.6, 1];
+/** The children: where they come to stand (x, z), their height, robe, and when they set out (s). */
+const CHILDREN: [number, number, number, string, number][] = [
+  [-0.75, 0.25, 0.7, "#7A5E48", 1.4],
+  [0.8, 0.3, 0.64, "#5E6A7A", 2],
+  [-1.4, 0.55, 0.78, "#8A6A50", 2.8],
+  [1.45, 0.6, 0.72, "#6B5442", 3.3],
+  [-2.05, 0.95, 0.62, "#7E7A5A", 4.1],
+  [2.1, 1, 0.8, "#6A4A4A", 4.6],
+];
+const EMBER_BOX: [number, number, number] = [1, 2.2, 1];
 
-const WALL_VERT = /* glsl */ `
-varying vec3 vWorld;
-void main() {
-  vec4 w = modelMatrix * vec4(position, 1.0);
-  vWorld = w.xyz;
-  gl_Position = projectionMatrix * viewMatrix * w;
-}`;
-
-const WALL_FRAG = /* glsl */ `
-uniform float uLight;
-uniform float uFloorY;
-uniform vec3 uDark;
-uniform vec3 uWarm;
-uniform vec3 uHot;
-varying vec3 vWorld;
-float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-float noise(vec2 p) {
-  vec2 i = floor(p), f = fract(p);
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
+function hash(n: number) {
+  const x = Math.sin(n * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
 }
-void main() {
-  vec2 p = vWorld.xy - vec2(0.0, -0.2);
-  float r = length(p * vec2(0.4, 0.6));
-  float pool = exp(-r * r * 0.7) * uLight;
-  float plaster = 0.9 + 0.1 * noise(vWorld.xy * 6.0) + 0.05 * noise(vWorld.xy * 23.0);
-  vec3 c = mix(uDark, uWarm, pool) * plaster;
-  c += uHot * pow(pool, 2.5) * 0.45;
-  if (vWorld.y < uFloorY) {
-    float d = uFloorY - vWorld.y;
-    c = mix(uDark, uWarm * 0.55, exp(-abs(vWorld.x) * 0.5) * uLight) * (1.0 - smoothstep(0.0, 1.6, d) * 0.6);
-  }
-  float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-  c += (grain - 0.5) * (2.0 / 255.0);
-  gl_FragColor = vec4(c, 1.0);
-}`;
 
-/** “Behold, I and the children God has given me”: one figure in the lamplight, the children coming out of the dark to stand beside him. */
+/** Courses of cut stone across the back of the court, leaving a doorway in the middle. */
+const BLOCKS = (() => {
+  const out: [number, number, number, number][] = [];
+  for (let row = 0; row < 9; row++) {
+    const y = 0.17 + row * 0.34;
+    const off = row % 2 ? 0.35 : 0;
+    for (let i = -10; i <= 10; i++) {
+      const x = i * 0.7 + off;
+      if (Math.abs(x) < DOOR / 2 + 0.3 && y < 2.2) continue;
+      out.push([x, y, 0.62 + hash(row * 31 + i) * 0.06, hash(row * 7 + i * 3)]);
+    }
+  }
+  return out;
+})();
+
+/** “Behold, I and the children God has given me”: in a courtyard at night one figure stands in the lamplight by the door, and the children come out of the dark to stand with him. */
 export function GatherScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
+  const haze = useRef(1);
   const children = useRef<Group>(null);
-  const figure = useMemo(() => figureGeometry(), []);
-  const ink = useMemo(() => new MeshBasicMaterial({ color: "#0B0907" }), []);
-  const wall = useMemo(() => {
-    const g = new PlaneGeometry(40, 20);
-    const m = new ShaderMaterial({
-      vertexShader: WALL_VERT,
-      fragmentShader: WALL_FRAG,
-      uniforms: {
-        uLight: { value: 0 },
-        uFloorY: { value: FLOOR_Y },
-        uDark: { value: new Color("#0D0B09") },
-        uWarm: { value: new Color("#B07A42") },
-        uHot: { value: new Color("#F3D38A") },
-      },
-    });
-    return { g, m };
-  }, []);
+  const wall = useRef<InstancedMesh>(null);
+  const block = useMemo(() => new BoxGeometry(1, 0.32, 0.4), []);
+  const stone = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: "#FFFFFF",
+        roughness: 0.95,
+        flatShading: true,
+      }),
+    [],
+  );
+  const paving = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: "#6E665C",
+        roughness: 1,
+        flatShading: true,
+      }),
+    [],
+  );
   useEffect(
     () => () => {
-      figure.dispose();
-      ink.dispose();
-      wall.g.dispose();
-      wall.m.dispose();
+      block.dispose();
+      stone.dispose();
+      paving.dispose();
     },
-    [figure, ink, wall],
+    [block, stone, paving],
   );
+  useEffect(() => {
+    const m = wall.current;
+    if (!m) return;
+    const mat = new Matrix4();
+    const c = new Color();
+    BLOCKS.forEach(([x, y, w, h], i) => {
+      mat.compose(
+        new Vector3(x, y, WALL_Z + (h - 0.5) * 0.03),
+        new Quaternion(),
+        new Vector3(w, 1, 1),
+      );
+      m.setMatrixAt(i, mat);
+      m.setColorAt(i, c.set(NIGHT.stone).multiplyScalar(0.8 + h * 0.35));
+    });
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+  }, []);
 
-  const spread = mobile ? 0.8 : 1;
-  const edge = mobile ? 3.4 : 5.6;
+  const edge = mobile ? 3.6 : 5.6;
+  const spread = mobile ? 0.75 : 1;
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(0, 0.1, mobile ? 9.5 : 7.4);
-    camera.lookAt(0, -0.05, 0);
+    camera.position.set(Math.sin(t * 0.07) * 0.2, 1.3, mobile ? 8.4 : 6.4);
+    camera.lookAt(0, 0.75, 0);
     const p = t % PERIOD;
-    const arrived =
-      CHILDREN.reduce(
-        (n, [, , start]) => n + smoothstep(start + WALK - 0.8, start + WALK, p),
-        0,
-      ) / CHILDREN.length;
-    const light =
-      (0.55 + 0.45 * arrived) *
-      smoothstep(0, 1.4, p) *
-      (1 - smoothstep(13.2, 15, p));
-    setUniform(
-      wall.m,
-      "uLight",
-      light + Math.sin(t * 7) * 0.012 + Math.sin(t * 11.3) * 0.008,
-    );
-
+    haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.8, 16, p);
     children.current?.children.forEach((g, i) => {
-      const [x, , start] = CHILDREN[i];
+      const [x, z, , , start] = CHILDREN[i];
       const k = easeInOutCubic((p - start) / WALK);
       g.position.x = lerp(Math.sign(x) * edge, x * spread, k);
+      g.position.z = lerp(z + 0.8, z, k);
       const walking = k > 0 && k < 1 ? 1 : 0;
-      const step = Math.sin((p - start) * 5.5);
-      g.position.y = FLOOR_Y + walking * Math.abs(step) * 0.025;
-      g.rotation.z = walking * step * 0.015;
+      g.position.y = walking * Math.abs(Math.sin((p - start) * 5.5)) * 0.02;
+      g.rotation.y = walking
+        ? -Math.sign(x) * Math.PI * 0.45
+        : lerp(
+            -Math.sign(x) * Math.PI * 0.45,
+            -Math.sign(x) * 0.25,
+            smoothstep(start + WALK - 0.4, start + WALK + 0.6, p),
+          );
     });
   });
 
   return (
     <>
-      <mesh
-        geometry={wall.g}
-        material={wall.m}
-        position={[0, 0, -1.2]}
-        renderOrder={-10}
+      <fog attach="fog" args={[NIGHT.haze, 7, 22]} />
+      <NightSky
+        horizonY={2.5}
+        glow={0.2}
+        stars={mobile ? 90 : 160}
+        moon={null}
       />
-      <mesh geometry={figure} material={ink} position={[0, FLOOR_Y, 0]} />
+      <MoonLights moon={[4, 8, 3]} intensity={0.5} fill={0.35} />
+      <instancedMesh
+        ref={wall}
+        args={[block, stone, BLOCKS.length]}
+        frustumCulled={false}
+      />
+      <mesh material={stone} position={[0, 2.25, WALL_Z + 0.05]}>
+        <boxGeometry args={[DOOR + 0.5, 0.18, 0.5]} />
+      </mesh>
+      <mesh position={[0, 1.05, WALL_Z - 0.3]}>
+        <planeGeometry args={[DOOR, 2.1]} />
+        <meshBasicMaterial color="#C98A40" />
+      </mesh>
+      <Glow
+        position={[0, 1.05, WALL_Z + 0.05]}
+        size={1}
+        scaleX={2.4}
+        scaleY={3.2}
+        color="#8A5A26"
+        inner="#F3C77A"
+        alpha={0.45}
+        power={1.8}
+        renderOrder={4}
+      />
+      <mesh
+        material={paving}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0, 1]}
+      >
+        <planeGeometry args={[30, 7]} />
+      </mesh>
+      <pointLight
+        position={[0, 1.2, WALL_Z + 0.6]}
+        intensity={5}
+        distance={6}
+        decay={1.5}
+        color="#FFC27A"
+      />
+      <group position={[0.55, 0, 0.05]}>
+        <mesh material={stone} position={[0, 0.45, 0]}>
+          <cylinderGeometry args={[0.06, 0.12, 0.9, 8]} />
+        </mesh>
+        <mesh material={stone} position={[0, 0.93, 0]}>
+          <cylinderGeometry args={[0.13, 0.07, 0.06, 10]} />
+        </mesh>
+        <Flame position={[0, 1.0, 0]} size={0.07} light={7} distance={7} />
+        <Embers
+          count={mobile ? 6 : 10}
+          box={EMBER_BOX}
+          position={[0, 1, 0]}
+          rise={0.08}
+          size={1.2}
+          alpha={0.5}
+        />
+      </group>
+      <Carved position={[0, 0, -0.1]} robe="#E6DCC6" scale={1.02} />
       <group ref={children}>
-        {CHILDREN.map(([x, h]) => (
-          <mesh
-            key={x}
-            geometry={figure}
-            material={ink}
-            position={[Math.sign(x) * edge, FLOOR_Y, 0.05]}
-            scale={[h * 1.05, h, 1]}
-          />
+        {CHILDREN.map(([x, , h, robe]) => (
+          <group key={x} position={[Math.sign(x) * edge, 0, 0]}>
+            <Carved position={[0, 0, 0]} robe={robe} scale={h} />
+          </group>
         ))}
       </group>
-      <Embers
-        count={mobile ? 12 : 22}
-        box={EMBER_BOX}
-        position={[0, -0.9, -0.6]}
-        rise={0.05}
-        size={1.6}
-        alpha={0.45}
-      />
-      {effects && <SceneEffects bloom={0.4} />}
+      <Squall opacity={haze} color="#0A0E18" />
+      {effects && <SceneEffects bloom={0.45} threshold={0.8} />}
     </>
   );
 }
