@@ -22,6 +22,7 @@ import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
 import { ResumePill } from "@/components/chrome/ResumePill";
 import { BackToTop } from "@/components/chrome/BackToTop";
+import { ChapterSteps } from "@/components/chrome/ChapterSteps";
 import { parseWordHash, resumeKey, setHash, wordHash } from "@/lib/share";
 
 interface ChapterPageProps {
@@ -225,6 +226,7 @@ export function ChapterPage({
         <BookIndex current={chapter.number} />
       </main>
       <Footer quote={copy.footQuote} />
+      <ChapterSteps chapter={chapter.number} visible={!sheetOpen} />
       <BackToTop
         visible={activeId !== "top" && !sheetOpen}
         onClick={() => scrollToTop(reduced)}

@@ -162,6 +162,23 @@ test("chapter menu routes to a coming-soon chapter with prev, next and back", as
   await expect(page).toHaveURL(/\/7$/);
 });
 
+test("side buttons step between live chapters only", async ({ page }) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("link", { name: /^Previous chapter/ }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "Next chapter · Hebrews 2" }).click();
+  await expect(page).toHaveURL(/\/2$/);
+  await page
+    .getByRole("link", { name: "Previous chapter · Hebrews 1" })
+    .click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.goto("/7");
+  await expect(page.getByRole("link", { name: /^Next chapter/ })).toHaveCount(
+    0,
+  );
+});
+
 test("chapter 8 has no previous link and chapter 13 has no next link", async ({
   page,
 }) => {

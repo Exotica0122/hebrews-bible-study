@@ -49,6 +49,8 @@ const T = {
     resume: "Continue from",
     dismiss: "Dismiss",
     backToTop: "Back to top",
+    prevChapter: "Previous chapter",
+    nextChapter: "Next chapter",
   },
   ko: {
     brand: "히브리서",
@@ -97,6 +99,8 @@ const T = {
     resume: "이어서 보기",
     dismiss: "닫기",
     backToTop: "맨 위로",
+    prevChapter: "이전 장",
+    nextChapter: "다음 장",
   },
 };
 
