@@ -31,6 +31,10 @@ const EARTH_SCENES: SceneId[] = ["drift", "crowned", "gather", "freed", "heroEar
 const WILDERNESS_SCENES: SceneId[] = ["tabernacle", "rock", "coals", "threshold", "heroCamp"];
 const GARDEN_SCENES: SceneId[] = ["seventh", "jordan", "sword", "mercy", "heroGarden"];
 const SANCTUARY_SCENES: SceneId[] = ["offering", "diadem", "cries", "bread", "heroSanctuary"];
+const COAST_SCENES: SceneId[] = ["foundation", "rain", "footsteps", "oath", "anchor", "heroCoast"];
+/** Footprints running away up the beach: left %, top %, size px. */
+const PRINTS: [number, number, number][] = Array.from({ length: 9 }, (_, i) => [62 + (i % 2 ? 1.6 : -1.6) * (1 - i / 10) - i * 0.9, 94 - i * 4.4 - i * i * 0.05, 20 - i * 1.7]);
+const SAND_GLINTS: [number, number][] = Array.from({ length: 60 }, (_, i) => [(i * 37.1) % 100, 70 + ((i * 13.7) % 28)]);
 const CROWD: [number, number][] = [[38, 0.5], [44, 0.55], [57, 0.53], [63, 0.48], [50.5, 0.58]];
 const STONES: [number, number, number][] = [[30, 70, 26], [35, 71, 24], [40, 70, 26], [32, 66, 22], [37, 66, 24], [34.5, 62, 20]];
 
@@ -291,6 +295,76 @@ function Scene({ scene }: { scene: SceneId }) {
           <span className={`${A} ${s.round} ${s.sa_flame}`} style={{ left: "62%", top: "30%" }} />
         </>
       );
+    case "foundation":
+      return (
+        <>
+          <CssCoastBackdrop field={false} boat={false} />
+          <div className={`${A} ${s.cs_ground}`} />
+          <div className={`${A} ${s.fd_wall}`} />
+          <div className={`${A} ${s.fd_stones}`}>
+            {Array.from({ length: 6 }, (_, i) => (
+              <span key={i} className={s.fd_stone} />
+            ))}
+          </div>
+        </>
+      );
+    case "rain":
+      return (
+        <>
+          <CssCoastBackdrop field={false} boat={false} />
+          <div className={`${A} ${s.cs_ground}`} />
+          <div className={`${A} ${s.rn_plot} ${s.rn_crop}`} />
+          <div className={`${A} ${s.rn_plot} ${s.rn_thorns}`} />
+          <div className={`${A} ${s.rn_fire}`} />
+          <div className={`${s.layer} ${s.cs_rain}`} />
+        </>
+      );
+    case "footsteps":
+      return (
+        <>
+          <CssCoastBackdrop field={false} boat={false} cliff={false} />
+          <div className={`${A} ${s.fs_sand}`} />
+          {PRINTS.map(([l, t, w], i) => (
+            <span key={i} className={`${A} ${s.fs_print}`} style={{ left: `${l}%`, top: `${t}%`, width: w * 0.55, height: w }} />
+          ))}
+          <svg className={`${A} ${s.sa_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
+            <path d={FIGURE} fill="#2E3A3E" transform="translate(52.4 31) scale(0.2)" />
+          </svg>
+        </>
+      );
+    case "oath":
+      return (
+        <>
+          <div className={`${s.layer} ${s.oa_night}`} />
+          <div className={`${s.layer} ${s.oa_stars}`} />
+          <div className={`${A} ${s.oa_sea}`} />
+          <div className={`${A} ${s.oa_sand}`} />
+          {SAND_GLINTS.map(([l, t], i) => (
+            <span key={i} className={`${A} ${s.round} ${s.oa_glint}`} style={{ left: `${l}%`, top: `${t}%` }} />
+          ))}
+          <svg className={`${A} ${s.sa_people}`} viewBox="40 22 20 22" preserveAspectRatio="xMidYMax meet">
+            <path d={FIGURE} fill="#0A0D14" transform="translate(52 36) scale(0.42)" />
+          </svg>
+        </>
+      );
+    case "anchor":
+      return (
+        <>
+          <div className={`${s.layer} ${s.an_water}`} />
+          <div className={`${A} ${s.an_light}`} />
+          <div className={`${A} ${s.an_hull}`} />
+          <div className={`${A} ${s.an_rope}`} />
+          <svg className={`${A} ${s.an_anchor}`} viewBox="-50 -10 100 120">
+            <g fill="none" stroke="#1E2629" strokeWidth="7" strokeLinecap="round">
+              <circle cx="0" cy="0" r="8" />
+              <path d="M0 8V100M-24 24H24M-40 72Q-36 104 0 104Q36 104 40 72" />
+            </g>
+          </svg>
+          <div className={`${A} ${s.an_curtain}`} />
+        </>
+      );
+    case "heroCoast":
+      return <CssCoastBackdrop />;
     case "heroSanctuary":
       return <CssSanctuaryBackdrop />;
     case "heroGarden":
@@ -307,7 +381,7 @@ function Scene({ scene }: { scene: SceneId }) {
 export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && !SANCTUARY_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
+      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && !SANCTUARY_SCENES.includes(scene) && !COAST_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
       <Scene scene={scene} />
     </div>
   );
@@ -373,6 +447,24 @@ export function HeroHalo() {
     <div aria-hidden="true" className={s.abs} style={{ position: "relative", width: 18, height: 18, marginBottom: "clamp(48px,14vh,160px)", flex: "none" }}>
       <div className={`${C} ${s.h_halo}`} />
       <div className={`${s.abs} ${s.round} ${s.core} ${s.h_core}`} />
+    </div>
+  );
+}
+
+/** A headland above the sea as the rain moves off: slate cloud, misty headlands, sea-green swell with a break of light, a cliff and a ploughed field. */
+export function CssCoastBackdrop({ field = true, boat = true, cliff = true }: { field?: boolean; boat?: boolean; cliff?: boolean }) {
+  return (
+    <div aria-hidden="true" className={s.layer}>
+      <div className={`${s.layer} ${s.cs_sky}`} />
+      <div className={`${s.layer} ${s.cs_far}`} />
+      <div className={`${A} ${s.cs_sea}`} />
+      <div className={`${A} ${s.cs_glint}`} />
+      <div className={`${A} ${s.cs_shower}`} />
+      {cliff && <div className={`${A} ${s.cs_cliff}`} />}
+      {cliff && <div className={`${A} ${s.cs_cliffL}`} />}
+      {boat && <div className={`${A} ${s.cs_boat}`} />}
+      {field && <div className={`${A} ${s.cs_turf}`} />}
+      {field && <div className={`${A} ${s.cs_field}`} />}
     </div>
   );
 }

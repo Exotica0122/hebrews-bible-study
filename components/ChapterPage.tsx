@@ -35,6 +35,7 @@ const HERO_ART: Record<Setting, string> = {
   wilderness: "3D · R3F — the camp of Israel at dusk, tents around the tabernacle under the pillar of fire",
   garden: "3D · R3F — the garden on the seventh day in full light: olive trees, still water and a high sun; the work is finished and nothing moves but the clouds",
   sanctuary: "3D · R3F — the Holy Place by lamplight: woven curtains of blue, purple and scarlet, the golden lampstand, the bread on its table, and incense rising before the veil",
+  coast: "3D · R3F — a headland above the sea as the rain moves off: a ploughed field on the cliff, a boat riding at anchor in the bay, and a break of light on the water",
 };
 
 export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, reduceMotion = false }: ChapterPageProps) {

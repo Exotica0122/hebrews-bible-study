@@ -1,9 +1,9 @@
 export type Lang = "en" | "ko";
 
-/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight. */
-export type Setting = "heavens" | "earth" | "wilderness" | "garden" | "sanctuary";
+/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight, chapter 6 a rain-washed headland above the sea. */
+export type Setting = "heavens" | "earth" | "wilderness" | "garden" | "sanctuary" | "coast";
 
-export type SceneId = "radiance" | "angels" | "throne" | "fold" | "exalted" | "drift" | "crowned" | "gather" | "freed" | "tabernacle" | "rock" | "coals" | "threshold" | "seventh" | "jordan" | "sword" | "mercy" | "offering" | "diadem" | "cries" | "bread";
+export type SceneId = "radiance" | "angels" | "throne" | "fold" | "exalted" | "drift" | "crowned" | "gather" | "freed" | "tabernacle" | "rock" | "coals" | "threshold" | "seventh" | "jordan" | "sword" | "mercy" | "offering" | "diadem" | "cries" | "bread" | "foundation" | "rain" | "footsteps" | "oath" | "anchor";
 
 export type CommentaryBlock = ["h" | "p" | "q", string];
 

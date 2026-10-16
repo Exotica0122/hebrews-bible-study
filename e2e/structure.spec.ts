@@ -55,6 +55,17 @@ test("renders Hebrews 5 with four movements and 새번역 in Korean", async ({ p
   await expect(page.locator("#hb-m2")).toContainText("멜기세덱의 계통을 따라 임명받은 영원한 제사장");
 });
 
+test("renders Hebrews 6 with five movements and 새번역 in Korean", async ({ page }) => {
+  await page.goto("/6");
+  await expect(page.getByRole("heading", { level: 1, name: "Hebrews 6" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Twenty verses, five movements" })).toBeVisible();
+  for (const id of ["m1", "m2", "m3", "m4", "m5"]) await expect(page.locator(`#hb-${id}`)).toBeAttached();
+  await expect(page.locator("#hb-m6")).toHaveCount(0);
+  await page.getByRole("button", { name: "한국어" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "히브리서 6장" })).toBeVisible();
+  await expect(page.locator("#hb-m5")).toContainText("안전하고 확실한 영혼의 닻");
+});
+
 test("desktop header shows the section nav; mobile shows the active label", async ({ page }, testInfo) => {
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Sections" });
