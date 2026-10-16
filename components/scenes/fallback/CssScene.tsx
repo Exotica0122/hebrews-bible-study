@@ -32,6 +32,10 @@ const WILDERNESS_SCENES: SceneId[] = ["tabernacle", "rock", "coals", "threshold"
 const GARDEN_SCENES: SceneId[] = ["seventh", "jordan", "sword", "mercy", "heroGarden"];
 const SANCTUARY_SCENES: SceneId[] = ["offering", "diadem", "cries", "bread", "heroSanctuary"];
 const COAST_SCENES: SceneId[] = ["foundation", "rain", "footsteps", "oath", "anchor", "heroCoast"];
+const SALEM_SCENES: SceneId[] = ["meeting", "tithe", "arise", "sworn", "forever", "heroSalem"];
+const STONE = "#E8DCC4";
+const MANTLE = "#9C8466";
+const GOLD = "#C99A3E";
 /** Footprints running away up the beach: left %, top %, size px. */
 const PRINTS: [number, number, number][] = Array.from({ length: 9 }, (_, i) => [62 + (i % 2 ? 1.6 : -1.6) * (1 - i / 10) - i * 0.9, 94 - i * 4.4 - i * i * 0.05, 20 - i * 1.7]);
 const SAND_GLINTS: [number, number][] = Array.from({ length: 60 }, (_, i) => [(i * 37.1) % 100, 70 + ((i * 13.7) % 28)]);
@@ -363,6 +367,93 @@ function Scene({ scene }: { scene: SceneId }) {
           <div className={`${A} ${s.an_curtain}`} />
         </>
       );
+    case "meeting":
+      return (
+        <>
+          <CssSalemBackdrop />
+          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+            <Fig x={58} y={44} s={1.15} fill={STONE} />
+            <rect x={56.3} y={22.6} width={3.4} height={1.2} fill={GOLD} />
+            <path d="M53.6 31h2.4l-0.4 2.4h-1.6z" fill={GOLD} />
+            <ellipse cx={53.4} cy={33.6} rx={1.4} ry={0.7} fill="#C08646" />
+            <Fig x={47} y={44} s={1.1} fill={MANTLE} />
+            {[[40, 43.4], [36, 44.6], [32, 43.8]].map(([x, y]) => (
+              <g key={x}>
+                <Fig x={x} y={y} s={1.05} fill="#A58E70" />
+                <line x1={x + 2.4} y1={y} x2={x + 3.2} y2={y - 24} stroke="#6E5A44" strokeWidth={0.35} />
+              </g>
+            ))}
+          </svg>
+        </>
+      );
+    case "tithe":
+      return (
+        <>
+          <CssSalemBackdrop city={false} />
+          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+            {[[34, 40], [29, 37], [24, 34]].map(([x, y], i) => (
+              <Fig key={x} x={x} y={y} s={1 - i * 0.08} fill={STONE} o={0.5} />
+            ))}
+            <Fig x={42} y={44} s={1.15} fill={MANTLE} />
+            <Fig x={62} y={44} s={1.15} fill={STONE} />
+            <rect x={60.3} y={22.6} width={3.4} height={1.2} fill={GOLD} />
+            {Array.from({ length: 9 }, (_, i) => (
+              <ellipse key={i} cx={30 + i * 2.6} cy={47 + (i % 2) * 0.6} rx={1.3} ry={0.9} fill="#A07F58" />
+            ))}
+            <ellipse cx={58} cy={45} rx={1.3} ry={0.9} fill="#B08A5E" />
+          </svg>
+        </>
+      );
+    case "arise":
+      return (
+        <>
+          <CssSalemBackdrop city={false} />
+          <div className={`${A} ${s.sl_ray}`} />
+          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+            <rect x={36} y={34} width={9} height={8} fill="#B39A78" />
+            <ellipse cx={40.5} cy={32.6} rx={1.4} ry={2} fill="#F0A060" />
+            {[[26, 43], [31, 41.6], [22, 41.2]].map(([x, y]) => (
+              <g key={x}>
+                <Fig x={x} y={y} s={1.05} fill={STONE} />
+                <rect x={x - 1.3} y={y - 19.6} width={2.6} height={1.4} rx={0.6} fill="#FFF8EA" />
+              </g>
+            ))}
+            <Fig x={56} y={44} s={1.2} fill="#FFF6E4" />
+            <rect x={54.3} y={21.3} width={3.4} height={1.2} fill={GOLD} />
+            <rect x={68} y={36} width={6} height={6} fill="#E4D4B6" />
+            <rect x={70.7} y={25} width={0.7} height={11} fill={GOLD} />
+            <circle cx={71} cy={24.4} r={1} fill={GOLD} />
+          </svg>
+        </>
+      );
+    case "sworn":
+      return (
+        <>
+          <div className={`${s.layer} ${s.sl_sky}`} />
+          <div className={`${A} ${s.sw_plinth}`} />
+          <div className={`${A} ${s.sw_tablet}`} />
+          <div className={`${A} ${s.sw_seal}`} />
+        </>
+      );
+    case "forever":
+      return (
+        <>
+          <CssSalemBackdrop city={false} />
+          <div className={`${A} ${s.sl_ray}`} />
+          <svg className={`${A} ${s.sl_svg}`} viewBox="0 0 100 50" preserveAspectRatio="xMidYMax meet">
+            <rect x={34} y={34} width={9} height={8} fill="#B39A78" />
+            <ellipse cx={38.5} cy={32.6} rx={1.4} ry={2} fill="#F0A060" />
+            {[0.12, 0.2, 0.3].map((o, i) => (
+              <Fig key={i} x={62 + i * 5} y={42 + i * 0.4} s={1.05} fill={STONE} o={o} />
+            ))}
+            <path d="M53.4 26.5L51.4 20.5M58.6 26.5L60.6 20.5" stroke="#FFF6E4" strokeWidth={0.8} strokeLinecap="round" />
+            <Fig x={56} y={44} s={1.2} fill="#FFF6E4" />
+            <rect x={54.3} y={21.3} width={3.4} height={1.2} fill={GOLD} />
+          </svg>
+        </>
+      );
+    case "heroSalem":
+      return <CssSalemBackdrop />;
     case "heroCoast":
       return <CssCoastBackdrop />;
     case "heroSanctuary":
@@ -381,7 +472,7 @@ function Scene({ scene }: { scene: SceneId }) {
 export function CssScene({ scene, className = "" }: { scene: SceneId; className?: string }) {
   return (
     <div aria-hidden="true" className={`${s.layer} ${className}`}>
-      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && !SANCTUARY_SCENES.includes(scene) && !COAST_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
+      {!EARTH_SCENES.includes(scene) && !WILDERNESS_SCENES.includes(scene) && !GARDEN_SCENES.includes(scene) && !SANCTUARY_SCENES.includes(scene) && !COAST_SCENES.includes(scene) && !SALEM_SCENES.includes(scene) && <CssStarfield opacity={0.75} second={false} />}
       <Scene scene={scene} />
     </div>
   );
@@ -465,6 +556,24 @@ export function CssCoastBackdrop({ field = true, boat = true, cliff = true }: { 
       {boat && <div className={`${A} ${s.cs_boat}`} />}
       {field && <div className={`${A} ${s.cs_turf}`} />}
       {field && <div className={`${A} ${s.cs_field}`} />}
+    </div>
+  );
+}
+
+function Fig({ x, y, s: k, fill, o = 1 }: { x: number; y: number; s: number; fill: string; o?: number }) {
+  return <path d={FIGURE} fill={fill} opacity={o} transform={`translate(${x} ${y}) scale(${k})`} />;
+}
+
+/** Salem on its terraced hill at first light: peach dawn under pale lapis, the walled city on the tell, a road down across the valley floor. */
+export function CssSalemBackdrop({ city = true }: { city?: boolean }) {
+  return (
+    <div aria-hidden="true" className={s.layer}>
+      <div className={`${s.layer} ${s.sl_sky}`} />
+      <div className={`${A} ${s.sl_far}`} />
+      {city && <div className={`${A} ${s.sl_tell}`} />}
+      {city && <div className={`${A} ${s.sl_city}`} />}
+      <div className={`${A} ${s.sl_ground}`} />
+      {city && <div className={`${A} ${s.sl_road}`} />}
     </div>
   );
 }
