@@ -16,7 +16,8 @@
     "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "lint:fix": "eslint --fix"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",
