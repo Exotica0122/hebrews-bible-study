@@ -12,9 +12,10 @@ import {
   SphereGeometry,
   Vector2,
   type Group,
+  type Mesh,
 } from "three";
 import { Hills, Sky, type HillLayer } from "./Earth";
-import { useFigure } from "./Sanctuary";
+import { FIGURE_HEAD, useFigure } from "./Sanctuary";
 import { setOpacity } from "./mutate";
 
 /** Hebrews 7 palette: Salem at first light, cut in limestone. Pale lapis overhead, a peach dawn low down, honey stone with violet shade, and gold and wine for the priest-king. */
@@ -310,6 +311,8 @@ interface CarvedProps {
   arms?: boolean;
   /** 0–1, read every frame; omit for a solid figure. */
   opacity?: RefObject<number>;
+  /** 0 standing to 1 kneeling, read every frame; overrides `pose`. */
+  kneel?: RefObject<number>;
 }
 
 /** A robed figure in carved stone, about 1.75 tall standing, feet at the origin; a gold circlet for the priest-king, a linen turban for a priest. */
@@ -323,8 +326,9 @@ export function Carved({
   turban = false,
   arms = false,
   opacity,
+  kneel,
 }: CarvedProps) {
-  const f = useFigure(pose);
+  const f = useFigure(kneel ? "standing" : pose, !!kneel);
   const fading = !!opacity;
   const mats = useMemo(() => {
     const make = (color: string, metalness = 0, roughness = 0.9) =>
@@ -352,6 +356,9 @@ export function Carved({
     [],
   );
   const group = useRef<Group>(null);
+  const body = useRef<Mesh>(null);
+  const top = useRef<Group>(null);
+  const hands = useRef<Group>(null);
   useEffect(
     () => () => {
       Object.values(mats).forEach((m) => m.dispose());
@@ -360,6 +367,16 @@ export function Carved({
     [mats, parts],
   );
   useFrame(() => {
+    if (kneel && body.current && top.current) {
+      const k = kneel.current;
+      if (!body.current.morphTargetInfluences)
+        body.current.updateMorphTargets();
+      body.current.morphTargetInfluences![0] = k;
+      const [sy, sz] = FIGURE_HEAD.standing;
+      const [ky, kz] = FIGURE_HEAD.kneeling;
+      top.current.position.set(0, (ky - sy) * k, (kz - sz) * k);
+      if (hands.current) hands.current.position.y = (ky - sy) * k;
+    }
     if (!opacity) return;
     const o = opacity.current;
     Object.values(mats).forEach((m) => setOpacity(m, o));
@@ -372,37 +389,41 @@ export function Carved({
       scale={scale}
       rotation={[0, rotationY, 0]}
     >
-      <mesh geometry={f.body} material={mats.robe} />
-      <mesh
-        geometry={f.head}
-        material={mats.head}
-        position={[0, f.headY, f.headZ]}
-      />
-      {crown && (
+      <mesh ref={body} geometry={f.body} material={mats.robe} />
+      <group ref={top}>
         <mesh
-          geometry={parts.ring}
-          material={mats.gold}
-          position={[0, f.headY + 0.08, f.headZ]}
-          material-side={DoubleSide}
+          geometry={f.head}
+          material={mats.head}
+          position={[0, f.headY, f.headZ]}
         />
-      )}
-      {turban && (
-        <mesh
-          geometry={parts.wrap}
-          material={mats.linen}
-          position={[0, f.headY + 0.08, f.headZ]}
-        />
-      )}
-      {arms &&
-        [-1, 1].map((s) => (
+        {crown && (
           <mesh
-            key={s}
-            geometry={parts.arm}
-            material={mats.robe}
-            position={[s * 0.3, 1.5, 0.05]}
-            rotation={[0, 0, -s * 0.45]}
+            geometry={parts.ring}
+            material={mats.gold}
+            position={[0, f.headY + 0.08, f.headZ]}
+            material-side={DoubleSide}
           />
-        ))}
+        )}
+        {turban && (
+          <mesh
+            geometry={parts.wrap}
+            material={mats.linen}
+            position={[0, f.headY + 0.08, f.headZ]}
+          />
+        )}
+      </group>
+      <group ref={hands}>
+        {arms &&
+          [-1, 1].map((s) => (
+            <mesh
+              key={s}
+              geometry={parts.arm}
+              material={mats.robe}
+              position={[s * 0.3, 1.5, 0.05]}
+              rotation={[0, 0, -s * 0.45]}
+            />
+          ))}
+      </group>
     </group>
   );
 }

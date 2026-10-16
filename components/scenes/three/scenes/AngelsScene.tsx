@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { Group } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Squall } from "../primitives/Coast";
@@ -31,11 +30,7 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
   const glory = useRef(0);
-  const standing = useRef<(Group | null)[]>([]);
-  const kneeling = useRef<(Group | null)[]>([]);
-  const [fades] = useState(() =>
-    ANGELS.map(() => ({ standing: { current: 1 }, kneeling: { current: 0 } })),
-  );
+  const [kneels] = useState(() => ANGELS.map(() => ({ current: 0 })));
 
   useSceneTime((t, _dt, { camera }) => {
     camera.position.set(Math.sin(t * 0.07) * 0.5, 1.6, mobile ? 9.8 : 7.2);
@@ -44,16 +39,7 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
     haze.current = 1 - smoothstep(0, 1, p) + smoothstep(14.6, 16, p);
     glory.current = 0.35 + 0.65 * smoothstep(1.4, 4.4, p);
     ANGELS.forEach((g, i) => {
-      const e = smoothstep(g.bows, g.bows + BOW_TIME, p);
-      fades[i].standing.current = 1 - e;
-      fades[i].kneeling.current = e;
-      const s = standing.current[i];
-      const k = kneeling.current[i];
-      if (s) {
-        s.visible = e < 1;
-        s.position.y = -0.25 * e;
-      }
-      if (k) k.visible = e > 0;
+      kneels[i].current = smoothstep(g.bows, g.bows + BOW_TIME, p);
     });
   });
 
@@ -72,37 +58,16 @@ export function AngelsScene({ mobile, effects }: SceneProps) {
         ];
         const face = Math.atan2(-pos[0], -0.6 - pos[2]);
         return (
-          <group key={i}>
-            <group
-              ref={(g) => {
-                standing.current[i] = g;
-              }}
-            >
-              <Angel
-                position={pos}
-                rotationY={face}
-                scale={0.74}
-                spread={0.9}
-                opacity={fades[i].standing}
-              />
-            </group>
-            <group
-              ref={(g) => {
-                kneeling.current[i] = g;
-              }}
-              visible={false}
-            >
-              <Angel
-                position={pos}
-                rotationY={face}
-                scale={0.74}
-                pose="kneeling"
-                spread={0.35}
-                bow={0.45}
-                opacity={fades[i].kneeling}
-              />
-            </group>
-          </group>
+          <Angel
+            key={i}
+            position={pos}
+            rotationY={face}
+            scale={0.74}
+            spread={0.9}
+            kneel={kneels[i]}
+            kneelSpread={0.35}
+            kneelBow={0.45}
+          />
         );
       })}
       <Squall opacity={haze} color={HEAVEN.top} />

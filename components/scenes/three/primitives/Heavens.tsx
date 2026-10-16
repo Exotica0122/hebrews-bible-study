@@ -17,6 +17,7 @@ import {
   SphereGeometry,
   type BufferGeometry,
   type Group,
+  type Mesh,
   type PointLight,
   type ShaderMaterial,
 } from "three";
@@ -547,6 +548,10 @@ interface AngelProps {
   robe?: string;
   /** 0–1, read every frame; omit for a solid angel. */
   opacity?: RefObject<number>;
+  /** 0 standing to 1 kneeling, read every frame: folds the wings to `kneelSpread` and leans to `kneelBow`. Overrides `pose`. */
+  kneel?: RefObject<number>;
+  kneelSpread?: number;
+  kneelBow?: number;
 }
 
 /** A winged angel in white and gold: a carved robed figure with two feathered wings at the shoulders. Feet at the origin, facing +z. */
@@ -559,6 +564,9 @@ export function Angel({
   bow = 0,
   robe = HEAVEN.angel,
   opacity,
+  kneel,
+  kneelSpread = spread,
+  kneelBow = bow,
 }: AngelProps) {
   const wing = useMemo(() => wingGeometry(), []);
   const fading = !!opacity;
@@ -583,24 +591,41 @@ export function Angel({
     },
     [wing, feather],
   );
+  const torso = useRef<Group>(null);
+  const wings = useRef<(Mesh | null)[]>([]);
   useFrame(() => {
     if (opacity) setOpacity(feather, opacity.current);
+    if (!kneel || !torso.current) return;
+    const k = kneel.current;
+    torso.current.rotation.x = bow + (kneelBow - bow) * k;
+    const sh = 1.32 - 0.5 * k;
+    const wz = -0.12 + 0.07 * k;
+    const l = 0.35 + (spread + (kneelSpread - spread) * k) * 0.6;
+    wings.current.forEach((w, i) => {
+      if (!w) return;
+      w.position.set((i ? 1 : -1) * 0.1, sh, wz);
+      w.scale.y = 0.9 * l + 0.35;
+    });
   });
   const shoulder = pose === "standing" ? 1.32 : 0.82;
   const z = pose === "standing" ? -0.12 : -0.05;
   const lift = 0.35 + spread * 0.6;
   return (
     <group position={position} rotation={[0, rotationY, 0]} scale={scale}>
-      <group rotation={[bow, 0, 0]}>
+      <group ref={torso} rotation={[bow, 0, 0]}>
         <Carved
           position={[0, 0, 0]}
           robe={robe}
           pose={pose}
           opacity={opacity}
+          kneel={kneel}
         />
-        {[-1, 1].map((s) => (
+        {[-1, 1].map((s, i) => (
           <mesh
             key={s}
+            ref={(m) => {
+              wings.current[i] = m;
+            }}
             geometry={wing}
             material={feather}
             position={[s * 0.1, shoulder, z]}

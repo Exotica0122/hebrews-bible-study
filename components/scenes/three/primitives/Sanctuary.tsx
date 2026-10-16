@@ -452,23 +452,39 @@ const KNEELING: [number, number][] = [
   [0, 0.91],
 ];
 
-/** A robed figure turned on a lathe, about 1.75 tall standing or 1.1 kneeling, feet at the origin. */
-export function useFigure(pose: "standing" | "kneeling" = "standing") {
+const lathe = (profile: [number, number][]) =>
+  new LatheGeometry(
+    profile.map(([r, y]) => new Vector2(r, y)),
+    20,
+  );
+
+/** Head height and forward offset for each pose. */
+export const FIGURE_HEAD = {
+  standing: [1.6, 0],
+  kneeling: [1.03, 0.08],
+} as const;
+
+/** A robed figure turned on a lathe, about 1.75 tall standing or 1.1 kneeling, feet at the origin; `morph` gives a standing body with the kneeling one as morph target 0. */
+export function useFigure(
+  pose: "standing" | "kneeling" = "standing",
+  morph = false,
+) {
   return useMemo(() => {
-    const body = new LatheGeometry(
-      (pose === "standing" ? STANDING : KNEELING).map(
-        ([r, y]) => new Vector2(r, y),
-      ),
-      20,
-    );
+    const body = lathe(pose === "standing" ? STANDING : KNEELING);
+    if (morph) {
+      const kneel = lathe(KNEELING);
+      body.morphAttributes.position = [kneel.attributes.position];
+      body.morphAttributes.normal = [kneel.attributes.normal];
+      kneel.dispose();
+    }
     const head = new SphereGeometry(0.105, 16, 12);
     return {
       body,
       head,
-      headY: pose === "standing" ? 1.6 : 1.03,
-      headZ: pose === "standing" ? 0 : 0.08,
+      headY: FIGURE_HEAD[pose][0],
+      headZ: FIGURE_HEAD[pose][1],
     };
-  }, [pose]);
+  }, [pose, morph]);
 }
 
 interface FigureProps {

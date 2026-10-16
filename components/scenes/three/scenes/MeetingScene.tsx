@@ -29,6 +29,8 @@ import { setUniform } from "../primitives/mutate";
 
 const PERIOD = 16;
 const STOP = -0.7;
+const KNEELS = 7.6;
+const KNEEL_TIME = 0.9;
 /** Abraham’s men behind him: offset from Abraham along x, z. */
 const MEN: [number, number][] = [
   [-1.1, -0.5],
@@ -41,8 +43,7 @@ export function MeetingScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
   const party = useRef<Group>(null);
-  const standing = useRef<Group>(null);
-  const kneeling = useRef<Group>(null);
+  const knelt = useRef(0);
   const blessing = useRef<ShaderMaterial | null>(null);
 
   useSceneTime((t, _dt, { camera }) => {
@@ -56,9 +57,7 @@ export function MeetingScene({ mobile, effects }: SceneProps) {
       party.current.position.y =
         walk < 1 ? Math.abs(Math.sin(p * 5)) * 0.03 : 0;
     }
-    const knelt = p > 7.6;
-    if (standing.current) standing.current.visible = !knelt;
-    if (kneeling.current) kneeling.current.visible = knelt;
+    knelt.current = smoothstep(KNEELS, KNEELS + KNEEL_TIME, p);
     if (blessing.current)
       setUniform(
         blessing.current,
@@ -98,17 +97,12 @@ export function MeetingScene({ mobile, effects }: SceneProps) {
         }}
       />
       <group ref={party}>
-        <group ref={standing}>
-          <Carved position={[0, 0, 0]} robe={SALEM.mantle} rotationY={1.2} />
-        </group>
-        <group ref={kneeling} visible={false}>
-          <Carved
-            position={[0, 0, 0]}
-            robe={SALEM.mantle}
-            rotationY={1.2}
-            pose="kneeling"
-          />
-        </group>
+        <Carved
+          position={[0, 0, 0]}
+          robe={SALEM.mantle}
+          rotationY={1.2}
+          kneel={knelt}
+        />
         {MEN.map(([x, z], i) => (
           <group key={i} position={[x, 0, z]}>
             <Carved
