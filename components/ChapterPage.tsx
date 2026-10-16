@@ -33,6 +33,7 @@ const HERO_ART: Record<Setting, string> = {
   heavens: "3D · R3F — the burning bush, Sinai, the pillar of cloud and the tablets drift in from the heavens and gather into one light",
   earth: "3D · R3F — lamp-lit travellers on a road through the night hills toward a lit town",
   wilderness: "3D · R3F — the camp of Israel at dusk, tents around the tabernacle under the pillar of fire",
+  garden: "3D · R3F — the garden on the seventh day in full light: olive trees, still water and a high sun; the work is finished and nothing moves but the clouds",
 };
 
 export function ChapterPage({ chapter, ruledLines = true, showArtNotes = false, reduceMotion = false }: ChapterPageProps) {

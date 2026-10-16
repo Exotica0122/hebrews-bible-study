@@ -99,20 +99,20 @@ test("scene toggle swaps the radiance quote for the seal", async ({ page }) => {
 test("chapter menu routes to a coming-soon chapter with prev, next and back", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /Chapter 1/ }).click();
-  await page.getByRole("menuitem", { name: /Hebrews 5/ }).click();
-  await expect(page).toHaveURL(/\/5$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Hebrews 5" })).toBeVisible();
-  await expect(page.locator("main").getByText("Coming soon", { exact: true }).first()).toBeVisible();
-  await page.getByRole("link", { name: /Hebrews 6 →/ }).click();
+  await page.getByRole("menuitem", { name: /Hebrews 6/ }).click();
   await expect(page).toHaveURL(/\/6$/);
-  await page.getByRole("link", { name: /← Hebrews 5/ }).click();
-  await expect(page).toHaveURL(/\/5$/);
-  await page.getByRole("link", { name: "Back to Hebrews 3" }).click();
-  await expect(page).toHaveURL(/\/3$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Hebrews 6" })).toBeVisible();
+  await expect(page.locator("main").getByText("Coming soon", { exact: true }).first()).toBeVisible();
+  await page.getByRole("link", { name: /Hebrews 7 →/ }).click();
+  await expect(page).toHaveURL(/\/7$/);
+  await page.getByRole("link", { name: /← Hebrews 6/ }).click();
+  await expect(page).toHaveURL(/\/6$/);
+  await page.getByRole("link", { name: "Back to Hebrews 4" }).click();
+  await expect(page).toHaveURL(/\/4$/);
 });
 
-test("chapter 4 has no previous link and chapter 13 has no next link", async ({ page }) => {
-  await page.goto("/4");
+test("chapter 5 has no previous link and chapter 13 has no next link", async ({ page }) => {
+  await page.goto("/5");
   await expect(page.getByRole("link", { name: /← Hebrews/ })).toHaveCount(0);
   await page.goto("/13");
   await expect(page.getByRole("link", { name: /Hebrews 14/ })).toHaveCount(0);

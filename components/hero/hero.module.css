@@ -5,6 +5,14 @@
   background: var(--night);
   color: var(--parchment);
 }
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 34% at 50% 62%, rgba(20, 17, 13, 0.55), rgba(20, 17, 13, 0) 100%),
+    linear-gradient(rgba(20, 17, 13, 0) 55%, rgba(20, 17, 13, 0.6));
+}
 .fragment {
   position: absolute;
   left: var(--l);

@@ -33,6 +33,17 @@ test("renders Hebrews 3 with four movements and 새번역 in Korean", async ({ p
   await expect(page.locator("#hb-m2")).toContainText("오늘 너희가 그의 음성을 듣거든");
 });
 
+test("renders Hebrews 4 with four movements and 새번역 in Korean", async ({ page }) => {
+  await page.goto("/4");
+  await expect(page.getByRole("heading", { level: 1, name: "Hebrews 4" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Sixteen verses, four movements" })).toBeVisible();
+  for (const id of ["m1", "m2", "m3", "m4"]) await expect(page.locator(`#hb-${id}`)).toBeAttached();
+  await expect(page.locator("#hb-m5")).toHaveCount(0);
+  await page.getByRole("button", { name: "한국어" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "히브리서 4장" })).toBeVisible();
+  await expect(page.locator("#hb-m3")).toContainText("어떤 양날칼보다도 더 날카롭습니다");
+});
+
 test("desktop header shows the section nav; mobile shows the active label", async ({ page }, testInfo) => {
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Sections" });
