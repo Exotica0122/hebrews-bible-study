@@ -3,13 +3,6 @@ const S = process.argv[2];
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
-await page.evaluate(() => localStorage.setItem("hb-resume-1", "m3"));
-await page.reload({ waitUntil: "networkidle" });
-await page.waitForTimeout(800);
-await page.screenshot({
-  path: `${S}/shots/resume-pill.png`,
-  clip: { x: 0, y: 0, width: 1440, height: 200 },
-});
 await page
   .locator("#hb-m1")
   .getByRole("button", { name: "radiance", exact: true })

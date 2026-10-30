@@ -26,5 +26,3 @@ export async function copyCurrentUrl(): Promise<boolean> {
     return false;
   }
 }
-
-export const resumeKey = (chapter: number) => `hb-resume-${chapter}`;

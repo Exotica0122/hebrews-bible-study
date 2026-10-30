@@ -80,29 +80,6 @@ test.describe("shareable word links", () => {
   });
 });
 
-test("offers to continue from the last movement on the next visit", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await expect(page.getByRole("link", { name: /Continue/ })).toHaveCount(0);
-  await page.locator("#hb-m3").scrollIntoViewIfNeeded();
-  await page.evaluate(() => window.scrollBy(0, 200));
-  await page.waitForTimeout(600);
-  await page.goto("/");
-  const resume = page.getByRole("link", { name: /Continue/ });
-  await expect(resume).toBeVisible();
-  await expect(resume).toContainText("III");
-  await resume.click();
-  await expect
-    .poll(
-      () =>
-        page.locator("#hb-m3").evaluate((el) => el.getBoundingClientRect().top),
-      { timeout: 5000 },
-    )
-    .toBeLessThan(200);
-  await expect(resume).toHaveCount(0);
-});
-
 test("print layout hides chrome and prints every word study and cross-reference", async ({
   page,
 }) => {
