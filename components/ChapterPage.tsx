@@ -20,10 +20,9 @@ import { MovementLeaf } from "@/components/movement/MovementLeaf";
 import { Summary } from "@/components/summary/Summary";
 import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
-import { ResumePill } from "@/components/chrome/ResumePill";
 import { BackToTop } from "@/components/chrome/BackToTop";
 import { ChapterSteps } from "@/components/chrome/ChapterSteps";
-import { parseWordHash, resumeKey, setHash, wordHash } from "@/lib/share";
+import { parseWordHash, setHash, wordHash } from "@/lib/share";
 
 interface ChapterPageProps {
   chapter: ChapterContent;
@@ -120,13 +119,6 @@ export function ChapterPage({
     else if (parseWordHash(window.location.hash)) setHash(null);
   }, [word]);
 
-  useEffect(() => {
-    if (!active.startsWith("hb-m")) return;
-    try {
-      window.localStorage.setItem(resumeKey(chapter.number), active.slice(3));
-    } catch {}
-  }, [active, chapter.number]);
-
   const sheetOpen = isMobile && word !== null;
   useEffect(() => {
     const main = mainRef.current;
@@ -184,7 +176,6 @@ export function ChapterPage({
         onGo={go}
         onTop={() => scrollToTop(reduced)}
       />
-      <ResumePill chapter={chapter.number} movements={movements} onGo={go} />
       <main ref={mainRef}>
         <Hero
           copy={copy}
