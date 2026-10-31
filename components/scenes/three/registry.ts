@@ -39,6 +39,12 @@ import { TitheScene } from "./scenes/TitheScene";
 import { AriseScene } from "./scenes/AriseScene";
 import { SwornScene } from "./scenes/SwornScene";
 import { ForeverScene } from "./scenes/ForeverScene";
+import { HeroPatternScene } from "./scenes/HeroPatternScene";
+import { TrueTentScene } from "./scenes/TrueTentScene";
+import { PatternScene } from "./scenes/PatternScene";
+import { SecondScene } from "./scenes/SecondScene";
+import { HeartsScene } from "./scenes/HeartsScene";
+import { VanishScene } from "./scenes/VanishScene";
 
 export interface DragState {
   dx: number;
@@ -98,4 +104,10 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   arise: AriseScene,
   sworn: SwornScene,
   forever: ForeverScene,
+  heroPattern: HeroPatternScene,
+  trueTent: TrueTentScene,
+  pattern: PatternScene,
+  second: SecondScene,
+  hearts: HeartsScene,
+  vanish: VanishScene,
 };

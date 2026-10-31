@@ -37,4 +37,10 @@ export type SceneId =
   | "tithe"
   | "arise"
   | "sworn"
-  | "forever";
+  | "forever"
+  | "heroPattern"
+  | "trueTent"
+  | "pattern"
+  | "second"
+  | "hearts"
+  | "vanish";

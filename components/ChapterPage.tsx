@@ -59,6 +59,8 @@ const HERO_ART: Record<Setting, string> = {
     "3D · R3F — a headland above the sea as the rain moves off: a ploughed field on the cliff, a boat riding at anchor in the bay, and a break of light on the water",
   salem:
     "3D · R3F — Salem on its hill at first light: terraced limestone, the walled city and its gate, and the road down into the King’s Valley, cut in stone and lit low from the east",
+  pattern:
+    "3D · R3F — a cyanotype sheet: the plan of the tent and its court drawn in white, Sinai in survey contours, and the true tent above in gold with its shadow printed pale below",
 };
 
 export function ChapterPage({

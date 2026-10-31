@@ -8,7 +8,7 @@ import { chromium } from "@playwright/test";
 
 const base = process.env.BASE_URL ?? "http://localhost:3000";
 const OUT = "public/scenes";
-const CHAPTERS = [1, 2, 3, 4, 5, 6, 7];
+const CHAPTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 const HEROES = {
   heavens: "hero",
   earth: "heroEarth",
@@ -17,6 +17,7 @@ const HEROES = {
   sanctuary: "heroSanctuary",
   coast: "heroCoast",
   salem: "heroSalem",
+  pattern: "heroPattern",
 };
 /** Seconds into each loop, at the hold after the event and before the fade out. */
 const MOMENTS = {
@@ -27,6 +28,7 @@ const MOMENTS = {
   heroSanctuary: 8,
   heroCoast: 8,
   heroSalem: 8,
+  heroPattern: 9.5,
   radiance: 11,
   seal: 9,
   angels: 13,
@@ -59,6 +61,11 @@ const MOMENTS = {
   arise: 13,
   sworn: 13,
   forever: 15,
+  trueTent: 12.5,
+  pattern: 13,
+  second: 13,
+  hearts: 15,
+  vanish: 13,
 };
 const VIEWS = [
   {

@@ -4,7 +4,7 @@ A bilingual (English / 한국어), verse-by-verse study of the letter to the Heb
 working through it one chapter at a time. Each chapter pairs the Scripture text with word studies, commentary,
 Old and New Testament threads, and a 3D scene for each movement of the passage.
 
-Chapters 1 to 7 are live; later chapters appear as the class reaches them.
+Chapters 1 to 8 are live; later chapters appear as the class reaches them.
 
 ## Features
 

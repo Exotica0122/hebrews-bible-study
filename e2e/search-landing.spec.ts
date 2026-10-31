@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const CHAPTERS = [1, 2, 3, 4, 5, 6, 7];
+const CHAPTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 interface Entry {
   kind: string;
