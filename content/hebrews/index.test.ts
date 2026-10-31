@@ -9,10 +9,10 @@ import {
   isLive,
 } from "./index";
 
-const LIVE = [1, 2, 3, 4, 5, 6, 7];
+const LIVE = [1, 2, 3, 4, 5, 6, 7, 8];
 
 describe("chapter registry", () => {
-  it("has thirteen chapters with chapters 1 to 7 live", () => {
+  it("has thirteen chapters with chapters 1 to 8 live", () => {
     expect(CHAPTER_COUNT).toBe(13);
     expect(isLive(1)).toBe(true);
     expect(isLive(2)).toBe(true);
@@ -21,10 +21,11 @@ describe("chapter registry", () => {
     expect(isLive(5)).toBe(true);
     expect(isLive(6)).toBe(true);
     expect(isLive(7)).toBe(true);
-    expect(isLive(8)).toBe(false);
+    expect(isLive(8)).toBe(true);
+    expect(isLive(9)).toBe(false);
     expect(isLive(13)).toBe(false);
-    expect(LIVE_COUNT).toBe(7);
-    expect(LATEST_LIVE).toBe(7);
+    expect(LIVE_COUNT).toBe(8);
+    expect(LATEST_LIVE).toBe(8);
   });
 
   it("returns chapter 1 with five movements in order", async () => {
@@ -141,12 +142,30 @@ describe("chapter registry", () => {
     }
   });
 
+  it("returns chapter 8 with five movements covering verses 1–13", async () => {
+    const ch = await getChapter(8);
+    expect(ch?.number).toBe(8);
+    expect(ch?.setting).toBe("pattern");
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–2",
+      "3–5",
+      "6–7",
+      "8–12",
+      "13",
+    ]);
+    for (const lang of ["en", "ko"] as const) {
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 13 }, (_, i) => i + 1));
+    }
+  });
+
   it("names every live chapter in both languages", () => {
     for (const n of LIVE) {
       expect(chapterTitle(n, "en")).toBeTruthy();
       expect(chapterTitle(n, "ko")).toBeTruthy();
     }
-    expect(chapterTitle(8, "en")).toBeUndefined();
+    expect(chapterTitle(9, "en")).toBeUndefined();
   });
 
   it("returns null for chapters that are not live", async () => {

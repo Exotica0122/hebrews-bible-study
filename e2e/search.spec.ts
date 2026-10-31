@@ -123,7 +123,7 @@ test.describe("search", () => {
     await page.unroute("**/search-index/en");
     await page.getByRole("button", { name: "Try again" }).click();
     await expect(dialog.getByRole("alert")).toHaveCount(0);
-    await expect(page.getByText("Search Hebrews 1–7")).toBeVisible();
+    await expect(page.getByText("Search Hebrews 1–8")).toBeVisible();
   });
 
   test("works on a coming-soon page", async ({ page }) => {

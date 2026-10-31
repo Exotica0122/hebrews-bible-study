@@ -45,6 +45,10 @@ const chapters: Record<number, ChapterEntry> = {
       ko: "멜기세덱의 계통을 따라",
     },
   },
+  8: {
+    load: () => import("./8").then((m) => m.chapter8),
+    title: { en: "A better covenant", ko: "더 좋은 언약" },
+  },
 };
 
 export const LIVE_COUNT = Object.keys(chapters).length;

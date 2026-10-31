@@ -8,7 +8,8 @@ export type Setting =
   | "garden"
   | "sanctuary"
   | "coast"
-  | "salem";
+  | "salem"
+  | "pattern";
 
 export type SceneId =
   | "radiance"
@@ -41,7 +42,13 @@ export type SceneId =
   | "tithe"
   | "arise"
   | "sworn"
-  | "forever";
+  | "forever"
+  | "heroPattern"
+  | "trueTent"
+  | "pattern"
+  | "second"
+  | "hearts"
+  | "vanish";
 
 export type CommentaryBlock = ["h" | "p" | "q", string];
 

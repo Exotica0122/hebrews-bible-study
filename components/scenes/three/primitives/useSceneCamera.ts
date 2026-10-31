@@ -1,6 +1,13 @@
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
-import { PerspectiveCamera } from "three";
+import { PerspectiveCamera, type Camera } from "three";
+
+export function setLens(camera: Camera, fov: number, far: number) {
+  if (!(camera instanceof PerspectiveCamera)) return;
+  camera.fov = fov;
+  camera.far = far;
+  camera.updateProjectionMatrix();
+}
 
 /** Restore the default camera pose whenever a scene unmounts so a swapped scene starts clean. */
 export function useResetCameraOnUnmount() {
