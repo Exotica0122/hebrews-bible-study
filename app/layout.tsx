@@ -1,3 +1,4 @@
+import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import {
@@ -8,7 +9,6 @@ import {
 import { LangProvider } from "@/lib/lang";
 import { INTRO_COOKIE, LANG_COOKIE } from "@/lib/cookies";
 import { IntroVeil } from "@/components/intro/IntroVeil";
-import "./globals.css";
 import "./print.css";
 
 const ebGaramond = EB_Garamond({

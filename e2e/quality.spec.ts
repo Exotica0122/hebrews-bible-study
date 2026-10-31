@@ -54,3 +54,11 @@ test("a tier-2 GPU renders scenes without post-processing", async ({
     .toBe(1);
   expect(await panel.evaluate((el) => el.dataset.effects)).toBe("off");
 });
+
+test("component styles override the shared classes", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#hb-top .hb-eyebrow")).toHaveCSS(
+    "color",
+    "rgb(217, 174, 78)",
+  );
+});
