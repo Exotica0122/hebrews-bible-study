@@ -24,46 +24,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
   transform: translateX(-50%);
 }
 .fragCap {
+  margin-top: 22px;
   font: italic 400 14px/16px var(--font-text);
   color: var(--dust);
   white-space: nowrap;
 }
-.bush {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--ember);
-  box-shadow:
-    0 0 24px 6px rgba(200, 85, 61, 0.6),
-    14px 6px 28px 2px rgba(200, 85, 61, 0.25);
-}
-.fire {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--gold-glow);
-  box-shadow:
-    0 0 22px 6px rgba(243, 211, 138, 0.55),
-    -14px 6px 28px 2px rgba(243, 211, 138, 0.2);
-}
-.cloud {
-  width: 26px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(238, 228, 207, 0.55);
-  filter: blur(3px);
-  box-shadow: 0 0 30px 8px rgba(238, 228, 207, 0.25);
-}
-.tablet {
-  width: 10px;
-  height: 14px;
-  border-radius: 4px 4px 1px 1px;
-  background: #d8d1c2;
-  box-shadow: 0 0 20px 4px rgba(238, 228, 207, 0.3);
+.centre {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-bottom: clamp(48px, 14vh, 160px);
 }
 .stack {
   position: relative;
@@ -166,18 +139,13 @@
   }
 }
 
-.cssLayers {
+.stillLayer {
   position: absolute;
   inset: 0;
   transition: opacity 800ms ease;
 }
-.cssLayersHidden {
+.stillHidden {
   opacity: 0;
-}
-.dotHidden,
-.haloHidden {
-  opacity: 0;
-  transition: opacity 800ms ease;
 }
 .fragment {
   will-change: transform;

@@ -17,7 +17,7 @@ async function litPixels(page: Page, selector: string) {
   });
 }
 
-test("a tier-0 GPU gets the CSS scenes and no canvas", async ({ page }) => {
+test("a tier-0 GPU gets the stills and no canvas", async ({ page }) => {
   await page.goto("/?gpu=0");
   await page.locator('[data-scene="m1"]').scrollIntoViewIfNeeded();
   await page.waitForTimeout(3000);

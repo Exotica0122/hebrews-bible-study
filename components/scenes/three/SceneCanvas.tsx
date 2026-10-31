@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import type { SceneId } from "../types";
 import { registry, type DragState, type PointerState } from "./registry";
+import { STILL } from "./primitives/Timeline";
 
 interface SceneCanvasProps {
   scene: SceneId;
@@ -93,7 +94,7 @@ export default function SceneCanvas({
   onContextLost,
 }: SceneCanvasProps) {
   const Scene = registry[scene];
-  const maxDpr = mobile ? 1.5 : 2;
+  const maxDpr = mobile && !STILL ? 1.5 : 2;
   const [dpr, setDpr] = useState(() =>
     Math.min(
       maxDpr,
@@ -127,12 +128,14 @@ export default function SceneCanvas({
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       style={{ position: "absolute", inset: 0 }}
     >
-      <PerformanceMonitor
-        flipflops={3}
-        onDecline={() => setDpr((d) => Math.max(0.75, d - 0.25))}
-        onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
-        onFallback={() => setDpr(0.75)}
-      />
+      {!STILL && (
+        <PerformanceMonitor
+          flipflops={3}
+          onDecline={() => setDpr((d) => Math.max(0.75, d - 0.25))}
+          onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
+          onFallback={() => setDpr(0.75)}
+        />
+      )}
       <ContextWatch onLost={onContextLost} />
       <SceneLoop active={active}>
         <ReadyProbe onReady={onReady} onUnmount={onUnmount} />

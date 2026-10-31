@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useDrag } from "@use-gesture/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsMobile, useReducedMotion } from "@/lib/hooks";
-import { CssScene } from "./fallback/CssScene";
+import { SceneStill } from "./SceneStill";
 import { useSceneVisibility } from "./hooks/useSceneVisibility";
 import { useWebGLSupport } from "./hooks/useWebGLSupport";
 import { useSceneSlot } from "./hooks/useSceneBudget";
@@ -112,10 +112,9 @@ export function SceneFrame({
       data-effects={gate.effects ? "on" : "off"}
       {...bindDrag()}
     >
-      <CssScene
-        scene={scene}
-        className={`${s.cssLayer} ${showCanvas ? s.cssHidden : ""}`}
-      />
+      <div className={`${s.stillLayer} ${showCanvas ? s.stillHidden : ""}`}>
+        <SceneStill scene={scene} />
+      </div>
       {gate.mount && (
         <div
           className={`${s.canvasWrap} ${showCanvas ? s.canvasReady : ""} ${swapping ? s.canvasSwap : ""}`}

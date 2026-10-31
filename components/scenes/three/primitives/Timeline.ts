@@ -17,6 +17,11 @@ export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 const MAX_DELTA = 0.05;
 
+/** `?still` is set by scene-stills.mjs: full resolution, and hero fragments parked at home. */
+export const STILL =
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).has("still");
+
 /** Accumulated scene time in seconds, clamped so background tabs do not jump. */
 export function useSceneTime(
   onFrame: (t: number, dt: number, state: RootState) => void,

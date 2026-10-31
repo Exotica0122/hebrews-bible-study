@@ -1,7 +1,7 @@
 // Screenshot a chapter's hero and every movement scene for review.
 // Usage: node e2e/tools/chapter-shots.mjs <chapter> <outDir> [--swiftshader]
 // Default runs headed Chrome on the real GPU, so post-processing is on as visitors see it;
-// SwiftShader turns effects off and hides bugs in them. Also shoots the reduced-motion CSS twins and mobile.
+// SwiftShader turns effects off and hides bugs in them. Also shoots the reduced-motion stills and mobile.
 import { mkdirSync } from "node:fs";
 import { chromium } from "@playwright/test";
 

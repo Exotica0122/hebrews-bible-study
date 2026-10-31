@@ -59,7 +59,7 @@ test("shows the shimmer, then hides it", async ({ page }) => {
   await expect(m1.getByText(SHIMMER)).toBeHidden({ timeout: 6_000 });
 });
 
-test("reduced motion shows the CSS still with a badge and mounts no canvas", async ({
+test("reduced motion shows the rendered still with a badge and mounts no canvas", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -68,11 +68,16 @@ test("reduced motion shows the CSS still with a badge and mounts no canvas", asy
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
   await expect(m1.getByText(BADGE)).toBeVisible({ timeout: 6_000 });
+  await expect
+    .poll(() =>
+      panel.locator("img").evaluate((i: HTMLImageElement) => i.naturalWidth),
+    )
+    .toBeGreaterThan(0);
   await page.waitForTimeout(1500);
   expect(await canvasCount(page)).toBe(0);
 });
 
-test("without WebGL the CSS scene stays, with no badge and no errors", async ({
+test("without WebGL the still stays, with no badge and no errors", async ({
   page,
 }) => {
   const errors: string[] = [];
