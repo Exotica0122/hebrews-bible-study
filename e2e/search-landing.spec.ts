@@ -130,6 +130,33 @@ test.describe("on a short laptop", () => {
   }
 });
 
+test.describe("on a short phone", () => {
+  test.skip(({ isMobile }) => !isMobile, "mobile only");
+  for (const lang of ["en", "ko"]) {
+    for (const n of [4, 7]) {
+      test(`${lang} words in Hebrews ${n} stay above the sheet`, async ({
+        page,
+        context,
+      }) => {
+        test.setTimeout(180_000);
+        await context.addCookies([
+          { name: "hb-lang", value: lang, domain: "localhost", path: "/" },
+        ]);
+        await page.setViewportSize({ width: 390, height: 664 });
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        const res = await page.request.get(`/search-index/${lang}`);
+        const entries = (await res.json()) as Entry[];
+        await page.goto(pathOf(n));
+        await ready(page);
+        const words = entries.filter(
+          (e) => e.chapter === n && e.kind === "word",
+        );
+        expect(await page.evaluate(audit, words)).toEqual([]);
+      });
+    }
+  }
+});
+
 test.describe("picking a word study", () => {
   test("enlightened opens with its popup on screen", async ({ page }) => {
     await page.goto("/6");

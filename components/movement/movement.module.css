@@ -152,6 +152,7 @@
   position: relative;
 }
 .key {
+  scroll-margin-top: calc(var(--header-h) + 20px);
   cursor: pointer;
   color: var(--gold-text);
   text-decoration-line: underline;

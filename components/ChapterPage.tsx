@@ -5,6 +5,7 @@ import type { ChapterContent, Setting } from "@/content/types";
 import { keysOf } from "@/content/parse";
 import { useLang } from "@/lib/lang";
 import {
+  MOBILE_QUERY,
   landOn,
   scrollToSection,
   scrollToTop,
@@ -110,10 +111,13 @@ export function ChapterPage({
       if (!hash) return;
       const target = parseWordHash(hash);
       if (target && movements.some((m) => m.id === target.mid)) {
-        const verse = document
-          .querySelector(`[data-word="${target.mid}:${target.key}"]`)
-          ?.closest(".hb-anchor");
-        const el = verse ?? document.getElementById(`hb-${target.mid}`);
+        const wordEl = document.querySelector(
+          `[data-word="${target.mid}:${target.key}"]`,
+        );
+        const spot = window.matchMedia(MOBILE_QUERY).matches
+          ? wordEl
+          : wordEl?.closest(".hb-anchor");
+        const el = spot ?? document.getElementById(`hb-${target.mid}`);
         el?.scrollIntoView({ behavior: "auto", block: "start" });
         setWord({ mid: target.mid, key: target.key });
         return;
