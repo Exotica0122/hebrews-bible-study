@@ -120,6 +120,7 @@ test("page scroll is locked behind the mobile word sheet", async ({
 test("a back-to-top button appears after the hero and returns to the top", async ({
   page,
 }) => {
+  test.slow();
   await page.goto("/");
   const top = page.getByRole("button", { name: "Back to top" });
   await expect(top).toBeHidden();
@@ -127,7 +128,8 @@ test("a back-to-top button appears after the hero and returns to the top", async
   await expect(top).toBeVisible();
   await top.click();
   await expect
-    .poll(() => page.evaluate(() => window.scrollY), { timeout: 8_000 })
+    // Software WebGL can stall smooth scrolling for over 8s; a real GPU takes about 1.3s.
+    .poll(() => page.evaluate(() => window.scrollY), { timeout: 30_000 })
     .toBeLessThan(5);
   await expect(top).toBeHidden();
 });
