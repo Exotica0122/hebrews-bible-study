@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { CHAPTER_COUNT, LATEST_LIVE } from "@/content/hebrews";
-import { Header, chapterHref } from "@/components/chrome/Header";
+import { Header } from "@/components/chrome/Header";
+import { chapterHref } from "@/lib/chapters";
 import { Footer } from "@/components/chrome/Footer";
 import { BookIndex } from "@/components/book/BookIndex";
 import { DoubleFrame } from "@/components/ornaments/Ornaments";
