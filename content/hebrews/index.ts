@@ -62,3 +62,7 @@ export function getChapter(n: number): Promise<ChapterContent | null> {
   const entry = chapters[n];
   return entry ? entry.load() : Promise.resolve(null);
 }
+
+export function allChapters(): Promise<ChapterContent[]> {
+  return Promise.all(Object.values(chapters).map((entry) => entry.load()));
+}

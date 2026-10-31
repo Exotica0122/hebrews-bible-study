@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { CHAPTER_COUNT, chapterTitle, isLive } from "@/content/hebrews";
-import { chapterHref } from "@/components/chrome/Header";
+import { chapterHref } from "@/lib/chapters";
 import { useLang } from "@/lib/lang";
 import s from "./book.module.css";
 

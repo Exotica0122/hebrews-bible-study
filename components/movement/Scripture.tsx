@@ -90,7 +90,7 @@ export function Scripture({
               segs[0] = { text: segs[0].text.slice(1) };
             }
             return (
-              <div key={n} className={s.verse}>
+              <div key={n} id={`hb-v${n}`} className={`${s.verse} hb-anchor`}>
                 <span aria-hidden="true" className={s.verseNum}>
                   {n}
                 </span>

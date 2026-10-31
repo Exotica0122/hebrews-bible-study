@@ -48,7 +48,11 @@ export function MovementLeaf(p: MovementLeafProps) {
   );
 
   return (
-    <section id={`hb-${m.id}`} aria-label={c.cap} className="hb-section">
+    <section
+      id={`hb-${m.id}`}
+      aria-label={c.cap}
+      className="hb-section hb-anchor"
+    >
       <div className={`hb-container ${s.inner}`}>
         <div className={`hb-eyebrow ${s.runningHead}`}>
           <span>{eyebrow}</span>
@@ -93,7 +97,9 @@ export function MovementLeaf(p: MovementLeafProps) {
 
         <div className={s.body}>
           <article className={s.article}>
-            <h2 className="hb-h2">{c.title}</h2>
+            <h2 id={`hb-title-${m.id}`} className="hb-h2 hb-anchor">
+              {c.title}
+            </h2>
             <Scripture
               movementId={m.id}
               copy={c}
@@ -106,8 +112,9 @@ export function MovementLeaf(p: MovementLeafProps) {
               onToggle={p.onToggleWord}
               onClose={p.onCloseWord}
             />
-            <Commentary blocks={c.com} />
+            <Commentary movementId={m.id} blocks={c.com} />
             <Threads
+              movementId={m.id}
               chips={m.chips}
               openId={p.openChip}
               onToggle={p.onToggleChip}

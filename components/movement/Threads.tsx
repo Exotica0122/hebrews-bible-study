@@ -2,15 +2,17 @@
 
 import type { Chip } from "@/content/types";
 import { useLang } from "@/lib/lang";
+import { threadHash } from "@/lib/share";
 import s from "./movement.module.css";
 
 interface ThreadsProps {
+  movementId: string;
   chips: Chip[];
   openId: string | null;
   onToggle: (id: string) => void;
 }
 
-export function Threads({ chips, openId, onToggle }: ThreadsProps) {
+export function Threads({ movementId, chips, openId, onToggle }: ThreadsProps) {
   const { lang, t } = useLang();
   const open = chips.find((c) => c.id === openId);
   return (
@@ -20,8 +22,9 @@ export function Threads({ chips, openId, onToggle }: ThreadsProps) {
         {chips.map((c) => (
           <button
             key={c.id}
+            id={threadHash(movementId, c.id)}
             type="button"
-            className={s.chip}
+            className={`${s.chip} hb-anchor`}
             aria-expanded={openId === c.id}
             onClick={() => onToggle(c.id)}
           >

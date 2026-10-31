@@ -51,6 +51,17 @@
 .chapterBtn:active {
   background: var(--gold-12);
 }
+.chShort {
+  display: none;
+}
+@media (max-width: 479px) {
+  .chLong {
+    display: none;
+  }
+  .chShort {
+    display: inline;
+  }
+}
 .caret {
   font-size: 9px;
   letter-spacing: 0;
@@ -221,6 +232,10 @@
 @media (max-width: 379px) {
   .inner {
     gap: 6px;
+  }
+  .header .inner {
+    padding-left: 12px;
+    padding-right: 12px;
   }
   .left {
     gap: 4px;

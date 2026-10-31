@@ -164,6 +164,13 @@ a:focus-visible,
   box-sizing: border-box;
 }
 
+.hb-anchor {
+  scroll-margin-top: calc(var(--header-h) + 20px);
+}
+.hb-anchor[tabindex="-1"]:focus-visible {
+  outline: none;
+}
+
 .hb-section {
   background: var(--vellum);
   color: var(--ink);

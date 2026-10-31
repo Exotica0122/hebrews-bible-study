@@ -5,6 +5,7 @@ import type { ChapterContent, Setting } from "@/content/types";
 import { keysOf } from "@/content/parse";
 import { useLang } from "@/lib/lang";
 import {
+  landOn,
   scrollToSection,
   scrollToTop,
   useEscape,
@@ -22,7 +23,13 @@ import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
 import { BackToTop } from "@/components/chrome/BackToTop";
 import { ChapterSteps } from "@/components/chrome/ChapterSteps";
-import { parseWordHash, setHash, wordHash } from "@/lib/share";
+import {
+  parseThreadHash,
+  parseWordHash,
+  sectionOfHash,
+  setHash,
+  wordHash,
+} from "@/lib/share";
 
 interface ChapterPageProps {
   chapter: ChapterContent;
@@ -99,15 +106,28 @@ export function ChapterPage({
 
   useEffect(() => {
     const openFromHash = () => {
-      const target = parseWordHash(window.location.hash);
-      if (!target || !movements.some((m) => m.id === target.mid)) return;
-      const el = document.getElementById(`hb-${target.mid}`);
-      if (el)
-        window.scrollTo({
-          top: el.getBoundingClientRect().top + window.scrollY - 63,
-          behavior: "auto",
-        });
-      setWord({ mid: target.mid, key: target.key });
+      const hash = window.location.hash;
+      if (!hash) return;
+      const target = parseWordHash(hash);
+      if (target && movements.some((m) => m.id === target.mid)) {
+        const verse = document
+          .querySelector(`[data-word="${target.mid}:${target.key}"]`)
+          ?.closest(".hb-anchor");
+        const el = verse ?? document.getElementById(`hb-${target.mid}`);
+        el?.scrollIntoView({ behavior: "auto", block: "start" });
+        setWord({ mid: target.mid, key: target.key });
+        return;
+      }
+      setWord(null);
+      const thread = parseThreadHash(hash);
+      if (thread) setChips((c) => ({ ...c, [thread.mid]: thread.id }));
+      const exact = document.getElementById(hash.slice(1));
+      if (exact) landOn(exact);
+      else {
+        const section = sectionOfHash(hash);
+        const el = section && document.getElementById(section);
+        if (el) landOn(el, false);
+      }
     };
     openFromHash();
     window.addEventListener("hashchange", openFromHash);

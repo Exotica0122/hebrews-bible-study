@@ -10,7 +10,9 @@ import {
 } from "react";
 import { CHAPTER_COUNT, LIVE_COUNT, isLive } from "@/content/hebrews";
 import { useLang } from "@/lib/lang";
+import { chapterHref } from "@/lib/chapters";
 import { useEscape } from "@/lib/hooks";
+import { SearchDialog } from "@/components/search/SearchDialog";
 import s from "./header.module.css";
 
 export interface NavItem {
@@ -26,10 +28,6 @@ interface HeaderProps {
   progressRef?: RefObject<HTMLDivElement | null>;
   onGo?: (id: string) => void;
   onTop?: () => void;
-}
-
-export function chapterHref(n: number) {
-  return n === 1 ? "/" : `/${n}`;
 }
 
 export function Header({
@@ -76,6 +74,7 @@ export function Header({
   };
 
   const chLabel = lang === "ko" ? `${chapter}장` : `Chapter ${chapter}`;
+  const chShort = lang === "ko" ? chLabel : `Ch ${chapter}`;
   const bookName = (n: number) =>
     lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`;
 
@@ -95,11 +94,13 @@ export function Header({
           <button
             type="button"
             className={`hb-eyebrow ${s.chapterBtn}`}
+            aria-label={chLabel}
             aria-expanded={open}
             aria-haspopup="true"
             onClick={() => setOpen((o) => !o)}
           >
-            {chLabel}
+            <span className={s.chLong}>{chLabel}</span>
+            <span className={s.chShort}>{chShort}</span>
             <span aria-hidden="true" className={s.caret}>
               ▼
             </span>
@@ -168,6 +169,8 @@ export function Header({
           </nav>
         )}
         <span className={s.activeLabel}>{activeLabel}</span>
+
+        <SearchDialog chapter={chapter} />
 
         <div role="group" aria-label="Language" className={s.lang}>
           <button

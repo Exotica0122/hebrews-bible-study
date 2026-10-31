@@ -109,6 +109,21 @@ export function scrollToSection(id: string, reduced: boolean) {
   });
 }
 
+/** Scrolls straight to a landing spot and glows it so the eye finds it. */
+export function landOn(el: HTMLElement, glow = true) {
+  el.scrollIntoView({ behavior: "auto", block: "start" });
+  if (el.tabIndex < 0) el.tabIndex = -1;
+  el.focus({ preventScroll: true });
+  if (glow)
+    el.animate(
+      [
+        { backgroundColor: "var(--gold-45)" },
+        { backgroundColor: "transparent" },
+      ],
+      { duration: 2000, easing: "ease-out" },
+    );
+}
+
 export function scrollToTop(reduced: boolean) {
   window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
 }
