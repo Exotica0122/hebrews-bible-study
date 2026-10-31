@@ -30,7 +30,7 @@ function detect(): Promise<GpuTier> {
   return pending;
 }
 
-/** GPU tier 0–3 from detect-gpu (null until known). Tier 0 keeps the CSS scenes; tier 3 enables post-processing. */
+/** GPU tier 0–3 from detect-gpu (null until known). Tier 0 keeps the stills; tier 3 enables post-processing. */
 export function useGpuTier(): GpuTier | null {
   const [tier, setTier] = useState<GpuTier | null>(cached);
   useEffect(() => {

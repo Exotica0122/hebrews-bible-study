@@ -1,19 +1,10 @@
 "use client";
 
-import { useRef, useState, type ComponentType } from "react";
+import { useRef, useState } from "react";
 import type { ChapterCopy, Setting } from "@/content/types";
 import { Fleuron, DoubleFrame } from "@/components/ornaments/Ornaments";
-import { CssStarfield } from "@/components/scenes/fallback/CssStarfield";
-import {
-  CssEarthBackdrop,
-  CssGardenBackdrop,
-  CssSanctuaryBackdrop,
-  CssWildernessBackdrop,
-  CssCoastBackdrop,
-  CssSalemBackdrop,
-  HeroHalo,
-} from "@/components/scenes/fallback/CssScene";
 import { HeroStage } from "@/components/scenes/HeroStage";
+import { SceneStill } from "@/components/scenes/SceneStill";
 import type { SceneId } from "@/components/scenes/types";
 import { useLang } from "@/lib/lang";
 import s from "./hero.module.css";
@@ -30,21 +21,14 @@ interface HeroProps {
 import { HERO_FRAGMENTS } from "./fragments";
 
 /** `scrim` shades the title area for daylit heroes, where the parchment type would otherwise sit on a bright sky. */
-const STAGES: Record<
-  Setting,
-  { scene: SceneId; Backdrop: ComponentType; scrim?: boolean }
-> = {
-  heavens: { scene: "hero", Backdrop: CssStarfield },
-  earth: { scene: "heroEarth", Backdrop: CssEarthBackdrop },
-  wilderness: { scene: "heroCamp", Backdrop: CssWildernessBackdrop },
-  garden: { scene: "heroGarden", Backdrop: CssGardenBackdrop, scrim: true },
-  sanctuary: {
-    scene: "heroSanctuary",
-    Backdrop: CssSanctuaryBackdrop,
-    scrim: true,
-  },
-  coast: { scene: "heroCoast", Backdrop: CssCoastBackdrop, scrim: true },
-  salem: { scene: "heroSalem", Backdrop: CssSalemBackdrop, scrim: true },
+const STAGES: Record<Setting, { scene: SceneId; scrim?: boolean }> = {
+  heavens: { scene: "hero" },
+  earth: { scene: "heroEarth" },
+  wilderness: { scene: "heroCamp" },
+  garden: { scene: "heroGarden", scrim: true },
+  sanctuary: { scene: "heroSanctuary", scrim: true },
+  coast: { scene: "heroCoast", scrim: true },
+  salem: { scene: "heroSalem", scrim: true },
 };
 
 export function Hero({
@@ -59,7 +43,7 @@ export function Hero({
   const hostRef = useRef<HTMLElement>(null);
   const captionRefs = useRef<(HTMLElement | null)[]>([]);
   const [live, setLive] = useState(false);
-  const { scene, Backdrop, scrim } = STAGES[setting];
+  const { scene, scrim } = STAGES[setting];
 
   return (
     <section
@@ -68,8 +52,8 @@ export function Hero({
       aria-label={copy.heroTitle}
       className={s.hero}
     >
-      <div className={`${s.cssLayers} ${live ? s.cssLayersHidden : ""}`}>
-        <Backdrop />
+      <div className={`${s.stillLayer} ${live ? s.stillHidden : ""}`}>
+        <SceneStill scene={scene} priority />
       </div>
       <HeroStage
         scene={scene}
@@ -83,7 +67,7 @@ export function Hero({
       {copy.fragments &&
         HERO_FRAGMENTS.map((f, i) => (
           <div
-            key={f.cls}
+            key={f.left}
             ref={(el) => {
               captionRefs.current[i] = el;
             }}
@@ -97,17 +81,11 @@ export function Hero({
               } as React.CSSProperties
             }
           >
-            <span className={`${s[f.cls]} ${live ? s.dotHidden : ""}`} />
             <span className={s.fragCap}>{copy.fragments?.[i]}</span>
           </div>
         ))}
       <div className={s.stack}>
-        <div
-          id="hb-hero-centre"
-          className={live || !copy.fragments ? s.haloHidden : undefined}
-        >
-          <HeroHalo />
-        </div>
+        <div id="hb-hero-centre" className={s.centre} />
         <div className={`hb-eyebrow ${s.eyebrow}`}>{copy.heroEyebrow}</div>
         <h1 className={s.title}>{copy.heroTitle}</h1>
         <Fleuron />

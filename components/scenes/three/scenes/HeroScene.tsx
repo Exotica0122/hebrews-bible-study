@@ -33,6 +33,7 @@ import {
   easeInSine,
   lerp,
   smoothstep,
+  STILL,
   useSceneTime,
 } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
@@ -288,7 +289,7 @@ export function HeroScene({ mobile, effects, captions, pointer }: SceneProps) {
 
     let pulse = 0;
     FRAGMENTS.forEach((f, i) => {
-      const p = (((t / CYCLE + f.phase) % 1) + 1) % 1;
+      const p = STILL ? 0.1 : (((t / CYCLE + f.phase) % 1) + 1) % 1;
       const hx = ((mobile ? f.leftMobile : f.left) - 0.5) * width;
       const hy = (0.5 - (mobile ? f.topMobile : f.top)) * height;
       const k = easeInSine(p);

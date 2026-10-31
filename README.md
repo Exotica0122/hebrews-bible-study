@@ -10,7 +10,7 @@ Chapters 1 to 7 are live; later chapters appear as the class reaches them.
 
 - English (ESV) and Korean (새번역) text, rendered on the server in the reader's chosen language
 - Tap-to-open word studies with the Greek term behind each key word
-- React Three Fiber scenes with GPU-tiered post-processing, and a CSS fallback when WebGL is unavailable or motion is reduced
+- React Three Fiber scenes with GPU-tiered post-processing, and a rendered still of each scene while loading, when WebGL is unavailable or when motion is reduced
 - Built for phones as much as desktops, and print-friendly
 
 ## Stack
@@ -50,7 +50,8 @@ app/                     routes: / (chapter 1), /[chapter], not-found
 components/
   movement/              scripture, commentary, word-study asides, threads
   scenes/three/          R3F scenes and shared primitives; registry.ts maps scene ids to components
-  scenes/fallback/       CSS-only fallback scenes
+  scenes/SceneStill.tsx  rendered fallback frames, made by e2e/tools/scene-stills.mjs
+  scenes/fallback/       CSS starfield for the intro and coming-soon pages
 content/
   hebrews/<n>.ts         one file per chapter, en + ko
   ui.ts                  interface strings

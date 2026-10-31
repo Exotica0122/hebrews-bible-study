@@ -1,6 +1,6 @@
 ---
 name: add-chapter
-description: Build the next Hebrews chapter study from the teacher's research notes and the user's own notes, including its own visual theme, 3D scenes, CSS fallbacks, bilingual content and tests. Use when asked to "make chapter N", add a chapter, or turn study notes into a chapter page.
+description: Build the next Hebrews chapter study from the teacher's research notes and the user's own notes, including its own visual theme, 3D scenes, rendered stills, bilingual content and tests. Use when asked to "make chapter N", add a chapter, or turn study notes into a chapter page.
 ---
 
 # Adding a Hebrews chapter
@@ -31,14 +31,14 @@ Open to redesign each chapter:
 - **Visual style.** The earlier chapters share one language: dark skies, layered hill silhouettes, additive glows and embers, bloom. A chapter can drop it for something that suits its text better, such as daylight, lit 3D forms, line work, an illuminated-manuscript look, stained glass or paper cut-outs.
 - **Palette and lighting.** Pick these fresh. Don't default to a dark sky with a warm horizon band.
 - **Composition, camera and motion.** Framing, camera moves, pacing, how the event unfolds.
-- **Materials, post effects and the CSS fallback look.**
+- **Materials and post effects.**
 - **New primitives.** Write new ones when the style needs them. Reuse the existing ones (`Sky`, `Hills`, `Glow`, `Embers`, ...) only where they genuinely fit.
 
 Fixed, because the page depends on them:
 
 - **Setting name.** Add it to `Setting` in `content/types.ts`.
 - **Palette constants.** Export them from the chapter's own primitives file.
-- **Hero scene.** Add a new `hero<Name>` scene id. Map the setting to it and its CSS backdrop in `STAGES` (`components/hero/Hero.tsx`), and to an art note in `HERO_ART` (`components/ChapterPage.tsx`).
+- **Hero scene.** Add a new `hero<Name>` scene id. Map the setting to it in `STAGES` (`components/hero/Hero.tsx`), and to an art note in `HERO_ART` (`components/ChapterPage.tsx`).
 - **One scene per movement**, each a concrete image from that passage rather than an abstract metaphor the text doesn't use.
 - **Legibility.** The hero title and the movement captions overlay the scene, so they must stay readable on it.
 
@@ -51,7 +51,7 @@ Write `content/hebrews/<n>.ts` in the shape of the existing chapters: movements 
 ## 5. Scenes and fallbacks
 
 - R3F scene per movement in `components/scenes/three/scenes/`, registered in `registry.ts`, with ids in both `SceneId` unions.
-- A static CSS twin per scene in `components/scenes/fallback/CssScene.tsx` + `css.module.css`. Reduced motion and no-WebGL users see only this, so it must read on its own. Group the chapter's scene ids in their own list so the heavens starfield isn't drawn behind them.
+- A still per scene, rendered from the scene itself. Add the id and the second of its loop to catch (the hold, after the event) to `MOMENTS` in `e2e/tools/scene-stills.mjs`, add the chapter to `CHAPTERS`, then run `node e2e/tools/scene-stills.mjs <ids>` on the real GPU. Reduced-motion, loading and no-WebGL users see only this, so pick a moment that reads on its own, and rerun it whenever the scene changes.
 - Loops of 14–18 s: fade in, the event, a hold, then fade out. Mutate memoised three.js objects through `primitives/mutate.ts` (React Compiler lint).
 
 ## 6. Tests and docs
@@ -66,12 +66,12 @@ Reuse the user's dev server on :3000. Run `pnpm typecheck`, `pnpm lint`, `pnpm f
 node e2e/tools/chapter-shots.mjs 5 <scratch>/shots
 ```
 
-It opens real Chrome on the GPU, so the post-processing stack is on as visitors see it, and it shoots the hero and every scene at several points in its loop, the reduced-motion CSS twins and mobile. `--swiftshader` runs without a GPU, but that turns effects off and hides bugs in them (a missing depth buffer once erased every solid object), so never sign off on SwiftShader shots alone. Open every shot and check:
+It opens real Chrome on the GPU, so the post-processing stack is on as visitors see it, and it shoots the hero and every scene at several points in its loop, the reduced-motion stills and mobile. `--swiftshader` runs without a GPU, but that turns effects off and hides bugs in them (a missing depth buffer once erased every solid object), so never sign off on SwiftShader shots alone. Open every shot and check:
 
 - **Each scene shows what its `art` note promises.** List the objects (the cup, the bread, the crown) and find each one in the shots. Something missing usually means draw order or depth, not the camera.
 - **The event reads across the loop**: fade in, the event, the hold, the fade out.
 - **Captions and the hero title stay legible**, on desktop and on mobile.
-- **The CSS twins read on their own** and don't clutter the hero title at mobile width.
+- **The stills read on their own** and don't clutter the hero title at mobile width.
 - **The theme is new.** Put the shots next to the previous chapter's: if it reads like the old one with different colours, rework the style.
 
 If you changed a shared primitive (`SceneEffects`, `Glow`, `Earth`, ...), shoot the earlier chapters again too. Finish with `pnpm exec playwright test`.
