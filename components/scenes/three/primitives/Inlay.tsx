@@ -50,6 +50,7 @@ const FRAG = /* glsl */ `
     vec4 grain = texture2D(uStone, p * 3.3 + 0.21);
 
     vec3 lapis = mix(vec3(0.07, 0.11, 0.27), vec3(0.11, 0.17, 0.38), tile.r);
+    float rise = (vUv.y - uFloor) / (1.0 - uFloor);
     lapis = mix(lapis, vec3(0.72, 0.56, 0.26), step(0.5, tile.a));
     lapis *= (0.84 + 0.22 * stone.r) * (0.9 + 0.2 * grain.b);
     float set = step(tile.r, uFade * 1.04);
@@ -57,7 +58,8 @@ const FRAG = /* glsl */ `
 
     vec4 a = textureLod(uArt, vUv, uLod);
     float h = a.r;
-    float form = smoothstep(0.15, 0.2, h) * step(tile.b, uFade * 1.05);
+    float seat = step(tile.b * 0.3 + clamp(rise, 0.0, 1.0) * 0.7, uFade * 1.05);
+    float form = smoothstep(0.15, 0.2, h) * seat;
     vec3 shell = vec3(0.05, 0.05, 0.07);
     shell = mix(shell, vec3(0.42, 0.38, 0.3), smoothstep(0.38, 0.42, h));
     shell = mix(shell, vec3(0.78, 0.58, 0.3), smoothstep(0.54, 0.58, h));
@@ -71,7 +73,7 @@ const FRAG = /* glsl */ `
     float edge = smoothstep(0.05, 0.18, length(vec2(dx, dy)));
     float bevel = clamp((dx - dy) * 2.6, -0.26, 0.34);
     c = mix(c, shell * (1.0 + bevel), form);
-    c = mix(c, vec3(0.02, 0.018, 0.03), edge * 0.92 * step(tile.b, uFade * 1.05));
+    c = mix(c, vec3(0.02, 0.018, 0.03), edge * 0.92 * seat);
 
     float gold = smoothstep(0.3, 0.6, a.b) * uFade;
     c = mix(c, vec3(0.9, 0.69, 0.28) * (0.74 + 0.46 * grain.r), gold);
