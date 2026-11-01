@@ -426,7 +426,7 @@ const MV: Movement[] = [
         "One offering has perfected for all time",
         "The Holy Spirit bears witness to us",
         "“I will put my laws on their hearts”",
-        "“I will remember their sins no more”",
+        "“I will remember their sins and their lawless deeds no more”",
         "Where there is forgiveness, no more offering",
       ],
       verses: [
@@ -501,8 +501,8 @@ const MV: Movement[] = [
         "원수들이 발 아래에 굴복할 때까지 기다리십니다",
         "한 번의 희생제사로 영원히 완전하게 하셨습니다",
         "성령도 우리에게 증언하여 주십니다",
-        "“내 율법을 그들의 마음에 박아주겠다”",
-        "“그들의 죄를 더 이상 기억하지 않겠다”",
+        "“나는 내 율법을 그들의 마음에 박아주고”",
+        "“그들의 죄와 불법을 더 이상 기억하지 않겠다”",
         "용서되었으니 제사가 더 이상 필요 없습니다",
       ],
       verses: [
