@@ -186,18 +186,18 @@ function paintMercy(t: number) {
   steps(x, FLOOR, 4);
   throne(x, FLOOR - 4 * rise, 0.86);
   const climb = smoothstep(6.5, 12.6, t);
-  const climbers: readonly (readonly [number, number])[] = [
-    [-340, 0],
-    [330, 0.22],
-    [-240, 0.4],
-    [210, 0.55],
+  const climbers: readonly (readonly [number, number, number, number])[] = [
+    [-340, 0, 128, 0.62],
+    [330, 0.22, 116, 0.46],
+    [-240, 0.4, 92, 0.34],
+    [210, 0.55, 124, 0.7],
   ];
-  climbers.forEach(([d, start], i) => {
+  climbers.forEach(([d, start, h, arm], i) => {
     if (climb <= start) return;
     const k = (climb - start) / (1 - start);
-    person(x + d * (1 - k * 0.3), FLOOR - Math.floor(k * 3) * rise, 120, {
+    person(x + d * (1 - k * 0.3), FLOOR - Math.floor(k * 3) * rise, h, {
       face: d < 0 ? 1 : -1,
-      arm: 0.5,
+      arm,
       tint: i % 2,
     });
   });
