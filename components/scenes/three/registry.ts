@@ -27,12 +27,6 @@ import { OfferingScene } from "./scenes/OfferingScene";
 import { DiademScene } from "./scenes/DiademScene";
 import { CriesScene } from "./scenes/CriesScene";
 import { BreadScene } from "./scenes/BreadScene";
-import { HeroCoastScene } from "./scenes/HeroCoastScene";
-import { FoundationScene } from "./scenes/FoundationScene";
-import { RainScene } from "./scenes/RainScene";
-import { FootstepsScene } from "./scenes/FootstepsScene";
-import { OathScene } from "./scenes/OathScene";
-import { AnchorScene } from "./scenes/AnchorScene";
 import { HeroSalemScene } from "./scenes/HeroSalemScene";
 import { MeetingScene } from "./scenes/MeetingScene";
 import { TitheScene } from "./scenes/TitheScene";
@@ -65,6 +59,14 @@ import { SatDownScene } from "./scenes/SatDownScene";
 import { DrawNearScene } from "./scenes/DrawNearScene";
 import { FearfulScene } from "./scenes/FearfulScene";
 import { SpectacleScene } from "./scenes/SpectacleScene";
+import {
+  AnchorScene,
+  FootstepsScene,
+  FoundationScene,
+  HeroInkScene,
+  OathScene,
+  RainScene,
+} from "./scenes/InkScenes";
 import {
   AfarScene,
   ApartFromUsScene,
@@ -122,7 +124,7 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   diadem: DiademScene,
   cries: CriesScene,
   bread: BreadScene,
-  heroCoast: HeroCoastScene,
+  heroCoast: HeroInkScene,
   foundation: FoundationScene,
   rain: RainScene,
   footsteps: FootstepsScene,

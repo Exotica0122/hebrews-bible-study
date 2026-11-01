@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Color, DoubleSide, PlaneGeometry, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Squall } from "../primitives/Coast";
+import { Squall } from "../primitives/Squall";
 import {
   CloudFloor,
   HEAVEN,

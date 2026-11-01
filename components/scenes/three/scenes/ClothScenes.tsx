@@ -2,7 +2,8 @@
 
 import type { SceneProps } from "../registry";
 import type { Frame } from "../primitives/Beaten";
-import { Embroidery, type Route } from "../primitives/Cloth";
+import { Embroidery } from "../primitives/Cloth";
+import type { Route } from "../primitives/route";
 import {
   altar,
   ark,

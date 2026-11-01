@@ -4,7 +4,7 @@ import { useRef } from "react";
 import type { Mesh, PointLight, ShaderMaterial } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Squall } from "../primitives/Coast";
+import { Squall } from "../primitives/Squall";
 import { Glow } from "../primitives/Glow";
 import { Cloth, Flame, Floor, FLOOR, HOLY } from "../primitives/Sanctuary";
 import { lerp, smoothstep, useSceneTime } from "../primitives/Timeline";

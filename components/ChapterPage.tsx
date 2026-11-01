@@ -57,7 +57,7 @@ const HERO_ART: Record<Setting, string> = {
   sanctuary:
     "3D · R3F — the Holy Place by lamplight: woven curtains of blue, purple and scarlet, the golden lampstand, the bread on its table, and incense rising before the veil",
   coast:
-    "3D · R3F — a headland above the sea as the rain moves off: a ploughed field on the cliff, a boat riding at anchor in the bay, and a break of light on the water",
+    "3D · R3F — ink wash on hanji: a bay between two headlands as the rain moves off, a boat riding at anchor, and a break of light left as bare paper",
   salem:
     "3D · R3F — Salem on its hill at first light: terraced limestone, the walled city and its gate, and the road down into the King’s Valley, cut in stone and lit low from the east",
   pattern:

@@ -13,7 +13,7 @@ import {
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Squall } from "../primitives/Coast";
+import { Squall } from "../primitives/Squall";
 import { Glow } from "../primitives/Glow";
 import { Cloth, Flame, FLOOR, HOLY, useGold } from "../primitives/Sanctuary";
 import {

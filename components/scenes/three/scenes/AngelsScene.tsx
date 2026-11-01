@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
-import { Squall } from "../primitives/Coast";
+import { Squall } from "../primitives/Squall";
 import {
   Angel,
   CloudFloor,

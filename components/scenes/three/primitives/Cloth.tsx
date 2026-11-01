@@ -17,6 +17,7 @@ import type { PointerState } from "../registry";
 import { fitFrame, type Frame } from "./Beaten";
 import { bindArt, clearCloth, FLOOR } from "./clothArt";
 import { setUniform, touch } from "./mutate";
+import { along, type Route } from "./route";
 import { SceneEffects } from "./SceneEffects";
 import { smoothstep, STILL, useSceneTime } from "./Timeline";
 
@@ -216,18 +217,6 @@ function clothMaterial(art: Texture) {
       uFine: { value: 1 },
     },
   });
-}
-
-/** Time in seconds, and how far along the cloth the phone's window sits, from 0 to 1. */
-export type Route = readonly (readonly [number, number])[];
-
-function along(route: Route, t: number) {
-  for (let i = 1; i < route.length; i++) {
-    const [a, from] = route[i - 1];
-    const [b, to] = route[i];
-    if (t <= b) return from + (to - from) * smoothstep(a, b, t);
-  }
-  return route[route.length - 1][1];
 }
 
 interface EmbroideryProps {

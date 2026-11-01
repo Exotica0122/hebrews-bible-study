@@ -17,7 +17,7 @@ import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Flames } from "../primitives/Flames";
-import { Squall } from "../primitives/Coast";
+import { Squall } from "../primitives/Squall";
 import {
   Angel,
   CloudFloor,
