@@ -146,20 +146,20 @@ test("chapter menu routes to a coming-soon chapter with prev, next and back", as
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /Chapter 1/ }).click();
-  await page.getByRole("menuitem", { name: /Hebrews 11/ }).click();
-  await expect(page).toHaveURL(/\/11$/);
+  await page.getByRole("menuitem", { name: /Hebrews 12/ }).click();
+  await expect(page).toHaveURL(/\/12$/);
   await expect(
-    page.getByRole("heading", { level: 1, name: "Hebrews 11" }),
+    page.getByRole("heading", { level: 1, name: "Hebrews 12" }),
   ).toBeVisible();
   await expect(
     page.locator("main").getByText("Coming soon", { exact: true }).first(),
   ).toBeVisible();
-  await page.getByRole("link", { name: /Hebrews 12 →/ }).click();
+  await page.getByRole("link", { name: /Hebrews 13 →/ }).click();
+  await expect(page).toHaveURL(/\/13$/);
+  await page.getByRole("link", { name: /← Hebrews 12/ }).click();
   await expect(page).toHaveURL(/\/12$/);
-  await page.getByRole("link", { name: /← Hebrews 11/ }).click();
+  await page.getByRole("link", { name: "Back to Hebrews 11" }).click();
   await expect(page).toHaveURL(/\/11$/);
-  await page.getByRole("link", { name: "Back to Hebrews 10" }).click();
-  await expect(page).toHaveURL(/\/10$/);
 });
 
 test("side buttons step between live chapters only", async ({ page }) => {
@@ -173,16 +173,16 @@ test("side buttons step between live chapters only", async ({ page }) => {
     .getByRole("link", { name: "Previous chapter · Hebrews 1" })
     .click();
   await expect(page).toHaveURL(/\/$/);
-  await page.goto("/10");
+  await page.goto("/11");
   await expect(page.getByRole("link", { name: /^Next chapter/ })).toHaveCount(
     0,
   );
 });
 
-test("chapter 11 has no previous link and chapter 13 has no next link", async ({
+test("chapter 12 has no previous link and chapter 13 has no next link", async ({
   page,
 }) => {
-  await page.goto("/11");
+  await page.goto("/12");
   await expect(page.getByRole("link", { name: /← Hebrews/ })).toHaveCount(0);
   await page.goto("/13");
   await expect(page.getByRole("link", { name: /Hebrews 14/ })).toHaveCount(0);

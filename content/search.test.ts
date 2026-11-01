@@ -214,7 +214,7 @@ describe("searchEntries", () => {
   });
 
   it("flags a chapter that isn't written yet", () => {
-    expect(searchEntries(en, "11:1").soon).toBe(11);
+    expect(searchEntries(en, "12:1").soon).toBe(12);
     expect(searchEntries(en, "6:19").soon).toBeNull();
     expect(searchEntries(en, "14:1").soon).toBeNull();
   });

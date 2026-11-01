@@ -64,6 +64,8 @@ const HERO_ART: Record<Setting, string> = {
     "3D · R3F — a cyanotype sheet: the plan of the tent and its court drawn in white, Sinai in survey contours, and the true tent above in gold with its shadow printed pale below",
   gold: "3D · R3F — one sheet of beaten gold lit by a single moving lamp: the second curtain raised in relief between the lampstand and the table, with one scarlet line running down its seam",
   wall: "3D · R3F — a limewashed wall in hard sun where everything is a cast shadow: the curtain stands open and light pours through it, and people draw near from both sides",
+  cloth:
+    "3D · R3F — a long embroidered cloth under a raking lamp, with the people of faith stitched in wool along its length. It moves past the ark, the tents, the sea and Jericho to a line of witnesses and stops unfinished at bare linen, where a needle waits. Christ is shown only as the light at its far edge, with no human outline",
 };
 
 export function ChapterPage({

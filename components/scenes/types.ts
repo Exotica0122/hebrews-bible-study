@@ -61,4 +61,12 @@ export type SceneId =
   | "satDown"
   | "drawNear"
   | "fearful"
-  | "spectacle";
+  | "spectacle"
+  | "heroCloth"
+  | "notSeen"
+  | "stillSpeaks"
+  | "afar"
+  | "receivedBack"
+  | "invisible"
+  | "notWorthy"
+  | "apartFromUs";

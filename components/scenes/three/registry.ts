@@ -65,6 +65,16 @@ import { SatDownScene } from "./scenes/SatDownScene";
 import { DrawNearScene } from "./scenes/DrawNearScene";
 import { FearfulScene } from "./scenes/FearfulScene";
 import { SpectacleScene } from "./scenes/SpectacleScene";
+import {
+  AfarScene,
+  ApartFromUsScene,
+  HeroClothScene,
+  InvisibleScene,
+  NotSeenScene,
+  NotWorthyScene,
+  ReceivedBackScene,
+  StillSpeaksScene,
+} from "./scenes/ClothScenes";
 
 export interface DragState {
   dx: number;
@@ -148,4 +158,12 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   drawNear: DrawNearScene,
   fearful: FearfulScene,
   spectacle: SpectacleScene,
+  heroCloth: HeroClothScene,
+  notSeen: NotSeenScene,
+  stillSpeaks: StillSpeaksScene,
+  afar: AfarScene,
+  receivedBack: ReceivedBackScene,
+  invisible: InvisibleScene,
+  notWorthy: NotWorthyScene,
+  apartFromUs: ApartFromUsScene,
 };

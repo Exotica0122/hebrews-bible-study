@@ -32,6 +32,7 @@ const STAGES: Record<Setting, { scene: SceneId; scrim?: boolean }> = {
   pattern: { scene: "heroPattern" },
   gold: { scene: "heroGold", scrim: true },
   wall: { scene: "heroWall", scrim: true },
+  cloth: { scene: "heroCloth", scrim: true },
 };
 
 export function Hero({
