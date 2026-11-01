@@ -103,8 +103,8 @@ test.describe("search", () => {
   test("an unwritten chapter says it is coming soon", async ({ page }) => {
     await page.goto("/");
     const input = await openSearch(page);
-    await input.fill("10:14");
-    await expect(page.getByText("Hebrews 10 is coming soon.")).toBeVisible();
+    await input.fill("11:1");
+    await expect(page.getByText("Hebrews 11 is coming soon.")).toBeVisible();
   });
 
   test("nothing found says so", async ({ page }) => {
@@ -123,7 +123,7 @@ test.describe("search", () => {
     await page.unroute("**/search-index/en");
     await page.getByRole("button", { name: "Try again" }).click();
     await expect(dialog.getByRole("alert")).toHaveCount(0);
-    await expect(page.getByText("Search Hebrews 1–9")).toBeVisible();
+    await expect(page.getByText("Search Hebrews 1–10")).toBeVisible();
   });
 
   test("works on a coming-soon page", async ({ page }) => {

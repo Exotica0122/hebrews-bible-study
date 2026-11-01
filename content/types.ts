@@ -1,6 +1,6 @@
 export type Lang = "en" | "ko";
 
-/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight, chapter 6 a rain-washed headland above the sea, chapter 7 Salem at first light, cut in stone, chapter 8 a cyanotype pattern, chapter 9 one sheet of beaten gold. */
+/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight, chapter 6 a rain-washed headland above the sea, chapter 7 Salem at first light, cut in stone, chapter 8 a cyanotype pattern, chapter 9 one sheet of beaten gold, chapter 10 a limewashed wall in hard sun. */
 export type Setting =
   | "heavens"
   | "earth"
@@ -10,7 +10,8 @@ export type Setting =
   | "coast"
   | "salem"
   | "pattern"
-  | "gold";
+  | "gold"
+  | "wall";
 
 export type SceneId =
   | "radiance"
@@ -59,7 +60,13 @@ export type SceneId =
   | "furnLampstand"
   | "furnCurtain"
   | "furnAltar"
-  | "furnArk";
+  | "furnArk"
+  | "shadow"
+  | "bodyPrepared"
+  | "satDown"
+  | "drawNear"
+  | "fearful"
+  | "spectacle";
 
 export type CommentaryBlock = ["h" | "p" | "q", string];
 

@@ -147,7 +147,7 @@ function dimpleTexture() {
   return texture;
 }
 
-function fitFrame(
+export function fitFrame(
   width: number,
   height: number,
   frame: Frame,

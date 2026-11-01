@@ -63,6 +63,7 @@ const HERO_ART: Record<Setting, string> = {
   pattern:
     "3D · R3F — a cyanotype sheet: the plan of the tent and its court drawn in white, Sinai in survey contours, and the true tent above in gold with its shadow printed pale below",
   gold: "3D · R3F — one sheet of beaten gold lit by a single moving lamp: the second curtain raised in relief between the lampstand and the table, with one scarlet line running down its seam",
+  wall: "3D · R3F — a limewashed wall in hard sun where everything is a cast shadow: the curtain stands open and light pours through it, and people draw near from both sides",
 };
 
 export function ChapterPage({

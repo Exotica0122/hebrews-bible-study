@@ -158,8 +158,8 @@ test("chapter menu routes to a coming-soon chapter with prev, next and back", as
   await expect(page).toHaveURL(/\/12$/);
   await page.getByRole("link", { name: /← Hebrews 11/ }).click();
   await expect(page).toHaveURL(/\/11$/);
-  await page.getByRole("link", { name: "Back to Hebrews 9" }).click();
-  await expect(page).toHaveURL(/\/9$/);
+  await page.getByRole("link", { name: "Back to Hebrews 10" }).click();
+  await expect(page).toHaveURL(/\/10$/);
 });
 
 test("side buttons step between live chapters only", async ({ page }) => {
@@ -173,16 +173,16 @@ test("side buttons step between live chapters only", async ({ page }) => {
     .getByRole("link", { name: "Previous chapter · Hebrews 1" })
     .click();
   await expect(page).toHaveURL(/\/$/);
-  await page.goto("/9");
+  await page.goto("/10");
   await expect(page.getByRole("link", { name: /^Next chapter/ })).toHaveCount(
     0,
   );
 });
 
-test("chapter 10 has no previous link and chapter 13 has no next link", async ({
+test("chapter 11 has no previous link and chapter 13 has no next link", async ({
   page,
 }) => {
-  await page.goto("/10");
+  await page.goto("/11");
   await expect(page.getByRole("link", { name: /← Hebrews/ })).toHaveCount(0);
   await page.goto("/13");
   await expect(page.getByRole("link", { name: /Hebrews 14/ })).toHaveCount(0);
