@@ -27,7 +27,7 @@ const TURN = 2;
 const FIRST = 1;
 const LAST = FIRST + 4 * TURN + 0.2;
 
-/** “The former priests were many in number, because they were prevented by death … but he holds his priesthood permanently”: before the altar high priests stand one after another, each fading; then one stands who does not fade, hands raised in intercession, and the light above him stays. */
+/** “The former priests were many in number, because they were prevented by death … but he holds his priesthood permanently”: before the altar high priests stand one after another, each fading; then a light stands there that does not fade, and it stays. */
 export function ForeverScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
@@ -39,6 +39,7 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
   const halo = useRef<ShaderMaterial | null>(null);
   const lamp = useRef<PointLight>(null);
   const ray = useRef<ShaderMaterial | null>(null);
+  const abiding = useRef<ShaderMaterial | null>(null);
 
   useSceneTime((t, _dt, { camera }) => {
     const p = t % PERIOD;
@@ -54,6 +55,8 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
     });
     one.current = smoothstep(LAST, LAST + 0.8, p) * (1 - out);
     const light = smoothstep(LAST + 0.3, LAST + 3, p) * (1 - out);
+    if (abiding.current)
+      setUniform(abiding.current, "uAlpha", 0.92 * one.current);
     if (halo.current) setUniform(halo.current, "uAlpha", 0.5 * light);
     if (ray.current) setUniform(ray.current, "uAlpha", 0.2 * light);
     if (lamp.current) lamp.current.intensity = 3.5 * light;
@@ -113,13 +116,19 @@ export function ForeverScene({ mobile, effects }: SceneProps) {
         turban
         opacity={p4}
       />
-      <Carved
-        position={SPOT}
-        robe={SALEM.linen}
-        rotationY={-0.3}
-        crown
-        arms
-        opacity={one}
+      <Glow
+        position={[SPOT[0], 1.25, SPOT[2]]}
+        size={1}
+        scaleX={1.1}
+        scaleY={3.4}
+        color="#F0C888"
+        inner="#FFFAF0"
+        alpha={0}
+        power={1.5}
+        renderOrder={7}
+        onMaterial={(m) => {
+          abiding.current = m;
+        }}
       />
       <GodRay
         from={[SPOT[0] + 0.4, 7, -0.6]}

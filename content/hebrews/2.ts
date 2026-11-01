@@ -647,12 +647,12 @@ const MV: Movement[] = [
     num: "III",
     range: "10–13",
     scene: "gather",
-    art: "3D · R3F — a stone courtyard at night: one robed figure stands in the lamplight by a lit doorway; smaller figures walk in from the dark on either side to stand with him.",
+    art: "3D · R3F — a stone courtyard at night: light stands at a lit doorway; robed figures walk in from the dark on either side to stand with it. Christ is shown only as light.",
     en: {
       title: "Not ashamed to call them brothers",
       quote: "“Behold, I and the children God has given me.”",
       sref: "Hebrews 2:13",
-      cap: "Scene: one figure stands in the lamplight, and the children come out of the dark to stand beside him.",
+      cap: "Scene: light stands at the door, and the children come out of the dark to stand beside it.",
       snips: [
         "The founder of their salvation made perfect through suffering",
         "He is not ashamed to call them brothers",
@@ -717,7 +717,7 @@ const MV: Movement[] = [
       quote:
         "“보십시오, 내가 여기에 있습니다. 또 하나님께서 내게 주신 자녀들이 여기에 있습니다.”",
       sref: "히브리서 2:13",
-      cap: "장면: 한 사람이 등불 빛 속에 서 있고, 자녀들이 어둠 속에서 나와 그 곁에 섭니다.",
+      cap: "장면: 빛이 문가에 서 있고, 자녀들이 어둠 속에서 나와 그 곁에 섭니다.",
       snips: [
         "그들의 구원의 창시자를 고난으로써 완전하게 하신다",
         "형제자매라고 부르시기를 부끄러워하지 않으셨습니다",
@@ -948,7 +948,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "14–18",
     scene: "freed",
-    art: "3D · R3F — captives kneel chained to a prison wall; one comes down among them in light, the chains break and scatter, and the captives rise with their hands lifted.",
+    art: "3D · R3F — captives kneel chained to a prison wall; light comes down among them, the chains break and scatter, and the captives rise with their hands lifted.",
     en: {
       title: "Made like his brothers",
       quote:

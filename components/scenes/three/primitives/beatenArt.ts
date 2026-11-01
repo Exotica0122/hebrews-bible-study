@@ -481,9 +481,11 @@ export function person(
   }
 }
 
-/** Christ is only ever light on this plate, never metal. */
-export function lightFigure(x: number, y: number, h: number, alpha: number) {
+/** Christ is only ever light on this plate: a soft shaft, never a human outline. */
+export function lightShaft(x: number, y: number, h: number, alpha: number) {
   const k = h / 100;
+  const w = 26 * k;
+  const top = y - 104 * k;
   g.save();
   g.globalAlpha = alpha;
   g.globalCompositeOperation = "lighter";
@@ -492,14 +494,12 @@ export function lightFigure(x: number, y: number, h: number, alpha: number) {
   halo.addColorStop(1, col(0, 0, 0));
   fill(halo);
   dot(x, y - 48 * k, 120 * k);
-  fill(LIGHT);
-  poly([
-    [x - 10 * k, y - 76 * k],
-    [x + 10 * k, y - 76 * k],
-    [x + 20 * k, y],
-    [x - 20 * k, y],
-  ]);
-  dot(x, y - 88 * k, 10 * k);
+  const shaft = g.createLinearGradient(x - w, 0, x + w, 0);
+  shaft.addColorStop(0, col(0, 0, 0));
+  shaft.addColorStop(0.5, col(0, 0, 1));
+  shaft.addColorStop(1, col(0, 0, 0));
+  fill(shaft);
+  rect(x - w, top, w * 2, y - top);
   g.restore();
 }
 

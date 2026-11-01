@@ -6,22 +6,13 @@ import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Squall } from "../primitives/Coast";
 import { Glow } from "../primitives/Glow";
-import {
-  Cloth,
-  Figure,
-  Flame,
-  Floor,
-  FLOOR,
-  HOLY,
-} from "../primitives/Sanctuary";
+import { Cloth, Flame, Floor, FLOOR, HOLY } from "../primitives/Sanctuary";
 import { lerp, smoothstep, useSceneTime } from "../primitives/Timeline";
 import { useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 import { setUniform } from "../primitives/mutate";
 
 const PERIOD = 17;
 const HEARD = 7.8;
-const RISE = 9.6;
-const RISE_TIME = 1.2;
 const SPREAD = 10.6;
 /** Each tear’s start time. */
 const TEARS = [2, 3.1, 4.3, 5.2, 6.3];
@@ -29,12 +20,11 @@ const X = 0.9;
 const FACE: [number, number, number] = [X, FLOOR + 1.0, 0.2];
 const LAMP: [number, number, number] = [X + 0.7, FLOOR + 0.05, 0.25];
 
-/** “Prayers and supplications, with loud cries and tears … and he was heard”: tears fall in the lamplight, light answers from above, he stands, and the light spreads out from where he is. */
+/** “Prayers and supplications, with loud cries and tears … and he was heard”: tears fall in the lamplight, light answers from above, and it spreads out from where they fell. */
 export function CriesScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const fade = useRef(1);
   const level = useRef(0);
-  const kneel = useRef(1);
   const tears = useRef<(Mesh | null)[]>([]);
   const tearGlow = useRef<(ShaderMaterial | null)[]>([]);
   const shaft = useRef<ShaderMaterial | null>(null);
@@ -54,7 +44,7 @@ export function CriesScene({ mobile, effects }: SceneProps) {
     fade.current = 1 - smoothstep(0, 0.9, p) + smoothstep(15.4, 16.9, p);
     const out = 1 - smoothstep(15.4, 17, p);
     level.current = smoothstep(0, 1.2, p) * out;
-    if (lamp.current) lamp.current.intensity = 8 * level.current;
+    if (lamp.current) lamp.current.intensity = 16 * level.current;
     TEARS.forEach((start, i) => {
       const k = (p - start) / 0.9;
       tears.current[i]?.position.set(
@@ -75,13 +65,12 @@ export function CriesScene({ mobile, effects }: SceneProps) {
       setUniform(
         shaft.current,
         "uAlpha",
-        0.55 * heard * (1 - 0.5 * smoothstep(SPREAD + 1, SPREAD + 3, p)),
+        0.85 * heard * (1 - 0.35 * smoothstep(SPREAD + 1, SPREAD + 3, p)),
       );
     if (above.current) above.current.intensity = 9 * heard;
-    kneel.current = 1 - smoothstep(RISE, RISE + RISE_TIME, p);
     const spread = smoothstep(SPREAD, SPREAD + 3.4, p);
     poolMesh.current?.scale.set(lerp(0.6, 9, spread), lerp(0.6, 9, spread), 1);
-    if (pool.current) setUniform(pool.current, "uAlpha", 0.5 * spread * out);
+    if (pool.current) setUniform(pool.current, "uAlpha", 0.8 * spread * out);
   });
 
   return (
@@ -122,7 +111,6 @@ export function CriesScene({ mobile, effects }: SceneProps) {
         distance={6}
         decay={1.6}
       />
-      <Figure position={[X, FLOOR, 0]} robe="#8C7B66" kneel={kneel} />
       {TEARS.map((_, i) => (
         <Glow
           key={i}
