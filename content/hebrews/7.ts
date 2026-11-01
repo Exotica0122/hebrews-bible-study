@@ -13,13 +13,13 @@ const MV: Movement[] = [
     num: "I",
     range: "1–3",
     scene: "meeting",
-    art: "3D · R3F — below the gate of Salem in the first light, the priest-king comes down with bread and a cup of wine. Abraham, back from the battle, climbs the road toward him and kneels to be blessed.",
+    art: "3D · R3F — shell inlay on lapis. Abraham, back from the battle, comes with his line standing behind him and kneels to be blessed. The priest-king stands alone with bread and a cup of wine, with no line behind him at all.",
     en: {
       title: "King of righteousness, king of peace",
       quote:
         "“For this Melchizedek, king of Salem, priest of the Most High God, met Abraham returning from the slaughter of the kings and blessed him.”",
       sref: "Hebrews 7:1",
-      cap: "Scene: the priest-king of Salem comes out with bread and wine, and blesses Abraham.",
+      cap: "Scene: Abraham comes with his line behind him. The priest-king stands alone with bread and wine, with no line at all.",
       snips: [
         "Melchizedek, king of Salem and priest of the Most High God, met Abraham and blessed him",
         "Abraham gave him a tenth; his name means king of righteousness, and king of peace",
@@ -66,7 +66,7 @@ const MV: Movement[] = [
       quote:
         "“이 멜기세덱은 살렘 왕이요, 지극히 높으신 하나님의 제사장이었습니다. 그는 아브라함이 여러 왕을 무찌르고 돌아올 때에, 그를 만나서 축복해 주었습니다.”",
       sref: "히브리서 7:1",
-      cap: "장면: 살렘의 제사장이자 왕이 빵과 포도주를 가지고 나와 아브라함을 축복합니다.",
+      cap: "장면: 아브라함 뒤에는 그의 계보가 서 있고, 제사장이자 왕은 빵과 포도주를 들고 계보 없이 홀로 서 있습니다.",
       snips: [
         "살렘 왕이요, 지극히 높으신 하나님의 제사장인 멜기세덱이 아브라함을 만나 축복했습니다",
         "아브라함은 십분의 일을 바쳤고, 그 이름은 정의의 왕, 평화의 왕이라는 뜻입니다",
@@ -269,7 +269,7 @@ const MV: Movement[] = [
     num: "II",
     range: "4–10",
     scene: "tithe",
-    art: "3D · R3F — the spoils lie on the road in ten bundles; one is carried forward and laid at Melchizedek’s feet. Behind Abraham his line appears, pale as carved stone: Isaac, Jacob and Levi, not yet born.",
+    art: "3D · R3F — shell inlay on lapis. The spoils lie in ten bundles; one is carried forward and laid at Melchizedek’s feet. Inside Abraham’s robe Levi’s line appears in pale shell, still in his loins as he gives.",
     en: {
       title: "See how great this man was",
       quote:
@@ -567,7 +567,7 @@ const MV: Movement[] = [
     num: "III",
     range: "11–19",
     scene: "arise",
-    art: "3D · R3F — Aaron’s priests stand by the altar of Levi. Across from them, Judah’s sceptre stands on its stone, and no one from that tribe has served at the altar. Out of Judah’s ground a light rises and stands. Christ is shown only as light.",
+    art: "3D · R3F — shell inlay on lapis. Levi’s line stands and ends at its altar. Across from it Judah’s sceptre stands on its stone, where no priest has served, and from that ground a light rises and stands. Christ is shown only as light, with no human outline.",
     en: {
       title: "Another priest arises",
       quote:
@@ -911,7 +911,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "20–22",
     scene: "sworn",
-    art: "3D · R3F — a soft clay tablet lies on a stone. A cylinder seal rolls across it and leaves the oath pressed in; the clay hardens in the light and the seal is set, never to be changed.",
+    art: "3D · R3F — shell inlay on lapis. A clay tablet lies on a stone. A cylinder seal rolls across it once and leaves the oath pressed in, never to be changed.",
     en: {
       title: "Not without an oath",
       quote:
@@ -1089,7 +1089,7 @@ const MV: Movement[] = [
     num: "V",
     range: "23–28",
     scene: "forever",
-    art: "3D · R3F — before the altar, high priests stand one after another, each fading as death takes him and the next steps in. Then a light stands there that does not fade, and it stays. Christ is shown only as light.",
+    art: "3D · R3F — shell inlay on lapis. At the altar, high priests stand one after another; each goes to his grave and the next steps in, until the graves stand in a row. Then a light stands at the altar and stays. Christ is shown only as light, with no human outline.",
     en: {
       title: "He always lives to make intercession",
       quote:

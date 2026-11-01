@@ -6,15 +6,10 @@ import {
   BoxGeometry,
   CylinderGeometry,
   DoubleSide,
-  IcosahedronGeometry,
-  LatheGeometry,
   MeshStandardMaterial,
-  SphereGeometry,
-  Vector2,
   type Group,
   type Mesh,
 } from "three";
-import { Hills, Sky, type HillLayer } from "./Earth";
 import { FIGURE_HEAD, useFigure } from "./Sanctuary";
 import { setOpacity } from "./mutate";
 
@@ -38,51 +33,6 @@ export const SALEM = {
   mantle: "#B49B7C",
   haze: "#EEDFCD",
 };
-
-export const SALEM_HILLS: HillLayer[] = [
-  { y: -0.6, z: -40, amp: 1.2, freq: 0.09, seed: 1.3, color: "#C9C3CF" },
-  { y: -1, z: -30, amp: 0.9, freq: 0.13, seed: 4.1, color: "#C8B7AA" },
-];
-
-/** Dawn sky: pale lapis overhead fading to peach where the sun is about to clear the hills. */
-export function SalemSky({
-  horizonY = -0.5,
-  blush = 0.35,
-}: {
-  horizonY?: number;
-  blush?: number;
-}) {
-  return (
-    <Sky
-      top={SALEM.sky}
-      horizon={SALEM.dawn}
-      glow={SALEM.blush}
-      horizonY={horizonY}
-      glowStrength={blush}
-      z={-45}
-    />
-  );
-}
-
-export function SalemHills({ layers = SALEM_HILLS }: { layers?: HillLayer[] }) {
-  return <Hills layers={layers} span={140} />;
-}
-
-/** Low sun raking in from the east so every carved edge throws a shadow side, with cool sky light in the shade. */
-export function SalemLights({
-  sun = [-8, 5, 6],
-  intensity = 2.6,
-}: {
-  sun?: [number, number, number];
-  intensity?: number;
-}) {
-  return (
-    <>
-      <hemisphereLight args={["#C3CEE6", "#B08C78", 1.4]} />
-      <directionalLight position={sun} intensity={intensity} color="#FFD6A0" />
-    </>
-  );
-}
 
 /** Matte, flat-shaded stone so faces read as cut planes. */
 export function useStone(
@@ -108,72 +58,6 @@ function useBox() {
   const g = useMemo(() => new BoxGeometry(1, 1, 1), []);
   useEffect(() => () => g.dispose(), [g]);
   return g;
-}
-
-/** Flat ground running out to the hills, lifted by its own warm bounce so the low sun never leaves it a dark slab. */
-export function Ground({
-  y = 0,
-  color = SALEM.ground,
-  size = 120,
-}: {
-  y?: number;
-  color?: string;
-  size?: number;
-}) {
-  const m = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color,
-        roughness: 1,
-        emissive: color,
-        emissiveIntensity: 0.35,
-      }),
-    [color],
-  );
-  useEffect(() => () => m.dispose(), [m]);
-  return (
-    <mesh position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]} material={m}>
-      <planeGeometry args={[size, size]} />
-    </mesh>
-  );
-}
-
-/** A terraced hill, stacked like cut courses: each level is [radius, height]. Base at the origin. */
-export function Terraces({
-  position,
-  levels,
-  color = SALEM.block,
-  segments = 11,
-}: {
-  position: [number, number, number];
-  levels: [number, number][];
-  color?: string;
-  segments?: number;
-}) {
-  const m = useStone(color);
-  const parts = useMemo(
-    () =>
-      levels.map(([r, h], i) => ({
-        g: new CylinderGeometry(r * 0.94, r, h, segments, 1),
-        y: levels.slice(0, i).reduce((y, [, lh]) => y + lh, 0) + h / 2,
-        rot: i * 0.37,
-      })),
-    [levels, segments],
-  );
-  useEffect(() => () => parts.forEach((p) => p.g.dispose()), [parts]);
-  return (
-    <group position={position}>
-      {parts.map((p, i) => (
-        <mesh
-          key={i}
-          geometry={p.g}
-          material={m}
-          position={[0, p.y, 0]}
-          rotation={[0, p.rot, 0]}
-        />
-      ))}
-    </group>
-  );
 }
 
 const HOUSES: [number, number, number, number][] = Array.from(
@@ -430,167 +314,6 @@ export function Carved({
             />
           ))}
       </group>
-    </group>
-  );
-}
-
-/** A round loaf. */
-export function Loaf({
-  position,
-  scale = 1,
-}: {
-  position: [number, number, number];
-  scale?: number;
-}) {
-  const m = useStone(SALEM.bread, { roughness: 0.8 });
-  const g = useMemo(() => new SphereGeometry(0.1, 10, 6), []);
-  useEffect(() => () => g.dispose(), [g]);
-  return (
-    <mesh
-      geometry={g}
-      material={m}
-      position={position}
-      scale={[scale, scale * 0.5, scale * 0.85]}
-    />
-  );
-}
-
-const CUP: [number, number][] = [
-  [0, 0],
-  [0.06, 0],
-  [0.06, 0.012],
-  [0.015, 0.03],
-  [0.015, 0.08],
-  [0.07, 0.11],
-  [0.085, 0.2],
-  [0.078, 0.2],
-  [0.064, 0.12],
-  [0, 0.11],
-];
-/** A gold cup filled with wine. Base at the origin, about 0.2 tall. */
-export function Cup({
-  position,
-  scale = 1,
-}: {
-  position: [number, number, number];
-  scale?: number;
-}) {
-  const gold = useStone(SALEM.gold, { roughness: 0.3, metalness: 0.75 });
-  const wine = useStone(SALEM.wine, { roughness: 0.25 });
-  const parts = useMemo(
-    () => ({
-      cup: new LatheGeometry(
-        CUP.map(([r, y]) => new Vector2(r, y)),
-        14,
-      ),
-      wine: new CylinderGeometry(0.076, 0.076, 0.004, 14),
-    }),
-    [],
-  );
-  useEffect(
-    () => () => Object.values(parts).forEach((g) => g.dispose()),
-    [parts],
-  );
-  return (
-    <group position={position} scale={scale}>
-      <mesh geometry={parts.cup} material={gold} material-side={DoubleSide} />
-      <mesh geometry={parts.wine} material={wine} position={[0, 0.185, 0]} />
-    </group>
-  );
-}
-
-/** A tied bundle of spoils. Base at the origin. */
-export function Bundle({
-  position,
-  color = "#A07F58",
-  scale = 1,
-  rotationY = 0,
-}: {
-  position: [number, number, number];
-  color?: string;
-  scale?: number;
-  rotationY?: number;
-}) {
-  const m = useStone(color);
-  const g = useMemo(() => new IcosahedronGeometry(0.2, 0), []);
-  useEffect(() => () => g.dispose(), [g]);
-  return (
-    <mesh
-      geometry={g}
-      material={m}
-      position={[position[0], position[1] + 0.15 * scale, position[2]]}
-      rotation={[0, rotationY, 0]}
-      scale={[1.3 * scale, 0.8 * scale, scale]}
-    />
-  );
-}
-
-/** An altar of stone with a horn at each corner. Base at the origin, top at 0.8. */
-export function StoneAltar({
-  position,
-}: {
-  position: [number, number, number];
-}) {
-  const box = useBox();
-  const m = useStone(SALEM.deep);
-  return (
-    <group position={position}>
-      <mesh
-        geometry={box}
-        material={m}
-        position={[0, 0.36, 0]}
-        scale={[0.95, 0.72, 0.95]}
-      />
-      <mesh
-        geometry={box}
-        material={m}
-        position={[0, 0.76, 0]}
-        scale={[1.05, 0.08, 1.05]}
-      />
-      {[
-        [-1, -1],
-        [-1, 1],
-        [1, -1],
-        [1, 1],
-      ].map(([x, z], i) => (
-        <mesh
-          key={i}
-          geometry={box}
-          material={m}
-          position={[x * 0.44, 0.86, z * 0.44]}
-          scale={0.13}
-        />
-      ))}
-    </group>
-  );
-}
-
-/** Judah’s sceptre standing on a cut stone (Gen 49:10). Base at the origin. */
-export function Sceptre({ position }: { position: [number, number, number] }) {
-  const box = useBox();
-  const stone = useStone(SALEM.stone);
-  const gold = useStone(SALEM.gold, { roughness: 0.3, metalness: 0.75 });
-  const parts = useMemo(
-    () => ({
-      rod: new CylinderGeometry(0.03, 0.035, 1.1, 8),
-      knob: new SphereGeometry(0.08, 10, 8),
-    }),
-    [],
-  );
-  useEffect(
-    () => () => Object.values(parts).forEach((g) => g.dispose()),
-    [parts],
-  );
-  return (
-    <group position={position}>
-      <mesh
-        geometry={box}
-        material={stone}
-        position={[0, 0.3, 0]}
-        scale={[0.6, 0.6, 0.6]}
-      />
-      <mesh geometry={parts.rod} material={gold} position={[0, 1.15, 0]} />
-      <mesh geometry={parts.knob} material={gold} position={[0, 1.74, 0]} />
     </group>
   );
 }
