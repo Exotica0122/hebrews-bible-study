@@ -59,7 +59,7 @@ const HERO_ART: Record<Setting, string> = {
   coast:
     "3D · R3F — ink wash on hanji: a bay between two headlands as the rain moves off, a boat riding at anchor, and a break of light left as bare paper",
   salem:
-    "3D · R3F — Salem on its hill at first light: terraced limestone, the walled city and its gate, and the road down into the King’s Valley, cut in stone and lit low from the east",
+    "3D · R3F — shell and limestone inlay on small lapis tiles, in the manner of Abraham’s Ur: Salem on its terraces, and his company coming up the road toward it",
   pattern:
     "3D · R3F — a cyanotype sheet: the plan of the tent and its court drawn in white, Sinai in survey contours, and the true tent above in gold with its shadow printed pale below",
   gold: "3D · R3F — one sheet of beaten gold lit by a single moving lamp: the second curtain raised in relief between the lampstand and the table, with one scarlet line running down its seam",

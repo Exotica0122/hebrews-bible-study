@@ -27,12 +27,6 @@ import { OfferingScene } from "./scenes/OfferingScene";
 import { DiademScene } from "./scenes/DiademScene";
 import { CriesScene } from "./scenes/CriesScene";
 import { BreadScene } from "./scenes/BreadScene";
-import { HeroSalemScene } from "./scenes/HeroSalemScene";
-import { MeetingScene } from "./scenes/MeetingScene";
-import { TitheScene } from "./scenes/TitheScene";
-import { AriseScene } from "./scenes/AriseScene";
-import { SwornScene } from "./scenes/SwornScene";
-import { ForeverScene } from "./scenes/ForeverScene";
 import { HeroPatternScene } from "./scenes/HeroPatternScene";
 import { TrueTentScene } from "./scenes/TrueTentScene";
 import { PatternScene } from "./scenes/PatternScene";
@@ -59,6 +53,14 @@ import { SatDownScene } from "./scenes/SatDownScene";
 import { DrawNearScene } from "./scenes/DrawNearScene";
 import { FearfulScene } from "./scenes/FearfulScene";
 import { SpectacleScene } from "./scenes/SpectacleScene";
+import {
+  AriseScene,
+  ForeverScene,
+  HeroInlayScene,
+  MeetingScene,
+  SwornScene,
+  TitheScene,
+} from "./scenes/InlayScenes";
 import {
   AnchorScene,
   FootstepsScene,
@@ -130,7 +132,7 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   footsteps: FootstepsScene,
   oath: OathScene,
   anchor: AnchorScene,
-  heroSalem: HeroSalemScene,
+  heroSalem: HeroInlayScene,
   meeting: MeetingScene,
   tithe: TitheScene,
   arise: AriseScene,
