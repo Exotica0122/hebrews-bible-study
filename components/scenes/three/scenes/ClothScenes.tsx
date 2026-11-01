@@ -2,7 +2,7 @@
 
 import type { SceneProps } from "../registry";
 import type { Frame } from "../primitives/Beaten";
-import { Embroidery } from "../primitives/Cloth";
+import { Embroidery, type Route } from "../primitives/Cloth";
 import {
   altar,
   ark,
@@ -54,6 +54,41 @@ const LAST_STITCH = 2990;
 /** Stitches a group in from the ground up. */
 const stitchUp = (x: number, w: number, a: number, draw: () => void) =>
   withinBox(x, FLOOR + 14 - 320 * a, w, 320 * a, draw);
+
+const ROUTES: Record<string, Route> = {
+  stillSpeaks: [
+    [0, 0],
+    [3.4, 0],
+    [5.2, 0.4],
+    [8.2, 0.4],
+    [10, 1],
+  ],
+  afar: [
+    [0, 0],
+    [3, 0],
+    [9, 1],
+  ],
+  receivedBack: [
+    [0, 0],
+    [8, 0],
+    [11, 1],
+  ],
+  invisible: [
+    [0, 0],
+    [5.6, 0],
+    [9, 1],
+  ],
+  notWorthy: [
+    [0, 0],
+    [3, 0],
+    [7, 1],
+  ],
+  apartFromUs: [
+    [0, 0],
+    [3, 0],
+    [8, 1],
+  ],
+};
 
 const heroPan = (t: number) => smoothstep(0.4, HERO_HOLD, t) * HERO_PAN;
 
@@ -165,6 +200,7 @@ export function StillSpeaksScene({ mobile, effects, pointer }: SceneProps) {
   return (
     <Embroidery
       paint={paintStillSpeaks}
+      route={ROUTES.stillSpeaks}
       period={PERIOD}
       mobile={mobile}
       effects={effects}
@@ -207,6 +243,7 @@ export function AfarScene({ mobile, effects, pointer }: SceneProps) {
   return (
     <Embroidery
       paint={paintAfar}
+      route={ROUTES.afar}
       period={PERIOD}
       mobile={mobile}
       effects={effects}
@@ -267,6 +304,7 @@ export function ReceivedBackScene({ mobile, effects, pointer }: SceneProps) {
   return (
     <Embroidery
       paint={paintReceivedBack}
+      route={ROUTES.receivedBack}
       period={PERIOD}
       mobile={mobile}
       effects={effects}
@@ -300,6 +338,7 @@ export function InvisibleScene({ mobile, effects, pointer }: SceneProps) {
   return (
     <Embroidery
       paint={paintInvisible}
+      route={ROUTES.invisible}
       period={PERIOD}
       mobile={mobile}
       effects={effects}
@@ -337,6 +376,7 @@ export function NotWorthyScene({ mobile, effects, pointer }: SceneProps) {
   return (
     <Embroidery
       paint={paintNotWorthy}
+      route={ROUTES.notWorthy}
       period={PERIOD}
       mobile={mobile}
       effects={effects}
@@ -376,6 +416,7 @@ export function ApartFromUsScene({ mobile, effects, pointer }: SceneProps) {
   return (
     <Embroidery
       paint={paintApartFromUs}
+      route={ROUTES.apartFromUs}
       period={PERIOD}
       mobile={mobile}
       effects={effects}

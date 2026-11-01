@@ -64,7 +64,7 @@ const MV: Movement[] = [
       title: "보이지 않는 것들",
       quote: "“…보이는 것은 나타나 있는 것에서 된 것이 아닙니다.”",
       sref: "히브리서 11:3",
-      cap: "장면: 빈 삼베 위에 아무것도 없다가, 보이는 온 세상이 없던 데서 수놓아집니다.",
+      cap: "장면: 빈 천 위에 아무것도 없다가, 보이는 온 세상이 없던 데서 수놓아집니다.",
       snips: [
         "믿음은 확신이요 증거입니다",
         "선조들은 믿음으로 증언을 받았습니다",
@@ -92,7 +92,7 @@ const MV: Movement[] = [
         ],
         [
           "p",
-          "이 장은 독자에게 마음과 참된 헌신으로 하나님을 믿는 법을 가르칩니다. 참된 믿음과 빈 종교를 대조합니다.",
+          "이 장은 독자에게 마음과 참된 헌신으로 하나님을 믿는 법을 가르칩니다. 참된 믿음과 형식뿐인 종교를 대조합니다.",
         ],
         ["h", "없는 데서"],
         [
@@ -235,7 +235,7 @@ const MV: Movement[] = [
         ["h", "Enoch: he walked with God"],
         [
           "p",
-          "Genesis 5 is the genealogy from Adam to Noah. Enoch lived 365 years and fathered Methuselah with other sons and daughters. He is the only person in the whole genealogy of whom it is said that he walked with God, and then he was not, for God took him (Gen 5:21–24).",
+          "Genesis 5 is the genealogy from Adam to Noah. Enoch lived 365 years and fathered Methuselah with other sons and daughters. He is the only person in the whole genealogy of whom it is said that he walked faithfully with God, and then was no more, because God took him (Gen 5:21–24).",
         ],
         [
           "p",
@@ -244,7 +244,7 @@ const MV: Movement[] = [
         ["h", "Noah: warned of what could not be seen"],
         [
           "p",
-          "Genesis 6 calls Noah a righteous man, blameless in his generation, who walked with God (v9). God commanded precisely how to build the ark and what to take in, and Noah did all that God commanded him (v22).",
+          "Genesis 6 calls Noah a righteous man, blameless among the people of his time, who walked faithfully with God (v9). God commanded precisely how to build the ark and what to take in, and Noah did everything just as God commanded him (v22).",
         ],
         [
           "p",
@@ -289,7 +289,7 @@ const MV: Movement[] = [
         ],
         [
           "p",
-          "아벨의 제물은 그의 속 믿음을 그대로 보여 주었고, 가인의 제물은 믿음이 없음을 보여 주었습니다. 저자는 아벨이 죽었지만 아직도 말하고 있다고 덧붙입니다. 아벨은 진실한 마음으로 하나님께 나아가는 법과, 가장 좋은 것으로 하나님을 신뢰하는 모습을 가르칩니다. 하나님께서는 참된 헌신을 보시고 귀히 여기시고 기억하십니다. 이것이 믿음으로 맺는 관계와 빈 종교의 차이입니다.",
+          "아벨의 제물은 그의 속 믿음을 그대로 보여 주었고, 가인의 제물은 믿음이 없음을 보여 주었습니다. 저자는 아벨이 죽었지만 아직도 말하고 있다고 덧붙입니다. 아벨은 진실한 마음으로 하나님께 나아가는 법과, 가장 좋은 것으로 하나님을 신뢰하는 모습을 가르칩니다. 하나님께서는 참된 헌신을 보시고 귀히 여기시고 기억하십니다. 이것이 믿음으로 맺는 관계와 형식뿐인 종교의 차이입니다.",
         ],
         ["h", "에녹: 하나님과 동행함"],
         [
@@ -481,7 +481,7 @@ const MV: Movement[] = [
         ["h", "Tents and a city"],
         [
           "p",
-          "In Genesis 12 God calls Abram: “Go from your country and your kindred and your father’s house to the land that I will show you”, which is Canaan. The key link is Genesis 12:4, where Abraham went as the Lord had told him. The author explains that this going was by faith.",
+          "In Genesis 12 God calls Abram: “Go from your country, your people and your father’s household to the land I will show you”, which is Canaan. The key link is Genesis 12:4, where Abraham went as the Lord had told him. The author explains that this going was by faith.",
         ],
         [
           "p",
@@ -676,7 +676,7 @@ const MV: Movement[] = [
         en: "Gen 17:16",
         ko: "창 17:16",
         ten: "I will bless her, and moreover, I will give you a son by her. I will bless her, and she shall become nations; kings of peoples shall come from her.”",
-        tko: "내가 그에게 복을 주어, 너에게 아들을 낳아 주게 하겠다. 내가 너의 아내에게 복을 주어서, 여러 민족의 어머니가 되게 하고, 백성들을 다스리는 왕들이 그에게서 나오게 하겠다.“",
+        tko: "내가 그에게 복을 주어, 너에게 아들을 낳아 주게 하겠다. 내가 너의 아내에게 복을 주어서, 여러 민족의 어머니가 되게 하고, 백성들을 다스리는 왕들이 그에게서 나오게 하겠다.”",
         wen: "Sarah, the mother of nations.",
         wko: "여러 민족의 어머니.",
       },
@@ -930,7 +930,7 @@ const MV: Movement[] = [
         en: "John 8:56",
         ko: "요 8:56",
         ten: "Your father Abraham rejoiced that he would see my day. He saw it and was glad.”",
-        tko: "너희의 조상 아브라함은 나의 날을 보리라고 기대하며 즐거워하였고, 마침내 보고 기뻐하였다.“",
+        tko: "너희의 조상 아브라함은 나의 날을 보리라고 기대하며 즐거워하였고, 마침내 보고 기뻐하였다.”",
         wen: "Abraham saw my day.",
         wko: "아브라함은 나의 날을 보았습니다.",
       },
@@ -1113,7 +1113,7 @@ const MV: Movement[] = [
         ["h", "이집트의 이스라엘 자손"],
         [
           "p",
-          "출애굽기 1장은 요셉을 알지 못하는 새 왕이 이집트를 다스렸다고 설명합니다. 이스라엘 자손이 많아지고 강해지자, 왕은 남자 아기를 모두 죽이려 했습니다. 2장에서 아므람과 요게벳은 모세가 잘생긴 것을 보고 석 달 동안 숨겼습니다. 스데반은 하나님 보시기에 아름다웠다고 말합니다(행 7:20). 부모는 하나님께서 정하신 특별한 뜻을 알아보았고, 그의 신적인 부르심을 알았습니다. 모세는 자란 뒤에 히브리 사람을 때리는 이집트 사람을 죽였습니다.",
+          "출애굽기 1장은 요셉을 알지 못하는 새 왕이 이집트를 다스렸다고 설명합니다. 이스라엘 자손이 많아지고 강해지자, 왕은 남자 아기를 모두 죽이려 했습니다. 2장에서 아므람과 요게벳은 모세가 잘생긴 것을 보고 석 달 동안 숨겼습니다. 스데반은 하나님 보시기에 아름다웠다고 말합니다(행 7:20). 부모는 하나님께서 정하신 특별한 뜻을 알아보았고, 그에게 있는 하나님의 부르심을 알았습니다. 모세는 자란 뒤에 히브리 사람을 때리는 이집트 사람을 죽였습니다.",
         ],
         ["h", "보이지 않는 하나님을 더 두려워함"],
         [
@@ -1169,7 +1169,7 @@ const MV: Movement[] = [
           g: "asteion · ἀστεῖον",
           v: "11:23",
           s: "겉모습 이상의 뜻",
-          d: "아름다움. 부모는 아기에게 있는 신적인 부르심을 알아보았고, 스데반은 하나님 보시기에 아름다웠다고 말합니다(행 7:20).",
+          d: "아름다움. 부모는 아기에게 있는 하나님의 부르심을 알아보았고, 스데반은 하나님 보시기에 아름다웠다고 말합니다(행 7:20).",
         },
         reproach: {
           t: "모욕",
@@ -1377,11 +1377,11 @@ const MV: Movement[] = [
         ["h", "시간이 모자랍니다"],
         [
           "p",
-          "나라들을 정복함: 여호수아와 다윗과 사사들은 가나안을 차지하거나 위협하던 이방 나라들을 물리쳤습니다. 정의를 실천함: 사무엘과 다윗은 경건한 다스리는 사람과 재판관으로서 이스라엘에 하나님의 정의를 세웠습니다. 약속된 것을 받음: 여호수아와 갈렙은 약속대로 가나안에 들어갔습니다.",
+          "나라들을 정복함: 여호수아와 다윗과 사사들은 가나안을 차지하거나 위협하던 이방 나라들을 물리쳤습니다. 정의를 실천함: 사무엘과 다윗은 경건한 통치자이자 재판관으로서 이스라엘에 하나님의 정의를 세웠습니다. 약속된 것을 받음: 여호수아와 갈렙은 약속대로 가나안에 들어갔습니다.",
         ],
         [
           "p",
-          "사자의 입을 막음: 사자 굴의 다니엘, 맨손으로 사자를 죽인 삼손과 다윗입니다. 불의 위력을 꺾음: 다니엘의 세 친구는 풀무불에서 옷조차 상하지 않고 걸어 나왔습니다. 칼날을 피함: 엘리야와 엘리사는 아합 왕과 이세벨 왕비의 살해 위협에서 살아남았습니다.",
+          "사자의 입을 막음: 사자 굴의 다니엘, 맨손으로 사자를 죽인 삼손과 다윗입니다. 불의 위력을 꺾음: 다니엘의 세 친구는 불타는 화덕에서 옷조차 상하지 않고 걸어 나왔습니다. 칼날을 피함: 엘리야와 엘리사는 아합 왕과 이세벨 왕비의 살해 위협에서 살아남았습니다.",
         ],
         [
           "p",

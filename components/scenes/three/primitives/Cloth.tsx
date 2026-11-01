@@ -33,6 +33,9 @@ export const CLOTH = {
 const DEFAULT_FRAME: Frame = [0, 130, 1600, FLOOR - 130];
 const SAFE_WIDE = [0.1, 0.66] as const;
 const SAFE_MOBILE = [0.1, 0.56] as const;
+const PHONE_FLOOR = 0.6;
+const PHONE_REACH = 330;
+const ART_WIDTH = 1600;
 const PAINT_STEP = 1 / 30;
 const MAX_ART = 1600;
 const BASE_HEIGHT = 576;
@@ -65,7 +68,8 @@ const FRAG = /* glsl */ `
     float folds = 1.0 + 0.045 * sin(p.x * 3.1 + 0.8 * sin(p.x * 1.3)) * (0.7 + 0.3 * sin(vUv.y * 2.4));
 
     vec4 cloth = texture2D(uWeave, p * 2.2);
-    vec3 c = vec3(0.8, 0.7, 0.53) * (0.78 + 0.3 * cloth.r) * (0.84 + 0.24 * cloth.g);
+    vec3 linen = vec3(0.8, 0.7, 0.53) * (0.78 + 0.3 * cloth.r) * (0.84 + 0.24 * cloth.g);
+    vec3 c = linen;
 
     vec4 a = textureLod(uArt, vUv, uLod);
     float wide = textureLod(uArt, vUv, uLod + 3.2).r;
@@ -122,6 +126,7 @@ const FRAG = /* glsl */ `
     c = mix(c, mix(vec3(0.63, 0.43, 0.19), vec3(0.62, 0.2, 0.13), zig) * mix(0.9, 0.7 + 0.5 * laid, uFine), band);
 
     float top = (1.0 - vUv.y) * uUnits.y;
+    c = mix(linen, c, smoothstep(0.026, 0.028, top));
     float rim = (1.0 - smoothstep(0.066, 0.068, top)) * smoothstep(0.026, 0.028, top);
     float slant = step(0.5, fract((p.x + top) * 11.0));
     c = mix(c, mix(vec3(0.17, 0.2, 0.32), vec3(0.63, 0.43, 0.19), slant * 0.82), rim * 0.92);
@@ -213,6 +218,18 @@ function clothMaterial(art: Texture) {
   });
 }
 
+/** Time in seconds, and how far along the cloth the phone's window sits, from 0 to 1. */
+export type Route = readonly (readonly [number, number])[];
+
+function along(route: Route, t: number) {
+  for (let i = 1; i < route.length; i++) {
+    const [a, from] = route[i - 1];
+    const [b, to] = route[i];
+    if (t <= b) return from + (to - from) * smoothstep(a, b, t);
+  }
+  return route[route.length - 1][1];
+}
+
 interface EmbroideryProps {
   /** Draws the stitches for time `t` in logical units; feet stand on FLOOR. */
   paint: (t: number) => void;
@@ -227,6 +244,8 @@ interface EmbroideryProps {
   reserve?: number;
   /** How far the cloth has moved to the left, in logical units. */
   pan?: (t: number) => number;
+  /** On phones, a closer view that travels along the scene. */
+  route?: Route;
   pointer?: RefObject<PointerState>;
 }
 
@@ -241,6 +260,7 @@ export function Embroidery({
   safe = mobile ? SAFE_MOBILE : SAFE_WIDE,
   reserve,
   pan,
+  route,
   pointer,
 }: EmbroideryProps) {
   const size = useThree((s) => s.size);
@@ -267,9 +287,20 @@ export function Embroidery({
     ? Math.max(0.3, 1 - reserve / Math.max(size.height, 1))
     : safe[1];
   const top = safe[0];
+  const travelling = mobile && route !== undefined;
+  const closeScale = ((PHONE_FLOOR - top) * height) / PHONE_REACH;
+  const travel = travelling ? ART_WIDTH - width / closeScale : 0;
+  const close = travel > 0;
   const fit = useMemo(
-    () => fitFrame(width, height, frame, [top, floorAt]),
-    [width, height, frame, top, floorAt],
+    () =>
+      close
+        ? {
+            scale: closeScale,
+            x: 0,
+            y: PHONE_FLOOR * height - FLOOR * closeScale,
+          }
+        : fitFrame(width, height, frame, [top, floorAt]),
+    [close, closeScale, width, height, frame, top, floorAt],
   );
 
   useEffect(
@@ -293,7 +324,7 @@ export function Embroidery({
 
     const unit = 900 * fit.scale;
     const rows = mobile ? ROWS_MOBILE : ROWS_WIDE;
-    const moved = pan ? pan(p) : 0;
+    const moved = close && route ? along(route, p) * travel : pan ? pan(p) : 0;
     setUniform(material, "uFade", fade);
     setUniform(material, "uLod", Math.log2(height / BASE_HEIGHT));
     setUniform(
