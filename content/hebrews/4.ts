@@ -13,12 +13,12 @@ const MV: Movement[] = [
     num: "I",
     range: "1–5",
     scene: "seventh",
-    art: "3D · R3F — the garden is made day by day in full light: the sun, then sky and water, land and olive trees, sun and moon, birds, people. On the seventh day it stands complete and still.",
+    art: "3D · R3F — cut paper in daylight. Six marks count six days as the garden is laid in, layer by layer: the sun, sky and water, land and olive trees, the moon, birds, people. The seventh adds nothing to it, and a gate in the wall stands open.",
     en: {
       title: "The promise still stands",
       quote: "“For we who have believed enter that rest.”",
       sref: "Hebrews 4:3",
-      cap: "Scene: the garden is made, day by day. On the seventh day it stands finished, and nothing is added.",
+      cap: "Scene: the garden is made, day by day. On the seventh day nothing is added, and the gate stands open.",
       snips: [
         "While the promise of entering his rest still stands, let us fear",
         "Good news came to us just as to them",
@@ -87,7 +87,7 @@ const MV: Movement[] = [
       title: "약속이 아직 남아 있습니다",
       quote: "“그 말씀을 믿은 우리는 안식에 들어갈 것입니다.”",
       sref: "히브리서 4:3",
-      cap: "장면: 동산이 하루하루 지어져 갑니다. 일곱째 날, 동산은 완성되어 더할 것이 없습니다.",
+      cap: "장면: 동산이 하루하루 지어져 갑니다. 일곱째 날에는 더할 것이 없고, 문이 열려 있습니다.",
       snips: [
         "안식에 들어가리라는 약속이 아직 남아 있는 동안에, 두려운 마음으로 조심하십시오",
         "그들이나 우리나 기쁜 소식을 들은 것은 마찬가지입니다",
@@ -299,12 +299,12 @@ const MV: Movement[] = [
     num: "II",
     range: "6–11",
     scene: "jordan",
-    art: "3D · R3F — twelve stones by the Jordan in daylight. Their shadow turns as the years pass and the stones weather; then a path of light, “Today,” runs past them toward the far hills.",
+    art: "3D · R3F — cut paper in daylight. Twelve stones stand by the Jordan, and the road does not stop there. A strip of gold paper, “Today,” runs on past them to another gate in the far hills.",
     en: {
       title: "There remains a Sabbath rest",
       quote: "“So then, there remains a Sabbath rest for the people of God.”",
       sref: "Hebrews 4:9",
-      cap: "Scene: Joshua’s stones by the Jordan weather with the years. A new day, “Today,” opens the way beyond them.",
+      cap: "Scene: Joshua’s stones stand by the Jordan, and the road runs on past them. “Today,” the way is still open.",
       snips: [
         "It remains for some to enter it",
         "Again he appoints a certain day, “Today”",
@@ -373,7 +373,7 @@ const MV: Movement[] = [
       title: "안식하는 일이 아직 남아 있습니다",
       quote: "“그러니 하나님의 백성에게는 안식하는 일이 아직 남아 있습니다.”",
       sref: "히브리서 4:9",
-      cap: "장면: 요단 강가에 세운 여호수아의 돌들이 세월에 바래 갑니다. ‘오늘’이라는 새 날이 그 너머로 길을 엽니다.",
+      cap: "장면: 여호수아의 돌들이 요단 강가에 서 있고, 길은 그 너머로 이어집니다. ‘오늘’, 그 길은 아직 열려 있습니다.",
       snips: [
         "어떤 사람들에게는 안식에 들어갈 기회가 아직 남아 있습니다",
         "다시 ‘오늘’이라는 어떤 날을 정하시고",
@@ -557,13 +557,13 @@ const MV: Movement[] = [
     num: "III",
     range: "12–13",
     scene: "sword",
-    art: "3D · R3F — a figure stands in the deep shade of an olive grove. A two-edged blade of cool light cuts down through the shade, the shade falls away, and the one standing there is in plain light.",
+    art: "3D · R3F — cut paper in daylight. Someone stands hidden inside a dark thicket. A two-edged sword drives down and cuts it open, the halves fall away, and the one standing there is in plain light.",
     en: {
       title: "Living and active",
       quote:
         "“For the word of God is living and active, sharper than any two-edged sword.”",
       sref: "Hebrews 4:12",
-      cap: "Scene: a two-edged blade of light cuts through the shade. Nothing stays hidden.",
+      cap: "Scene: a two-edged sword cuts the thicket open. Nothing stays hidden.",
       snips: [
         "The word of God is living and active, sharper than any two-edged sword",
         "All are naked and exposed to the eyes of him to whom we must give account",
@@ -605,7 +605,7 @@ const MV: Movement[] = [
       quote:
         "“하나님의 말씀은 살아 있고 힘이 있어서, 어떤 양날칼보다도 더 날카롭습니다.”",
       sref: "히브리서 4:12",
-      cap: "장면: 양날의 빛이 그늘을 가릅니다. 숨겨진 것은 아무것도 없습니다.",
+      cap: "장면: 양날의 칼이 덤불을 가릅니다. 숨겨진 것은 아무것도 없습니다.",
       snips: [
         "하나님의 말씀은 살아 있고 힘이 있어서, 어떤 양날칼보다도 더 날카롭습니다",
         "모든 것이 그의 눈 앞에 벌거숭이로 드러나 있습니다",
@@ -793,7 +793,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "14–16",
     scene: "mercy",
-    art: "3D · R3F — broad limestone steps rise to an open throne under a clear sky. A light passes up through the clouds, the throne grows warm, and a figure climbs the steps to it unafraid.",
+    art: "3D · R3F — cut paper in daylight. Light passes up through layer after layer of cloud as the heavens part. The seat of the throne holds light alone, and people walk up the broad steps to it unafraid. Christ is shown only as light, with no human outline.",
     en: {
       title: "Draw near to the throne of grace",
       quote: "“Let us then with confidence draw near to the throne of grace.”",

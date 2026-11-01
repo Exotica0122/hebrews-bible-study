@@ -53,7 +53,7 @@ const HERO_ART: Record<Setting, string> = {
   wilderness:
     "3D · R3F — the camp of Israel in the dunes at dusk, tribe by tribe around the tabernacle under the pillar of fire",
   garden:
-    "3D · R3F — the garden on the seventh day in full light: olive trees, still water and a high sun; the work is finished and nothing moves but the clouds",
+    "3D · R3F — the garden on the seventh day in layers of cut paper: olive trees, a low wall and a high sun; the work is finished, nothing moves, and the gate stands open",
   sanctuary:
     "3D · R3F — the Holy Place by lamplight: woven curtains of blue, purple and scarlet, the golden lampstand, the bread on its table, and incense rising before the veil",
   coast:

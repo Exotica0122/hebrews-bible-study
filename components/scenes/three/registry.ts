@@ -17,11 +17,6 @@ import { TabernacleScene } from "./scenes/TabernacleScene";
 import { RockScene } from "./scenes/RockScene";
 import { CoalsScene } from "./scenes/CoalsScene";
 import { ThresholdScene } from "./scenes/ThresholdScene";
-import { HeroGardenScene } from "./scenes/HeroGardenScene";
-import { SeventhScene } from "./scenes/SeventhScene";
-import { JordanScene } from "./scenes/JordanScene";
-import { SwordScene } from "./scenes/SwordScene";
-import { MercyScene } from "./scenes/MercyScene";
 import { HeroSanctuaryScene } from "./scenes/HeroSanctuaryScene";
 import { OfferingScene } from "./scenes/OfferingScene";
 import { DiademScene } from "./scenes/DiademScene";
@@ -53,6 +48,13 @@ import { SatDownScene } from "./scenes/SatDownScene";
 import { DrawNearScene } from "./scenes/DrawNearScene";
 import { FearfulScene } from "./scenes/FearfulScene";
 import { SpectacleScene } from "./scenes/SpectacleScene";
+import {
+  HeroPaperScene,
+  JordanScene,
+  MercyScene,
+  SeventhScene,
+  SwordScene,
+} from "./scenes/PaperScenes";
 import {
   AriseScene,
   ForeverScene,
@@ -116,7 +118,7 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   rock: RockScene,
   coals: CoalsScene,
   threshold: ThresholdScene,
-  heroGarden: HeroGardenScene,
+  heroGarden: HeroPaperScene,
   seventh: SeventhScene,
   jordan: JordanScene,
   sword: SwordScene,
