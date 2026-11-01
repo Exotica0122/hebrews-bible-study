@@ -30,6 +30,8 @@ interface SceneFrameProps {
   labels: SceneLabels;
   artNote?: string;
   reduceMotion?: boolean;
+  /** Leaves out the dark band that captions need, for a scene with nothing over it. */
+  bare?: boolean;
   children?: React.ReactNode;
 }
 
@@ -67,6 +69,7 @@ export function SceneFrame({
   labels,
   artNote,
   reduceMotion = false,
+  bare = false,
   children,
 }: SceneFrameProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -131,7 +134,7 @@ export function SceneFrame({
           />
         </div>
       )}
-      <div aria-hidden="true" className={s.bottomFade} />
+      {!bare && <div aria-hidden="true" className={s.bottomFade} />}
       {!shimmerDone && (
         <div className={s.shimmer}>
           <div className={s.shimmerSweep} />

@@ -19,6 +19,7 @@ import { Footer } from "@/components/chrome/Footer";
 import { Hero } from "@/components/hero/Hero";
 import { ChapterMap } from "@/components/map/ChapterMap";
 import { MovementLeaf } from "@/components/movement/MovementLeaf";
+import { Appendix } from "@/components/appendix/Appendix";
 import { Summary } from "@/components/summary/Summary";
 import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
@@ -61,6 +62,7 @@ const HERO_ART: Record<Setting, string> = {
     "3D · R3F — Salem on its hill at first light: terraced limestone, the walled city and its gate, and the road down into the King’s Valley, cut in stone and lit low from the east",
   pattern:
     "3D · R3F — a cyanotype sheet: the plan of the tent and its court drawn in white, Sinai in survey contours, and the true tent above in gold with its shadow printed pale below",
+  gold: "3D · R3F — one sheet of beaten gold lit by a single moving lamp: the second curtain raised in relief between the lampstand and the table, with one scarlet line running down its seam",
 };
 
 export function ChapterPage({
@@ -81,14 +83,16 @@ export function ChapterPage({
   const movements = chapter.movements;
   const summary = chapter.summary[lang];
   const copy = chapter.copy[lang];
+  const appendix = chapter.appendix;
   const sectionIds = useMemo(
     () => [
       "hb-top",
       "hb-map",
       ...movements.map((m) => `hb-${m.id}`),
+      ...(appendix ? ["hb-appendix"] : []),
       "hb-summary",
     ],
-    [movements],
+    [movements, appendix],
   );
   const progressRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -171,6 +175,7 @@ export function ChapterPage({
   const navItems: NavItem[] = [
     { id: "map", label: t.map },
     ...movements.map((m) => ({ id: m.id, label: m.num })),
+    ...(appendix ? [{ id: "appendix", label: appendix.copy[lang].nav }] : []),
     { id: "summary", label: t.summary },
   ];
   const activeId = active.replace(/^hb-/, "");
@@ -181,7 +186,9 @@ export function ChapterPage({
       ? t.map
       : activeId === "summary"
         ? t.summary
-        : "";
+        : activeId === "appendix" && appendix
+          ? appendix.copy[lang].nav
+          : "";
 
   const sheetMovement = word
     ? movements.find((m) => m.id === word.mid)
@@ -239,6 +246,9 @@ export function ChapterPage({
             reduceMotion={reduceMotion}
           />
         ))}
+        {appendix && (
+          <Appendix appendix={appendix} reduceMotion={reduceMotion} />
+        )}
         <Summary summary={summary} title={copy.summaryTitle} />
         <BookIndex current={chapter.number} />
       </main>

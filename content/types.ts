@@ -1,6 +1,6 @@
 export type Lang = "en" | "ko";
 
-/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight, chapter 6 a rain-washed headland above the sea, chapter 7 Salem at first light, cut in stone. */
+/** Each chapter's visual world: chapter 1 the heavens, chapter 2 the night road, chapter 3 the wilderness camp at dusk, chapter 4 the garden on the seventh day, in full light, chapter 5 the Holy Place by lamplight, chapter 6 a rain-washed headland above the sea, chapter 7 Salem at first light, cut in stone, chapter 8 a cyanotype pattern, chapter 9 one sheet of beaten gold. */
 export type Setting =
   | "heavens"
   | "earth"
@@ -9,7 +9,8 @@ export type Setting =
   | "sanctuary"
   | "coast"
   | "salem"
-  | "pattern";
+  | "pattern"
+  | "gold";
 
 export type SceneId =
   | "radiance"
@@ -48,7 +49,17 @@ export type SceneId =
   | "pattern"
   | "second"
   | "hearts"
-  | "vanish";
+  | "vanish"
+  | "holyPlaces"
+  | "notYet"
+  | "onceForAll"
+  | "covenantBlood"
+  | "secondTime"
+  | "furnTable"
+  | "furnLampstand"
+  | "furnCurtain"
+  | "furnAltar"
+  | "furnArk";
 
 export type CommentaryBlock = ["h" | "p" | "q", string];
 
@@ -121,12 +132,40 @@ export interface ChapterCopy {
   version: string;
 }
 
+export interface FurnishingCopy {
+  name: string;
+  ref: string;
+  note: string;
+}
+
+export interface Furnishing extends Record<Lang, FurnishingCopy> {
+  scene: SceneId;
+  source?: string;
+}
+
+export interface AppendixCopy {
+  nav: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  original: string;
+  overview: string;
+  credit: string;
+}
+
+export interface Appendix {
+  items: Furnishing[];
+  overview: string;
+  copy: Record<Lang, AppendixCopy>;
+}
+
 export interface ChapterContent {
   number: number;
   setting: Setting;
   copy: Record<Lang, ChapterCopy>;
   movements: Movement[];
   summary: Record<Lang, Summary>;
+  appendix?: Appendix;
 }
 
 export interface Segment {

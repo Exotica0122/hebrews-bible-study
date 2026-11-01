@@ -43,4 +43,15 @@ export type SceneId =
   | "pattern"
   | "second"
   | "hearts"
-  | "vanish";
+  | "vanish"
+  | "heroGold"
+  | "holyPlaces"
+  | "notYet"
+  | "onceForAll"
+  | "covenantBlood"
+  | "secondTime"
+  | "furnTable"
+  | "furnLampstand"
+  | "furnCurtain"
+  | "furnAltar"
+  | "furnArk";

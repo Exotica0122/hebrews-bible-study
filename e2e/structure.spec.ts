@@ -202,6 +202,40 @@ test("renders Hebrews 8 with five movements and 새번역 in Korean", async ({
   );
 });
 
+test("renders Hebrews 9 with its appendix and 새번역 in Korean", async ({
+  page,
+}) => {
+  await page.goto("/9");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Hebrews 9" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      level: 2,
+      name: "Twenty-eight verses, five movements",
+    }),
+  ).toBeVisible();
+  for (const id of ["m1", "m2", "m3", "m4", "m5"])
+    await expect(page.locator(`#hb-${id}`)).toBeAttached();
+  await expect(page.locator("#hb-m6")).toHaveCount(0);
+  const appendix = page.locator("#hb-appendix");
+  await appendix.getByRole("button", { name: "The ark" }).click();
+  await expect(appendix.getByRole("heading", { level: 3 })).toHaveText(
+    "The ark",
+  );
+  await expect(
+    appendix.getByRole("link", { name: /original/ }),
+  ).toHaveAttribute("href", /bs-ark-covenant/);
+  await page.getByRole("button", { name: "한국어" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "히브리서 9장" }),
+  ).toBeVisible();
+  await expect(page.locator("#hb-m3")).toContainText("단 한 번에");
+  await expect(appendix.getByRole("heading", { level: 3 })).toHaveText(
+    "언약궤",
+  );
+});
+
 test("desktop header shows the section nav; mobile shows the active label", async ({
   page,
 }, testInfo) => {
