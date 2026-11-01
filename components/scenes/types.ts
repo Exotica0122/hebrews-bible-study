@@ -54,4 +54,11 @@ export type SceneId =
   | "furnLampstand"
   | "furnCurtain"
   | "furnAltar"
-  | "furnArk";
+  | "furnArk"
+  | "heroWall"
+  | "shadow"
+  | "bodyPrepared"
+  | "satDown"
+  | "drawNear"
+  | "fearful"
+  | "spectacle";

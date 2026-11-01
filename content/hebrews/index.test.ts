@@ -9,10 +9,10 @@ import {
   isLive,
 } from "./index";
 
-const LIVE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const LIVE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 describe("chapter registry", () => {
-  it("has thirteen chapters with chapters 1 to 9 live", () => {
+  it("has thirteen chapters with chapters 1 to 10 live", () => {
     expect(CHAPTER_COUNT).toBe(13);
     expect(isLive(1)).toBe(true);
     expect(isLive(2)).toBe(true);
@@ -23,10 +23,11 @@ describe("chapter registry", () => {
     expect(isLive(7)).toBe(true);
     expect(isLive(8)).toBe(true);
     expect(isLive(9)).toBe(true);
-    expect(isLive(10)).toBe(false);
+    expect(isLive(10)).toBe(true);
+    expect(isLive(11)).toBe(false);
     expect(isLive(13)).toBe(false);
-    expect(LIVE_COUNT).toBe(9);
-    expect(LATEST_LIVE).toBe(9);
+    expect(LIVE_COUNT).toBe(10);
+    expect(LATEST_LIVE).toBe(10);
   });
 
   it("returns chapter 1 with five movements in order", async () => {
@@ -180,16 +181,35 @@ describe("chapter registry", () => {
     }
   });
 
+  it("returns chapter 10 with six movements covering verses 1–39", async () => {
+    const ch = await getChapter(10);
+    expect(ch?.number).toBe(10);
+    expect(ch?.setting).toBe("wall");
+    expect(ch?.movements.map((m) => m.range)).toEqual([
+      "1–4",
+      "5–10",
+      "11–18",
+      "19–25",
+      "26–31",
+      "32–39",
+    ]);
+    for (const lang of ["en", "ko"] as const) {
+      expect(
+        ch!.movements.flatMap((m) => m[lang].verses.map(([n]) => n)),
+      ).toEqual(Array.from({ length: 39 }, (_, i) => i + 1));
+    }
+  });
+
   it("names every live chapter in both languages", () => {
     for (const n of LIVE) {
       expect(chapterTitle(n, "en")).toBeTruthy();
       expect(chapterTitle(n, "ko")).toBeTruthy();
     }
-    expect(chapterTitle(10, "en")).toBeUndefined();
+    expect(chapterTitle(11, "en")).toBeUndefined();
   });
 
   it("returns null for chapters that are not live", async () => {
-    expect(await getChapter(10)).toBeNull();
+    expect(await getChapter(11)).toBeNull();
   });
 });
 

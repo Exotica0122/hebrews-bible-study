@@ -58,6 +58,13 @@ import {
   FurnLampstandScene,
   FurnTableScene,
 } from "./scenes/FurnishingScenes";
+import { HeroWallScene } from "./scenes/HeroWallScene";
+import { ShadowScene } from "./scenes/ShadowScene";
+import { BodyPreparedScene } from "./scenes/BodyPreparedScene";
+import { SatDownScene } from "./scenes/SatDownScene";
+import { DrawNearScene } from "./scenes/DrawNearScene";
+import { FearfulScene } from "./scenes/FearfulScene";
+import { SpectacleScene } from "./scenes/SpectacleScene";
 
 export interface DragState {
   dx: number;
@@ -134,4 +141,11 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   furnCurtain: FurnCurtainScene,
   furnAltar: FurnAltarScene,
   furnArk: FurnArkScene,
+  heroWall: HeroWallScene,
+  shadow: ShadowScene,
+  bodyPrepared: BodyPreparedScene,
+  satDown: SatDownScene,
+  drawNear: DrawNearScene,
+  fearful: FearfulScene,
+  spectacle: SpectacleScene,
 };

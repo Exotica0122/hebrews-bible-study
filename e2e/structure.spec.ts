@@ -236,6 +236,29 @@ test("renders Hebrews 9 with its appendix and 새번역 in Korean", async ({
   );
 });
 
+test("renders Hebrews 10 with six movements and 새번역 in Korean", async ({
+  page,
+}) => {
+  await page.goto("/10");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Hebrews 10" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      level: 2,
+      name: "Thirty-nine verses, six movements",
+    }),
+  ).toBeVisible();
+  for (const id of ["m1", "m2", "m3", "m4", "m5", "m6"])
+    await expect(page.locator(`#hb-${id}`)).toBeAttached();
+  await expect(page.locator("#hb-m7")).toHaveCount(0);
+  await page.getByRole("button", { name: "한국어" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "히브리서 10장" }),
+  ).toBeVisible();
+  await expect(page.locator("#hb-m6")).toContainText("뒤로 물러나서 멸망할");
+});
+
 test("desktop header shows the section nav; mobile shows the active label", async ({
   page,
 }, testInfo) => {
