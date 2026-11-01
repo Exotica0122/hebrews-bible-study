@@ -62,7 +62,7 @@ const BLOCKS = (() => {
   return out;
 })();
 
-/** “Behold, I and the children God has given me”: in a courtyard at night one figure stands in the lamplight by the door, and the children come out of the dark to stand with him. */
+/** “Behold, I and the children God has given me”: in a courtyard at night light stands at the door, and the children come out of the dark to stand with him. */
 export function GatherScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
@@ -214,7 +214,17 @@ export function GatherScene({ mobile, effects }: SceneProps) {
           alpha={0.5}
         />
       </group>
-      <Carved position={[0, 0, -0.1]} robe="#E6DCC6" scale={1.02} />
+      <Glow
+        position={[0, 1.15, -0.1]}
+        size={1}
+        scaleX={1.1}
+        scaleY={3.2}
+        color="#D9A860"
+        inner="#FFF6E0"
+        alpha={0.85}
+        power={1.5}
+        renderOrder={6}
+      />
       <group ref={children}>
         {CHILDREN.map(([x, , h, robe]) => (
           <group key={x} position={[Math.sign(x) * edge, 0, 0]}>

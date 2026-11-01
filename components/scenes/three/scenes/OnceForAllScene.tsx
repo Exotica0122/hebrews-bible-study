@@ -7,8 +7,8 @@ import {
   curtain,
   floor,
   glow,
-  lightFigure,
   lightRing,
+  lightShaft,
   scarletDrop,
   scarletOval,
   scarletRect,
@@ -26,7 +26,7 @@ function paint(t: number) {
   curtain(560, 70, 480, 540, open);
   const x = 170 + 630 * smoothstep(0.8, 7.6, t);
   scarletRect(170, 617, x - 170, 7);
-  lightFigure(
+  lightShaft(
     x,
     610,
     200,
@@ -44,7 +44,7 @@ function paint(t: number) {
 
 const lamp = (t: number) => [240 + 560 * smoothstep(0.8, 7.6, t), 260] as const;
 
-/** Verses 11–14: one figure of light crosses the gold leaving a single scarlet line, the curtain draws back and does not close, and the blood falls once on the mercy seat. */
+/** Verses 11–14: one light crosses the gold leaving a single scarlet line, the curtain draws back and does not close, and the blood falls once on the mercy seat. */
 export function OnceForAllScene({ mobile, effects }: SceneProps) {
   return (
     <Plate

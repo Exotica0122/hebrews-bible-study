@@ -485,7 +485,7 @@ const MV: Movement[] = [
     num: "III",
     range: "11–14",
     scene: "onceForAll",
-    art: "3D · R3F — a figure of pure light crosses the gold, leaving one scarlet line on the floor. The curtain draws back and stays open, a single drop falls on the mercy seat, and rings of light go out from it. Christ is shown only as light.",
+    art: "3D · R3F — a soft light with no human outline crosses the gold, leaving one scarlet line on the floor. The curtain draws back and stays open, a single drop falls on the mercy seat, and rings of light go out from it. Christ is shown only as light.",
     en: {
       title: "Once for all",
       quote:

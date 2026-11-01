@@ -29,7 +29,7 @@ const PRIESTS: [number, number][] = [
   [-4.2, 0.3],
 ];
 
-/** “Another priest arises in the likeness of Melchizedek … by the power of an indestructible life”: Aaron’s priests stand by Levi’s altar, Judah’s sceptre stands where no one has served at the altar, and out of Judah’s ground another priest rises, lit. */
+/** “Another priest arises in the likeness of Melchizedek … by the power of an indestructible life”: Aaron’s priests stand by Levi’s altar, Judah’s sceptre stands where no one has served at the altar, and out of Judah’s ground light rises and stands. */
 export function AriseScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
@@ -85,7 +85,17 @@ export function AriseScene({ mobile, effects }: SceneProps) {
       ))}
       <Sceptre position={[2.4, 0, -1]} />
       <group ref={priest} position={[RISE_X, -1.9, 0.2]}>
-        <Carved position={[0, 0, 0]} rotationY={-0.2} crown />
+        <Glow
+          position={[0, 1.25, 0]}
+          size={1}
+          scaleX={1.1}
+          scaleY={3.4}
+          color="#F0C888"
+          inner="#FFFAF0"
+          alpha={0.9}
+          power={1.5}
+          renderOrder={7}
+        />
       </group>
       <GodRay
         from={[RISE_X + 0.6, 6, -0.4]}

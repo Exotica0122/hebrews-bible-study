@@ -567,13 +567,13 @@ const MV: Movement[] = [
     num: "III",
     range: "11–19",
     scene: "arise",
-    art: "3D · R3F — Aaron’s priests stand by the altar of Levi. Across from them, Judah’s sceptre stands on its stone, and no one from that tribe has served at the altar. Out of Judah’s ground another priest rises, lit, and stands.",
+    art: "3D · R3F — Aaron’s priests stand by the altar of Levi. Across from them, Judah’s sceptre stands on its stone, and no one from that tribe has served at the altar. Out of Judah’s ground a light rises and stands. Christ is shown only as light.",
     en: {
       title: "Another priest arises",
       quote:
         "“Who has become a priest, not on the basis of a legal requirement concerning bodily descent, but by the power of an indestructible life.”",
       sref: "Hebrews 7:16",
-      cap: "Scene: from Judah, not Levi, another priest rises by the power of an indestructible life.",
+      cap: "Scene: from Judah, not Levi, light rises: another priest, by the power of an indestructible life.",
       snips: [
         "If perfection had come through Levi, why another priest after the order of Melchizedek?",
         "A change in the priesthood is a change in the law",
@@ -659,7 +659,7 @@ const MV: Movement[] = [
       quote:
         "“그는 제사장의 혈통에 대해서 규정한 율법을 따라 제사장이 되신 것이 아니라, 썩지 않는 생명의 능력을 따라 되셨습니다.”",
       sref: "히브리서 7:16",
-      cap: "장면: 레위가 아닌 유다에서, 썩지 않는 생명의 능력으로 다른 제사장이 일어섭니다.",
+      cap: "장면: 레위가 아닌 유다에서 빛이 일어섭니다. 썩지 않는 생명의 능력으로 오신 다른 제사장입니다.",
       snips: [
         "레위 계통으로 완전해질 수 있었다면, 왜 멜기세덱의 계통을 따른 다른 제사장이 필요하겠습니까?",
         "제사직분에 변화가 생기면 율법에도 변화가 생깁니다",
@@ -1089,13 +1089,13 @@ const MV: Movement[] = [
     num: "V",
     range: "23–28",
     scene: "forever",
-    art: "3D · R3F — before the altar, high priests stand one after another, each fading as death takes him and the next steps in. Then one stands who does not fade, his hands raised in intercession, and the light above him stays.",
+    art: "3D · R3F — before the altar, high priests stand one after another, each fading as death takes him and the next steps in. Then a light stands there that does not fade, and it stays. Christ is shown only as light.",
     en: {
       title: "He always lives to make intercession",
       quote:
         "“Consequently, he is able to save to the uttermost those who draw near to God through him, since he always lives to make intercession for them.”",
       sref: "Hebrews 7:25",
-      cap: "Scene: one priest after another is taken by death. One stands, and does not fade.",
+      cap: "Scene: one priest after another is taken by death. Then light stands there, and does not fade.",
       snips: [
         "The former priests were many, prevented by death from continuing",
         "He holds his priesthood permanently, because he continues forever",
@@ -1158,7 +1158,7 @@ const MV: Movement[] = [
       quote:
         "“따라서 그는 자기를 통하여 하나님께 나아오는 사람들을 완전하게 구원하실 수 있습니다. 그는 늘 살아 계셔서 그들을 위하여 중재의 간구를 하십니다.”",
       sref: "히브리서 7:25",
-      cap: "장면: 제사장이 차례로 죽음에 막혀 사라집니다. 한 분이 서서, 사라지지 않으십니다.",
+      cap: "장면: 제사장이 차례로 죽음에 막혀 사라집니다. 그리고 빛이 서서, 사라지지 않습니다.",
       snips: [
         "레위 계통의 제사장들은 죽음 때문에 직무를 계속할 수 없어서 그 수가 많아졌습니다",
         "예수는 영원히 계시므로 제사장직을 영구히 간직하십니다",

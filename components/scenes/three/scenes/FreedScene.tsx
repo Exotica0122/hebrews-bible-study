@@ -94,7 +94,7 @@ const BLOCKS = (() => {
   return out;
 })();
 
-/** “That through death he might destroy the one who has the power of death, and deliver all those who through fear of death were subject to lifelong slavery”: captives kneel chained to a prison wall; one comes down among them in light, the chains break and scatter, and the captives rise. */
+/** “That through death he might destroy the one who has the power of death, and deliver all those who through fear of death were subject to lifelong slavery”: captives kneel chained to a prison wall; light comes down among them, the chains break and scatter, and the captives rise. */
 export function FreedScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
@@ -313,7 +313,17 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         </group>
       ))}
       <group ref={deliverer} position={[0, 3.6, 0.4]} visible={false}>
-        <Carved position={[0, 0, 0]} robe="#BFB29A" />
+        <Glow
+          position={[0, 1.1, 0]}
+          size={1}
+          scaleX={1}
+          scaleY={3}
+          color="#D9B060"
+          inner="#FFF6E0"
+          alpha={0.9}
+          power={1.5}
+          renderOrder={7}
+        />
         <Glow
           position={[0, 1.1, -0.1]}
           size={2.6}

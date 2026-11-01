@@ -36,7 +36,7 @@ Start from the chapter's own description: its summary, its key images and the mo
 
 Open to redesign each chapter:
 
-- **Visual style.** The earlier chapters share one language: dark skies, layered hill silhouettes, additive glows and embers, bloom. A chapter can drop it for something that suits its text better, such as daylight, lit 3D forms, line work, an illuminated-manuscript look, stained glass or paper cut-outs.
+- **Visual style.** The earlier chapters share one language: dark skies, layered hill silhouettes, additive glows and embers, bloom. A chapter can drop it for something that suits its text better, such as daylight, lit 3D forms, line work or paper cut-outs. Leave out stained glass, icons and devotional-image styles: the site comes from a Presbyterian class.
 - **Palette and lighting.** Pick these fresh. Don't default to a dark sky with a warm horizon band.
 - **Composition, camera and motion.** Framing, camera moves, pacing, how the event unfolds.
 - **Materials and post effects.**
@@ -47,6 +47,7 @@ Fixed, because the page depends on them:
 - **Setting name.** Add it to `Setting` in `content/types.ts`.
 - **Palette constants.** Export them from the chapter's own primitives file.
 - **Hero scene.** Add a new `hero<Name>` scene id. Map the setting to it in `STAGES` (`components/hero/Hero.tsx`), and to an art note in `HERO_ART` (`components/ChapterPage.tsx`).
+- **Christ is shown only as light,** never as a human figure or human outline, even a faceless or glowing one. Check the scene as well as the `art` note, and say so in the note.
 - **One scene per movement**, each a concrete image from that passage rather than an abstract metaphor the text doesn't use.
 - **Legibility.** The hero title and the movement captions overlay the scene, so they must stay readable on it. Panels are about 2:1 with the quote over the lower half, and the hero's title block is about 530 px tall. A quote can reach three lines on a phone, so compose for that instead of cropping the sketch to fit.
 

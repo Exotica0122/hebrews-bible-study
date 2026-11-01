@@ -461,13 +461,13 @@ const MV: Movement[] = [
     num: "III",
     range: "7–10",
     scene: "cries",
-    art: "3D · R3F — one lamp in the dark. A figure kneels, and tears fall in the lamplight; then light answers from above, the figure rises, and the light spreads out from where he stands.",
+    art: "3D · R3F — one lamp in the dark. Tears fall in the lamplight; then light answers from above and spreads out across the floor. Christ is not drawn.",
     en: {
       title: "Made perfect through suffering",
       quote:
         "“And being made perfect, he became the source of eternal salvation to all who obey him.”",
       sref: "Hebrews 5:9",
-      cap: "Scene: prayers with loud cries and tears, and he was heard. The light spreads out from him.",
+      cap: "Scene: prayers with loud cries and tears, and he was heard. The light spreads out across the floor.",
       snips: [
         "In the days of his flesh, prayers with loud cries and tears; he was heard",
         "Although a son, he learned obedience through what he suffered",
@@ -519,7 +519,7 @@ const MV: Movement[] = [
       quote:
         "“그리고 완전하게 되신 뒤에, 자기에게 순종하는 모든 사람에게 영원한 구원의 근원이 되시고”",
       sref: "히브리서 5:9",
-      cap: "장면: 큰 부르짖음과 많은 눈물의 기도, 그리고 들으심. 빛이 그에게서 퍼져 나갑니다.",
+      cap: "장면: 큰 부르짖음과 많은 눈물의 기도, 그리고 들으심. 빛이 바닥으로 퍼져 나갑니다.",
       snips: [
         "육신으로 계실 때에 큰 부르짖음과 많은 눈물로 기도하셨고, 들으심을 얻으셨습니다",
         "아드님이시지만, 고난을 당하심으로써 순종을 배우셨습니다",
