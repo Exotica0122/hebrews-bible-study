@@ -124,7 +124,7 @@ const MV: Movement[] = [
       en: {
         earthly: {
           t: "Earthly place of holiness",
-          g: "to hagion kosmikon · τὸ ἅγιον κοσμικόν",
+          g: "to te hagion kosmikon · τό τε ἅγιον κοσμικόν",
           v: "9:1",
           s: "Part of this creation",
           d: "A sanctuary belonging to this world, made by people from physical materials, and so part of this creation.",
@@ -145,7 +145,7 @@ const MV: Movement[] = [
         },
         staff: {
           t: "Aaron’s staff that budded",
-          g: "hē rhabdos Aarōn · ἡ ῥάβδος Ἀαρών",
+          g: "hē rhabdos Aarōn · ἡ ῥάβδος Ἀαρὼν",
           v: "9:4",
           s: "Life from death",
           d: "A staff is dead wood, but budding means it is alive again. It marked God’s choice of the priestly line, which brings life out of death.",
@@ -161,7 +161,7 @@ const MV: Movement[] = [
       ko: {
         earthly: {
           t: "세상에 속한 성소",
-          g: "to hagion kosmikon · τὸ ἅγιον κοσμικόν",
+          g: "to te hagion kosmikon · τό τε ἅγιον κοσμικόν",
           v: "9:1",
           s: "이 피조 세계의 일부",
           d: "이 세상에 속한 성소. 사람이 물질로 지은 것이어서 이 피조 세계의 일부입니다.",
@@ -182,7 +182,7 @@ const MV: Movement[] = [
         },
         staff: {
           t: "싹이 난 아론의 지팡이",
-          g: "hē rhabdos Aarōn · ἡ ῥάβδος Ἀαρών",
+          g: "hē rhabdos Aarōn · ἡ ῥάβδος Ἀαρὼν",
           v: "9:4",
           s: "죽음에서 나온 생명",
           d: "지팡이는 죽은 나무이지만 싹이 났다는 것은 다시 살아났다는 뜻입니다. 죽음에서 생명을 내는 제사장 계통을 하나님께서 택하셨음을 보여 줍니다.",
@@ -236,6 +236,16 @@ const MV: Movement[] = [
         tko: "내 기도를 주님께 드리는 분향으로 받아 주시고, 손을 위로 들고서 드리는 기도는 저녁 제물로 받아 주십시오.",
         wen: "Incense as prayer rising to God.",
         wko: "하나님께 올라가는 기도인 분향.",
+      },
+      {
+        id: "rev8-4",
+        tag: "NT",
+        en: "Rev 8:4",
+        ko: "계 8:4",
+        ten: "and the smoke of the incense, with the prayers of the saints, rose before God from the hand of the angel.",
+        tko: "그래서 향의 연기가 성도들의 기도와 함께 천사의 손으로부터 하나님 앞으로 올라갔습니다.",
+        wen: "Incense rising with the prayers of the saints.",
+        wko: "성도들의 기도와 함께 올라가는 향.",
       },
     ],
   },
@@ -585,8 +595,8 @@ const MV: Movement[] = [
           t: "Once for all",
           g: "ephapax · ἐφάπαξ",
           v: "9:12",
-          s: "단 한 번에",
-          d: "One entry that never needs repeating, set against the daily and yearly offerings of the earthly priests.",
+          s: "Never repeated",
+          d: "단 한 번에: one entry that never needs repeating, set against the daily and yearly offerings of the earthly priests.",
         },
         redemption: {
           t: "Eternal redemption",
@@ -597,10 +607,10 @@ const MV: Movement[] = [
         },
         spirit: {
           t: "Eternal Spirit",
-          g: "pneumatos aiōniou · πνεύματος αἰωνίου",
+          g: "pneumatos aiōniou · Πνεύματος αἰωνίου",
           v: "9:14",
-          s: "The Spirit at work",
-          d: "The Spirit who indicated the way in verse 8 is the Spirit through whom Christ offered himself.",
+          s: "Through the Spirit",
+          d: "Christ offered himself without blemish to God through the eternal Spirit. Verse 8 has already shown the Holy Spirit at work.",
         },
         deadWorks: {
           t: "Dead works",
@@ -627,10 +637,10 @@ const MV: Movement[] = [
         },
         spirit: {
           t: "영원한 성령",
-          g: "pneumatos aiōniou · πνεύματος αἰωνίου",
+          g: "pneumatos aiōniou · Πνεύματος αἰωνίου",
           v: "9:14",
-          s: "일하시는 성령",
-          d: "8절에서 길을 보여 주신 성령께서, 그리스도께서 자기를 드리실 때 힘입으신 바로 그 성령이십니다.",
+          s: "성령을 힘입어",
+          d: "그리스도께서는 영원한 성령을 힘입어 자기 몸을 흠 없는 제물로 하나님께 바치셨습니다. 8절에서 이미 성령께서 일하심을 보여 주었습니다.",
         },
         deadWorks: {
           t: "죽은 행실",
@@ -1051,7 +1061,7 @@ const MV: Movement[] = [
         },
         putAway: {
           t: "Put away sin",
-          g: "athetēsin hamartias · ἀθέτησιν ἁμαρτίας",
+          g: "athetēsin tēs hamartias · ἀθέτησιν τῆς ἁμαρτίας",
           v: "9:26",
           s: "To remove",
           d: "NLT: “to remove sin by his own death as a sacrifice.”",
@@ -1074,7 +1084,7 @@ const MV: Movement[] = [
         },
         putAway: {
           t: "죄를 없이하심",
-          g: "athetēsin hamartias · ἀθέτησιν ἁμαρτίας",
+          g: "athetēsin tēs hamartias · ἀθέτησιν τῆς ἁμαρτίας",
           v: "9:26",
           s: "없애 버림",
           d: "자기를 희생 제물로 드려서 죄를 없애 버리신다는 뜻입니다.",
@@ -1100,14 +1110,14 @@ const MV: Movement[] = [
         wko: "8장에서 말한 모형.",
       },
       {
-        id: "rev8-4",
+        id: "heb8-2",
         tag: "NT",
-        en: "Rev 8:4",
-        ko: "계 8:4",
-        ten: "and the smoke of the incense, with the prayers of the saints, rose before God from the hand of the angel.",
-        tko: "그래서 향의 연기가 성도들의 기도와 함께 천사의 손으로부터 하나님 앞으로 올라갔습니다.",
-        wen: "The true things in the presence of God.",
-        wko: "하나님 앞에 있는 참된 것들.",
+        en: "Heb 8:2",
+        ko: "히 8:2",
+        ten: "a minister in the holy places, in the true tent that the Lord set up, not man.",
+        tko: "그는 성소와 참 장막에서 섬기시는 분입니다. 이 장막은 주님께서 세우신 것이요, 사람이 세운 것이 아닙니다.",
+        wen: "The true tent, set up by the Lord and not by people.",
+        wko: "사람이 아니라 주님께서 세우신 참 장막.",
       },
     ],
   },
@@ -1259,7 +1269,7 @@ const APPENDIX: Appendix = {
       ko: {
         name: "상과 빵",
         ref: "출애굽기 25:23–30",
-        note: "상 위에 열두 덩이 빵을 차려 놓고 안식일마다, 곧 금요일 해 질 때부터 토요일 해 질 때까지의 날에 새로 바꾸었습니다(레 24:5–9). 하나님 앞에서 이어지는 교제와 공급을 상징했습니다.",
+        note: "상 위에 열두 덩이 빵을 차려 놓고 안식일(금요일 해 질 때부터 토요일 해 질 때까지)마다 새로 바꾸었습니다(레 24:5–9). 하나님 앞에서 이어지는 교제와 공급을 상징했습니다.",
       },
     },
     {
