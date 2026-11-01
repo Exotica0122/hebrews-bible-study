@@ -31,6 +31,8 @@ export const BEATEN = {
 export type Frame = readonly [number, number, number, number];
 
 const DEFAULT_FRAME: Frame = [60, 30, 1480, 600];
+const SAFE_WIDE = [0.04, 0.7] as const;
+const SAFE_MOBILE = [0.04, 0.5] as const;
 const PAINT_STEP = 1 / 30;
 const MAX_ART = 1600;
 const TEXEL_UNIT = 0.64;
@@ -212,7 +214,7 @@ export function Plate({
   effects,
   hold,
   frame = DEFAULT_FRAME,
-  safe = [0.04, 0.7],
+  safe = mobile ? SAFE_MOBILE : SAFE_WIDE,
   reserve,
   lamp,
   pointer,

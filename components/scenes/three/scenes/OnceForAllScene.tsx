@@ -52,7 +52,7 @@ export function OnceForAllScene({ mobile, effects }: SceneProps) {
       period={16}
       mobile={mobile}
       effects={effects}
-      safe={SAFE}
+      safe={mobile ? undefined : SAFE}
       lamp={lamp}
     />
   );
