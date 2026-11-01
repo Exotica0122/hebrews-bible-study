@@ -22,7 +22,7 @@ python3 .claude/skills/add-chapter/scripts/saenew.py heb 4        # whole chapte
 python3 .claude/skills/add-chapter/scripts/saenew.py psa 95 7-11  # a range
 ```
 
-Book codes follow the site (heb, psa, num, exo, 1pe, 1co, ...). This covers the chapter's verses, cross-reference chips (`tko`) and quotations inside commentary. Never write 새번역 from memory. Give each chip an id of `<book><chapter>-<verse>` (e.g. `exo24-8`) so it can be checked, then run this once the chapter is written:
+Book codes follow the site (heb, psa, num, exo, 1pe, 1co, ...). This covers the chapter's verses, cross-reference chips (`tko`) and quotations inside commentary. Never write 새번역 from memory. Give each chip an id of `<book><chapter>-<verse>` (e.g. `exo24-8`) and a reference label the checker can read (e.g. `Exod 24:8` or `Gen 12:2–3`), then run this once the chapter is written:
 
 ```bash
 python3 .claude/skills/add-chapter/scripts/check_saenew.py 4
