@@ -319,16 +319,36 @@ export function thicket(cx: number, d: number, fall: number) {
   g.restore();
 }
 
-/** A tapering two-edged blade coming down from above; `reach` is the y of its point. */
-export function blade(x: number, reach: number) {
-  fill(col(0, 0, 1));
+/** A two-edged sword point down, its tip at (x, tip): a ridged blade under a crossguard, grip and pommel. */
+export function sword(x: number, tip: number) {
+  const half = 34;
+  const guard = tip - 300;
+  fill(col(LAYER.cream));
   poly([
-    [x - 11, -120],
-    [x + 11, -120],
-    [x + 11, reach - 46],
-    [x, reach],
-    [x - 11, reach - 46],
+    [x - half, guard],
+    [x, guard],
+    [x, tip],
+    [x - half * 0.3, tip - 60],
+    [x - half, tip - 96],
   ]);
+  fill(col(LAYER.cream, 0.5));
+  poly([
+    [x, guard],
+    [x + half, guard],
+    [x + half, tip - 96],
+    [x + half * 0.3, tip - 60],
+    [x, tip],
+  ]);
+  fill(col(LAYER.deep));
+  rect(x - 3, guard, 6, 214);
+  fill(col(0, 0, 1));
+  rect(x - 94, guard - 16, 188, 22);
+  dot(x - 94, guard - 5, 15);
+  dot(x + 94, guard - 5, 15);
+  fill(col(LAYER.robe, 1));
+  rect(x - 13, guard - 76, 26, 62);
+  fill(col(0, 0, 1));
+  dot(x, guard - 88, 21);
 }
 
 export function cloud(y: number, v: number, gap: number, cx: number) {

@@ -557,13 +557,13 @@ const MV: Movement[] = [
     num: "III",
     range: "12–13",
     scene: "sword",
-    art: "3D · R3F — cut paper in daylight. Someone stands hidden inside a dark thicket. A two-edged blade comes down and cuts it open, the halves fall away, and the one standing there is in plain light.",
+    art: "3D · R3F — cut paper in daylight. Someone stands hidden inside a dark thicket. A two-edged sword drives down and cuts it open, the halves fall away, and the one standing there is in plain light.",
     en: {
       title: "Living and active",
       quote:
         "“For the word of God is living and active, sharper than any two-edged sword.”",
       sref: "Hebrews 4:12",
-      cap: "Scene: a two-edged blade cuts the thicket open. Nothing stays hidden.",
+      cap: "Scene: a two-edged sword cuts the thicket open. Nothing stays hidden.",
       snips: [
         "The word of God is living and active, sharper than any two-edged sword",
         "All are naked and exposed to the eyes of him to whom we must give account",
@@ -793,7 +793,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "14–16",
     scene: "mercy",
-    art: "3D · R3F — cut paper in daylight. Light passes up through layer after layer of cloud as the heavens part. The seat of the throne holds light alone, and people climb the broad steps to it unafraid. Christ is shown only as light, with no human outline.",
+    art: "3D · R3F — cut paper in daylight. Light passes up through layer after layer of cloud as the heavens part. The seat of the throne holds light alone, and people walk up the broad steps to it unafraid. Christ is shown only as light, with no human outline.",
     en: {
       title: "Draw near to the throne of grace",
       quote: "“Let us then with confidence draw near to the throne of grace.”",

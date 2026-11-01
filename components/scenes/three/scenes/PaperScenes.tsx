@@ -5,7 +5,6 @@ import { PaperStack } from "../primitives/Paper";
 import {
   ascent,
   bird,
-  blade,
   cairn,
   cloud,
   dayMark,
@@ -21,6 +20,7 @@ import {
   road,
   steps,
   sun,
+  sword,
   thicket,
   throne,
   today,
@@ -148,18 +148,18 @@ export function JordanScene({ mobile, effects }: SceneProps) {
 }
 
 function paintSword(t: number) {
-  sun(800, 210, 30);
+  const x = 800;
+  sun(1330, 300, 34);
   hills(2.1, 430, 56, LAYER.far);
   hills(1.3, 530, 20, LAYER.grass);
   const fall = smoothstep(4.8, 9, t);
-  person(800, FLOOR, 190, { arm: 0.4 });
-  thicket(800, -1, fall);
-  thicket(800, 1, fall);
-  const down = smoothstep(2.6, 4.6, t) * (1 - smoothstep(6, 7.6, t));
-  if (down > 0) blade(800, -120 + down * 800);
+  person(1040, FLOOR, 190, { face: -1, arm: 0.4 });
+  thicket(x, -1, fall);
+  thicket(x, 1, fall);
+  sword(x, -200 + smoothstep(2.6, 4.7, t) * 800);
 }
 
-/** Verses 12–13: a two-edged blade comes down and cuts the thicket open, the halves fall away, and the one hiding inside stands in plain light. */
+/** Verses 12–13: a two-edged sword drives down and cuts the thicket open, the halves fall away, and the one hiding inside stands in plain light. */
 export function SwordScene({ mobile, effects }: SceneProps) {
   return (
     <PaperStack
@@ -172,9 +172,27 @@ export function SwordScene({ mobile, effects }: SceneProps) {
   );
 }
 
+const RISE = 40;
+const TREAD = 60;
+const STEPS = 4;
+
+/** Walks in from off the cloth along the ground, then climbs `up` steps; each step lifts smoothly. */
+function climb(side: number, up: number, k: number) {
+  const walk = smoothstep(0, 0.46, k);
+  const base = 450;
+  const climbed = Math.max(0, (k - 0.46) / 0.54) * up;
+  const step = Math.min(Math.floor(climbed), up - 1);
+  const part = Math.min(climbed - step, 1);
+  const lift = smoothstep(0, 1, part);
+  const moved = step + lift;
+  return {
+    x: 800 + side * (base + (1 - walk) * 620 - moved * TREAD),
+    y: FLOOR - moved * RISE - Math.sin(part * Math.PI) * 9,
+  };
+}
+
 function paintMercy(t: number) {
   const x = 800;
-  const rise = 40;
   hills(0.9, 570, 34, LAYER.grass);
   const part = smoothstep(1, 6, t);
   cloud(400, LAYER.far, 40 + part * 200, x);
@@ -182,24 +200,28 @@ function paintMercy(t: number) {
   cloud(260, LAYER.hill, 40 + part * 280, x);
   cloud(190, LAYER.hill + 0.08, 40 + part * 320, x);
   const up = smoothstep(0.8, 6.4, t);
-  ascent(x, 500, 500 - up * 620, 18 + part * 40);
-  steps(x, FLOOR, 4);
-  throne(x, FLOOR - 4 * rise, 0.86);
-  const climb = smoothstep(6.5, 12.6, t);
-  const climbers: readonly (readonly [number, number, number, number])[] = [
-    [-340, 0, 128, 0.62],
-    [330, 0.22, 116, 0.46],
-    [-240, 0.4, 92, 0.34],
-    [210, 0.55, 124, 0.7],
+  const base = FLOOR - STEPS * RISE;
+  ascent(x, base - 200, base - 200 - up * 420, 18 + part * 40);
+  steps(x, FLOOR, STEPS);
+  throne(x, base, 0.86);
+  const climbers: readonly (readonly [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ])[] = [
+    [-1, 4, 3.4, 8.6, 128, 0.62],
+    [1, 3, 4.6, 9.6, 116, 0.46],
+    [-1, 2, 6, 10.8, 92, 0.34],
+    [1, 2, 7.2, 12, 124, 0.7],
   ];
-  climbers.forEach(([d, start, h, arm], i) => {
-    if (climb <= start) return;
-    const k = (climb - start) / (1 - start);
-    person(x + d * (1 - k * 0.3), FLOOR - Math.floor(k * 3) * rise, h, {
-      face: d < 0 ? 1 : -1,
-      arm,
-      tint: i % 2,
-    });
+  climbers.forEach(([side, count, from, to, h, arm], i) => {
+    const k = Math.min(1, Math.max(0, (t - from) / (to - from)));
+    if (k <= 0) return;
+    const at = climb(side, count, k);
+    person(at.x, at.y, h, { face: -side, arm, tint: i % 2 });
   });
 }
 
