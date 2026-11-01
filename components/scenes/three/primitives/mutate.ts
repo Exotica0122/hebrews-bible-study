@@ -3,12 +3,17 @@ import type {
   Material,
   MeshStandardMaterial,
   ShaderMaterial,
+  Texture,
 } from "three";
 
 // Frame-loop writes to memoised three.js objects go through these so the React Compiler lint allows them.
 
 export function setOpacity(material: Material, opacity: number) {
   material.opacity = opacity;
+}
+
+export function touch(texture: Texture) {
+  texture.needsUpdate = true;
 }
 
 export function setUniform(

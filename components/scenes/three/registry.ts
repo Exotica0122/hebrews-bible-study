@@ -45,6 +45,19 @@ import { PatternScene } from "./scenes/PatternScene";
 import { SecondScene } from "./scenes/SecondScene";
 import { HeartsScene } from "./scenes/HeartsScene";
 import { VanishScene } from "./scenes/VanishScene";
+import { HeroGoldScene } from "./scenes/HeroGoldScene";
+import { HolyPlacesScene } from "./scenes/HolyPlacesScene";
+import { NotYetScene } from "./scenes/NotYetScene";
+import { OnceForAllScene } from "./scenes/OnceForAllScene";
+import { CovenantBloodScene } from "./scenes/CovenantBloodScene";
+import { SecondTimeScene } from "./scenes/SecondTimeScene";
+import {
+  FurnAltarScene,
+  FurnArkScene,
+  FurnCurtainScene,
+  FurnLampstandScene,
+  FurnTableScene,
+} from "./scenes/FurnishingScenes";
 
 export interface DragState {
   dx: number;
@@ -110,4 +123,15 @@ export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   second: SecondScene,
   hearts: HeartsScene,
   vanish: VanishScene,
+  heroGold: HeroGoldScene,
+  holyPlaces: HolyPlacesScene,
+  notYet: NotYetScene,
+  onceForAll: OnceForAllScene,
+  covenantBlood: CovenantBloodScene,
+  secondTime: SecondTimeScene,
+  furnTable: FurnTableScene,
+  furnLampstand: FurnLampstandScene,
+  furnCurtain: FurnCurtainScene,
+  furnAltar: FurnAltarScene,
+  furnArk: FurnArkScene,
 };

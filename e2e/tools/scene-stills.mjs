@@ -8,7 +8,7 @@ import { chromium } from "@playwright/test";
 
 const base = process.env.BASE_URL ?? "http://localhost:3000";
 const OUT = "public/scenes";
-const CHAPTERS = [1, 2, 3, 4, 5, 6, 7, 8];
+const CHAPTERS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const HEROES = {
   heavens: "hero",
   earth: "heroEarth",
@@ -18,6 +18,7 @@ const HEROES = {
   coast: "heroCoast",
   salem: "heroSalem",
   pattern: "heroPattern",
+  gold: "heroGold",
 };
 /** Seconds into each loop, at the hold after the event and before the fade out. */
 const MOMENTS = {
@@ -29,6 +30,7 @@ const MOMENTS = {
   heroCoast: 8,
   heroSalem: 8,
   heroPattern: 9.5,
+  heroGold: 9.5,
   radiance: 11,
   seal: 9,
   angels: 13,
@@ -66,6 +68,16 @@ const MOMENTS = {
   second: 13,
   hearts: 15,
   vanish: 13,
+  holyPlaces: 13,
+  notYet: 10.6,
+  onceForAll: 11.2,
+  covenantBlood: 12.6,
+  secondTime: 13,
+  furnTable: 3,
+  furnLampstand: 3,
+  furnCurtain: 3,
+  furnAltar: 3,
+  furnArk: 3,
 };
 const VIEWS = [
   {
@@ -101,8 +113,21 @@ function targets() {
       const panel = `[data-scene="m${i + 1}"]`;
       list.push({ scene, url, panel });
       if (scene === "radiance")
-        list.push({ scene: "seal", url, panel, alt: true });
+        list.push({
+          scene: "seal",
+          url,
+          panel,
+          pick: '[aria-pressed="false"]',
+        });
     });
+    for (const [, scene] of src.matchAll(/^ {6}scene: "(furn\w+)"/gm))
+      list.push({
+        scene,
+        url,
+        panel: '[data-scene="appendix"]',
+        scope: "#hb-appendix",
+        pick: `[data-furnishing="${scene}"]`,
+      });
   }
   return list;
 }
@@ -116,8 +141,11 @@ async function capture(browser, target, view) {
   await panel
     .locator("[class*=canvasReady] canvas")
     .waitFor({ state: "attached", timeout: 90_000 });
-  if (target.alt) {
-    await panel.locator('[aria-pressed="false"]').click();
+  if (target.pick) {
+    await page
+      .locator(target.scope ?? target.panel)
+      .locator(target.pick)
+      .click();
     await page.waitForTimeout(300);
   }
   await page.waitForTimeout(MOMENTS[target.scene] * 1000);
