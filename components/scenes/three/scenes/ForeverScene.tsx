@@ -6,7 +6,7 @@ import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { GodRay } from "../primitives/GodRay";
-import { Squall } from "../primitives/Coast";
+import { Squall } from "../primitives/Squall";
 import {
   Carved,
   Ground,

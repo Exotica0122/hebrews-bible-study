@@ -13,7 +13,7 @@ const MV: Movement[] = [
     num: "I",
     range: "1–3",
     scene: "foundation",
-    art: "3D · R3F — on the headland after rain, six cut stones lie in a row: a foundation laid once. Nobody lays them again; course by course a wall rises on them.",
+    art: "3D · R3F — ink wash on hanji. On the headland after rain, six cut stones lie in a row: a foundation laid once. Nobody lays them again; course by course a wall rises on them.",
     en: {
       title: "Go on to maturity",
       quote:
@@ -272,7 +272,7 @@ const MV: Movement[] = [
     num: "II",
     range: "4–8",
     scene: "rain",
-    art: "3D · R3F — two plots on the headland under the same rain. One drinks it and comes up in green and then golden grain; the other comes up in thorns and thistles, and its end is to be burned.",
+    art: "3D · R3F — ink wash on hanji. Two plots under the same rain. One drinks it and comes up in tall grain; the other comes up in thorns and thistles, and its end is to be burned, in the only colour on the page.",
     en: {
       title: "Land that drinks the rain",
       quote:
@@ -556,7 +556,7 @@ const MV: Movement[] = [
     num: "III",
     range: "9–12",
     scene: "footsteps",
-    art: "3D · R3F — wet sand along the shore. A line of footprints runs ahead toward a figure far down the beach; one by one new prints are pressed into the old, following the ones who went before.",
+    art: "3D · R3F — ink wash on hanji. Wet sand along the shore. A line of footprints runs ahead toward a figure far down the beach; one by one new prints are pressed into the old, following the ones who went before.",
     en: {
       title: "Imitators of those who inherit",
       quote:
@@ -802,7 +802,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "13–15",
     scene: "oath",
-    art: "3D · R3F — night on the seashore. Abraham stands alone at the water’s edge; overhead the stars come out until they cannot be counted, and the sand at his feet glints with as many grains.",
+    art: "3D · R3F — ink wash on hanji. Night on the seashore, the sky a black wash thinning toward the horizon. Abraham stands alone at the water’s edge against the pale horizon; overhead the stars come out as bare paper until they cannot be counted, and the sand at his feet fills with as many grains of ink.",
     en: {
       title: "He swore by himself",
       quote: "“Surely I will bless you and multiply you.”",
@@ -960,7 +960,7 @@ const MV: Movement[] = [
     num: "V",
     range: "16–20",
     scene: "anchor",
-    art: "3D · R3F — beneath a storm swell. The boat above pitches on the waves, but its line runs down taut through the green water to an anchor that has gone in behind a curtain, where the light is.",
+    art: "3D · R3F — ink wash on hanji. Beneath the swell, the boat above pitches on the waves, but its line runs down taut through the dark water to an anchor that has gone in behind a curtain, where the light is. Christ is shown only as that light, with no human outline.",
     en: {
       title: "An anchor of the soul",
       quote:
