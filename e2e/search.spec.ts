@@ -30,6 +30,15 @@ test.describe("search", () => {
 
   test("a word in the current chapter glows at its verse", async ({ page }) => {
     await page.goto("/");
+    await page.evaluate(() => {
+      const glows: string[] = [];
+      Object.assign(window, { glows });
+      const animate = Element.prototype.animate;
+      Element.prototype.animate = function (...args) {
+        glows.push(this.id);
+        return animate.apply(this, args);
+      };
+    });
     const input = await openSearch(page);
     await input.fill("exact imprint");
     await page
@@ -38,10 +47,11 @@ test.describe("search", () => {
       .click();
     await expect(page).toHaveURL(/#hb-v3$/);
     await expect.poll(() => inView(page, "#hb-v3")).toBe(true);
-    const glowing = await page
-      .locator("#hb-v3")
-      .evaluate((el) => el.getAnimations().length);
-    expect(glowing).toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        page.evaluate(() => (window as unknown as { glows: string[] }).glows),
+      )
+      .toContain("hb-v3");
   });
 
   test("a commentary subheading lands on the subheading", async ({ page }) => {
@@ -158,12 +168,30 @@ test.describe("search on a small phone", () => {
     test(`the header fits at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 700 });
       await page.goto("/7");
-      const scrollWidth = await page.evaluate(
-        () => document.documentElement.scrollWidth,
-      );
+      const scrollWidth = await page.evaluate(async () => {
+        await document.fonts.ready;
+        return document.documentElement.scrollWidth;
+      });
       expect(scrollWidth).toBeLessThanOrEqual(width);
     });
   }
+});
+
+test("the header gives way when a label renders wider", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "mobile only");
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto("/7");
+  await page.addStyleTag({
+    content: "[class*=langKo] { padding-right: 28px !important; }",
+  });
+  const scrollWidth = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return document.documentElement.scrollWidth;
+  });
+  expect(scrollWidth).toBeLessThanOrEqual(320);
 });
 
 test.describe("search on a keyboard", () => {

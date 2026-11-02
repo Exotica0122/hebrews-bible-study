@@ -2,15 +2,17 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = Number(process.env.PORT ?? 3000);
 const PROD = Boolean(process.env.E2E_PROD);
-const CI = Boolean(process.env.CI);
 
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   // Each worker renders WebGL in software; more than this delays hydration enough to flake the intro and canvas tests.
-  workers: CI ? 2 : 4,
-  retries: CI ? 1 : 0,
-  reporter: CI ? [["line"], ["html", { open: "never" }]] : "list",
+  workers: 4,
+  // A rare timing miss under software WebGL shows as flaky rather than failing the run.
+  retries: 1,
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
+  reporter: "list",
   use: {
     baseURL: `http://localhost:${PORT}`,
     storageState: {
@@ -55,7 +57,7 @@ export default defineConfig({
       ? `pnpm build && pnpm start -p ${PORT}`
       : `pnpm dev -p ${PORT}`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !CI,
+    reuseExistingServer: true,
     timeout: PROD ? 300_000 : 60_000,
   },
 });

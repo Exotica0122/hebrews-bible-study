@@ -307,9 +307,12 @@ test("shows the chapter index with chapter 1 live", async ({ page }) => {
 test("never scrolls horizontally on a 320px phone", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("/");
-  const widths = await page.evaluate(() => ({
-    scroll: document.documentElement.scrollWidth,
-    client: document.documentElement.clientWidth,
-  }));
+  const widths = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return {
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+    };
+  });
   expect(widths.scroll).toBe(widths.client);
 });
