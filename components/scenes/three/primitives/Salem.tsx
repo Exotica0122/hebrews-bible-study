@@ -7,6 +7,7 @@ import {
   CylinderGeometry,
   DoubleSide,
   MeshStandardMaterial,
+  SphereGeometry,
   type Group,
   type Mesh,
 } from "three";
@@ -183,6 +184,9 @@ export function City({
   );
 }
 
+const UPPER_ARM = 0.3;
+const LOWER_ARM = 0.28;
+
 interface CarvedProps {
   position: [number, number, number];
   robe?: string;
@@ -193,6 +197,8 @@ interface CarvedProps {
   turban?: boolean;
   /** Both hands raised, as in prayer or blessing. */
   arms?: boolean;
+  /** How far free hands lift, from 0.3 at the waist to 1 at the shoulder. */
+  reach?: number;
   /** Head colour; skin by default, stone for a carved angel. */
   skin?: string;
   /** 0–1, read every frame; omit for a solid figure. */
@@ -211,6 +217,7 @@ export function Carved({
   crown = false,
   turban = false,
   arms = false,
+  reach = 0.6,
   skin = "#C9A07C",
   opacity,
   kneel,
@@ -238,14 +245,25 @@ export function Carved({
     () => ({
       ring: new CylinderGeometry(0.115, 0.11, 0.07, 9, 1, true),
       wrap: new CylinderGeometry(0.125, 0.115, 0.13, 10),
-      arm: new CylinderGeometry(0.035, 0.03, 0.55, 6),
+      upper: new CylinderGeometry(0.052, 0.062, UPPER_ARM, 7).translate(
+        0,
+        -UPPER_ARM / 2,
+        0,
+      ),
+      lower: new CylinderGeometry(0.058, 0.04, LOWER_ARM, 7).translate(
+        0,
+        -LOWER_ARM / 2,
+        0,
+      ),
+      hand: new SphereGeometry(0.046, 8, 6),
     }),
     [],
   );
   const group = useRef<Group>(null);
   const body = useRef<Mesh>(null);
   const top = useRef<Group>(null);
-  const hands = useRef<Group>(null);
+  const shoulders = useRef<(Group | null)[]>([]);
+  const elbows = useRef<(Group | null)[]>([]);
   useEffect(
     () => () => {
       Object.values(mats).forEach((m) => m.dispose());
@@ -262,10 +280,17 @@ export function Carved({
       const [sy, sz] = FIGURE_HEAD.standing;
       const [ky, kz] = FIGURE_HEAD.kneeling;
       top.current.position.set(0, (ky - sy) * k, (kz - sz) * k);
-      if (hands.current) {
-        hands.current.position.y = 1.5 + (ky - sy) * k;
-        hands.current.scale.setScalar(Math.max(1 - k, 0.001));
-      }
+      top.current.position.z += 0.07 * k;
+      const free = 1 - k;
+      shoulders.current.forEach((g, i) => {
+        if (!g) return;
+        const side = i ? 1 : -1;
+        g.rotation.x = -0.25 - 0.65 * free;
+        g.rotation.z = side * (-0.42 + 0.84 * free);
+      });
+      elbows.current.forEach((g) => {
+        if (g) g.rotation.x = -1.2 + (0.85 - 1.5 * reach) * free;
+      });
     }
     if (!opacity) return;
     const o = opacity.current;
@@ -301,17 +326,30 @@ export function Carved({
             position={[0, f.headY + 0.08, f.headZ]}
           />
         )}
-      </group>
-      <group ref={hands} position={[0, 1.5, 0]}>
         {arms &&
-          [-1, 1].map((s) => (
-            <mesh
-              key={s}
-              geometry={parts.arm}
-              material={mats.robe}
-              position={[s * 0.3, 0, 0.05]}
-              rotation={[0, 0, -s * 0.45]}
-            />
+          [-1, 1].map((side, i) => (
+            <group
+              key={side}
+              ref={(g) => {
+                shoulders.current[i] = g;
+              }}
+              position={[side * 0.17, f.headY - 0.32, f.headZ + 0.02]}
+            >
+              <mesh geometry={parts.upper} material={mats.robe} />
+              <group
+                ref={(g) => {
+                  elbows.current[i] = g;
+                }}
+                position={[0, -UPPER_ARM, 0]}
+              >
+                <mesh geometry={parts.lower} material={mats.robe} />
+                <mesh
+                  geometry={parts.hand}
+                  material={mats.head}
+                  position={[0, -LOWER_ARM - 0.03, 0]}
+                />
+              </group>
+            </group>
           ))}
       </group>
     </group>

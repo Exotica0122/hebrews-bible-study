@@ -20,6 +20,7 @@ import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import { Squall } from "../primitives/Squall";
+import { Flagstones } from "../primitives/Stonework";
 import { Carved } from "../primitives/Salem";
 import { NIGHT } from "../primitives/Road";
 import {
@@ -39,13 +40,15 @@ const BREAK = 5.3;
 const RISE = 6.2;
 const RISE_TIME = 1.2;
 const LINKS = 11;
-const CAPTIVES: [number, string][] = [
-  [-2.2, "#6B5442"],
-  [-1.1, "#5E4A3A"],
-  [1.1, "#7A6248"],
-  [2.2, "#5A4636"],
+/** Where each captive kneels, their robe, how far their hands lift, and how long after the first they rise (s). */
+const CAPTIVES: [number, string, number, number][] = [
+  [-2.2, "#6B5442", 0.5, 0.5],
+  [-1.1, "#5E4A3A", 0.85, 0],
+  [1.1, "#7A6248", 0.65, 0.25],
+  [2.2, "#5A4636", 0.4, 0.8],
 ];
 const EMBER_BOX: [number, number, number] = [5, 3, 2];
+const WINDOWS = [-3.5, 3.5];
 
 function hash(n: number) {
   const x = Math.sin(n * 12.9898) * 43758.5453;
@@ -57,7 +60,7 @@ const LINK_REST = CAPTIVES.flatMap(([cx], c) =>
   Array.from({ length: LINKS }, (_, i) => {
     const k = (i + 0.5) / LINKS;
     const a = new Vector3(cx, 1.55, WALL_Z + 0.08);
-    const b = new Vector3(cx, 0.5, 0.42);
+    const b = new Vector3(cx + Math.sign(cx) * 0.08, 0.34, 0.5);
     const p = a.clone().lerp(b, k);
     p.y -= 0.22 * Math.sin(k * Math.PI);
     const tangent = b.clone().sub(a).normalize();
@@ -101,7 +104,11 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   const deliverer = useRef<Group>(null);
   const links = useRef<InstancedMesh>(null);
   const wall = useRef<InstancedMesh>(null);
-  const kneel = useRef(1);
+  const kneelA = useRef(1);
+  const kneelB = useRef(1);
+  const kneelC = useRef(1);
+  const kneelD = useRef(1);
+  const kneels = [kneelA, kneelB, kneelC, kneelD];
   const captives = useRef<(Group | null)[]>([]);
   const key = useRef<PointLight>(null);
   const shaft = useRef<ShaderMaterial | null>(null);
@@ -127,7 +134,6 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         roughness: 1,
         flatShading: true,
       }),
-      floor: new MeshStandardMaterial({ color: "#3A342E", roughness: 1 }),
     }),
     [],
   );
@@ -183,12 +189,13 @@ export function FreedScene({ mobile, effects }: SceneProps) {
       deliverer.current.position.y = lerp(mobile ? 5.4 : 3.6, 0, down);
       deliverer.current.visible = p > DESCEND - 0.2;
     }
-    const rise = smoothstep(RISE, RISE + RISE_TIME, p);
-    kneel.current = 1 - rise;
     captives.current.forEach((g, i) => {
       if (!g) return;
+      const [x, , , after] = CAPTIVES[i];
+      const rise = smoothstep(RISE + after, RISE + after + RISE_TIME, p);
+      kneels[i].current = 1 - rise;
       g.position.z = lerp(0.2, 0.3, rise);
-      g.rotation.y = -Math.sign(CAPTIVES[i][0]) * lerp(0.2, 0.35, rise);
+      g.rotation.y = -Math.sign(x) * lerp(0.2, 0.62, rise);
     });
 
     const m = links.current;
@@ -241,7 +248,7 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         attach="fog"
         args={["#0A0908", mobile ? 8.5 : 6, mobile ? 19 : 16]}
       />
-      <hemisphereLight args={["#5A6A8E", "#1A1410", 1.8]} />
+      <hemisphereLight args={["#6E80A8", "#2A2018", 3]} />
       {mobile && (
         <pointLight
           position={[0, 2.4, 3.2]}
@@ -253,7 +260,7 @@ export function FreedScene({ mobile, effects }: SceneProps) {
       )}
       <directionalLight
         position={[3, 6, 2]}
-        intensity={mobile ? 1.4 : 0.9}
+        intensity={mobile ? 2.2 : 1.8}
         color={NIGHT.moonLight}
       />
       <instancedMesh
@@ -261,13 +268,47 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         args={[geo.block, mats.stone, BLOCKS.length]}
         frustumCulled={false}
       />
-      <mesh
-        material={mats.floor}
-        rotation={[-Math.PI / 2, 0, 0]}
+      <Flagstones
         position={[0, 0, 1]}
-      >
-        <planeGeometry args={[20, 6]} />
-      </mesh>
+        width={20}
+        depth={6}
+        size={0.6}
+        color="#5E564C"
+      />
+      {WINDOWS.map((x) => (
+        <group key={x} position={[x * spread, 2.55, WALL_Z + 0.04]}>
+          <mesh>
+            <planeGeometry args={[0.9, 0.8]} />
+            <meshBasicMaterial color="#8FA6D4" />
+          </mesh>
+          {[-0.3, -0.1, 0.1, 0.3].map((b) => (
+            <mesh key={b} material={mats.iron} position={[b, 0, 0.03]}>
+              <boxGeometry args={[0.05, 0.84, 0.05]} />
+            </mesh>
+          ))}
+          <mesh material={mats.iron} position={[0, 0, 0.03]}>
+            <boxGeometry args={[0.92, 0.05, 0.05]} />
+          </mesh>
+          <Glow
+            position={[-Math.sign(x) * 0.5, -1.15, 0.2]}
+            size={1}
+            scaleX={1.5}
+            scaleY={3.2}
+            color="#3E5684"
+            inner="#8FA6D4"
+            alpha={0.3}
+            power={1.8}
+            renderOrder={1}
+          />
+          <pointLight
+            position={[-Math.sign(x) * 0.6, -1.2, 1]}
+            intensity={3.5}
+            distance={5.5}
+            decay={1.4}
+            color="#9DB4E0"
+          />
+        </group>
+      ))}
       <Glow
         position={[0, 2.4, WALL_Z + 0.3]}
         size={1}
@@ -295,7 +336,7 @@ export function FreedScene({ mobile, effects }: SceneProps) {
         args={[geo.link, mats.iron, LINK_REST.length]}
         frustumCulled={false}
       />
-      {CAPTIVES.map(([x, robe], i) => (
+      {CAPTIVES.map(([x, robe, reach], i) => (
         <group
           key={x}
           ref={(g) => {
@@ -308,7 +349,8 @@ export function FreedScene({ mobile, effects }: SceneProps) {
             robe={robe}
             scale={0.85}
             arms
-            kneel={kneel}
+            reach={reach}
+            kneel={kneels[i]}
           />
         </group>
       ))}

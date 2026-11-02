@@ -19,7 +19,7 @@ const MV: Movement[] = [
       quote:
         "“Therefore we must pay much closer attention to what we have heard, lest we drift away from it.”",
       sref: "Hebrews 2:1",
-      cap: "Scene: a small light is held to a steady one by a thin thread while the current pulls at it. Let go, and it drifts.",
+      cap: "Scene: a boat is moored by a rope to a lamp-lit post while the current pulls at it. Let go, and it drifts.",
       snips: [
         "We must pay much closer attention to what we have heard",
         "The message declared by angels proved to be reliable",
@@ -79,7 +79,7 @@ const MV: Movement[] = [
       quote:
         "“그러므로 우리는 들은 바를 더욱 굳게 간직하여, 잘못된 길로 빠져드는 일이 없어야 마땅하겠습니다.”",
       sref: "히브리서 2:1",
-      cap: "장면: 작은 빛이 가는 줄로 흔들림 없는 빛에 매여 있고, 물살이 그것을 옆으로 끌어당깁니다. 놓으면 떠내려갑니다.",
+      cap: "장면: 배가 밧줄로 등불이 달린 기둥에 매여 있고, 물살이 그것을 옆으로 끌어당깁니다. 놓으면 떠내려갑니다.",
       snips: [
         "우리는 들은 바를 더욱 굳게 간직하여",
         "천사들을 통하여 하신 말씀이 효력을 내어",
@@ -296,7 +296,7 @@ const MV: Movement[] = [
       title: "Crowned with glory and honour",
       quote: "“But we see him… namely Jesus, crowned with glory and honour.”",
       sref: "Hebrews 2:9",
-      cap: "Scene: one light goes down beneath the angels for a little while, then rises, crowned with a ring of gold.",
+      cap: "Scene: a crown of thorns lies below the angels. It rises above them, its thorns turned to gold and laurel growing through them.",
       snips: [
         "Not to angels did God subject the world to come",
         "“What is man, that you are mindful of him?”",
@@ -360,7 +360,7 @@ const MV: Movement[] = [
       title: "영광과 존귀의 면류관",
       quote: "“예수께서… 영광과 존귀의 면류관을 받아쓰신 것을, 우리가 봅니다.”",
       sref: "히브리서 2:9",
-      cap: "장면: 한 빛이 잠시 동안 천사들 아래로 내려갔다가, 금빛 고리를 쓰고 다시 떠오릅니다.",
+      cap: "장면: 가시 면류관이 천사들 아래에 놓여 있습니다. 그것이 천사들 위로 떠오르고, 가시는 금빛으로 변하며 월계수가 그 사이로 자라납니다.",
       snips: [
         "장차 올 세상을 천사들의 지배 아래에 두신 것이 아닙니다",
         "사람이 무엇이기에 주님께서 그를 기억하여 주시며",
@@ -954,7 +954,7 @@ const MV: Movement[] = [
       quote:
         "“…that through death he might destroy the one who has the power of death.”",
       sref: "Hebrews 2:14",
-      cap: "Scene: a light enters the chain that holds the others. The links break, and the captives rise.",
+      cap: "Scene: a light comes down among the captives. The chains break, and they rise with their hands lifted.",
       snips: [
         "He himself likewise partook of flesh and blood",
         "Deliver all those who through fear of death were subject to slavery",
@@ -1020,7 +1020,7 @@ const MV: Movement[] = [
       quote:
         "“…그가 죽음을 겪으시고서, 죽음의 세력을 쥐고 있는 자 곧 악마를 멸하시고”",
       sref: "히브리서 2:14",
-      cap: "장면: 한 빛이 다른 빛들을 묶고 있는 사슬 속으로 들어갑니다. 고리가 끊어지고, 갇혔던 빛들이 떠오릅니다.",
+      cap: "장면: 한 빛이 갇힌 사람들 가운데로 내려옵니다. 사슬이 끊어지고, 그들이 손을 들고 일어섭니다.",
       snips: [
         "그도 역시 피와 살을 가지셨습니다",
         "죽음의 공포 때문에 종노릇하는 사람들을 해방시키시기 위함이었습니다",

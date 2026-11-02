@@ -24,6 +24,7 @@ import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import { Squall } from "../primitives/Squall";
+import { Courses, Flagstones } from "../primitives/Stonework";
 import { Carved } from "../primitives/Salem";
 import { MoonLights, NIGHT, NightSky } from "../primitives/Road";
 import {
@@ -39,7 +40,7 @@ import { lerpColor, setEmissive, setUniform } from "../primitives/mutate";
 const PERIOD = 16;
 const R = 0.42;
 const LOW_Y = 0.3;
-const HIGH_Y = 2.8;
+const HIGH_Y = 2.15;
 const RISE_AT = 3;
 const RISE_TIME = 5;
 const GROW_AT = 4.6;
@@ -229,17 +230,12 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
         emissiveIntensity: 0,
       }),
       leaf: new MeshStandardMaterial({
-        color: "#6A8A2C",
+        color: "#7C8340",
         roughness: 0.5,
         metalness: 0.2,
-        emissive: "#3E6A18",
-        emissiveIntensity: 0.8,
+        emissive: "#5C5A1E",
+        emissiveIntensity: 0.28,
         side: DoubleSide,
-      }),
-      stone: new MeshStandardMaterial({
-        color: NIGHT.stone,
-        roughness: 0.95,
-        flatShading: true,
       }),
     }),
     [],
@@ -255,8 +251,8 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
   );
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(Math.sin(t * 0.08) * 0.25, 1.05, mobile ? 10 : 7.6);
-    camera.lookAt(0, 0.95, 0);
+    camera.position.set(Math.sin(t * 0.08) * 0.25, 1, mobile ? 10 : 6.8);
+    camera.lookAt(0, 0.8, 0);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.8, 16, p);
     const rise = easeInOutCubic((p - RISE_AT) / RISE_TIME);
@@ -281,7 +277,7 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
       });
       mesh.instanceMatrix.needsUpdate = true;
     }
-    if (key.current) key.current.intensity = lerp(2, 12, gild);
+    if (key.current) key.current.intensity = lerp(3, 22, gild);
     if (shaft.current) setUniform(shaft.current, "uAlpha", 0.08 + 0.32 * gild);
     if (halo.current) setUniform(halo.current, "uAlpha", 0.3 * gild);
   });
@@ -295,7 +291,7 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
         stars={mobile ? 120 : 220}
         moon={null}
       />
-      <MoonLights moon={[-5, 6, 4]} intensity={1.4} fill={0.8} />
+      <MoonLights moon={[-5, 6, 4]} intensity={1.7} fill={1} />
       <Glow
         position={[0, 2.4, -2.6]}
         size={1}
@@ -310,27 +306,44 @@ export function CrownedScene({ mobile, effects }: SceneProps) {
           shaft.current = m;
         }}
       />
-      <mesh material={mats.stone} position={[0, TERRACE_Y - 0.6, -2.2]}>
-        <boxGeometry args={[9, 1.2, 1.6]} />
-      </mesh>
-      <mesh material={mats.stone} position={[0, -1.2, -0.6]}>
-        <boxGeometry args={[12, 1.4, 4]} />
-      </mesh>
-      <mesh material={mats.stone} position={[0, (LOW_Y - 0.5) / 2, 0.4]}>
-        <boxGeometry args={[1.5, LOW_Y + 0.5, 1.2]} />
-      </mesh>
+      <Courses
+        position={[0, TERRACE_Y, -2.2]}
+        width={13}
+        rows={4}
+        rowHeight={0.34}
+        depth={1.6}
+        blockWidth={0.95}
+        color={NIGHT.stone}
+      />
+      <Flagstones
+        position={[0, -0.5, 0.6]}
+        width={18}
+        depth={6.4}
+        size={0.8}
+        color="#4A4A52"
+      />
+      <Courses
+        position={[0, LOW_Y, 0.4]}
+        width={1.5}
+        rows={2}
+        rowHeight={0.4}
+        depth={1.2}
+        blockWidth={0.75}
+        color="#8E8678"
+        stagger={false}
+      />
       {ANGELS.map((x) => (
         <Angel key={x} x={mobile ? x * 0.78 : x} scale={mobile ? 0.72 : 0.95} />
       ))}
       <pointLight
         ref={key}
-        position={[0, 3.2, 1.2]}
-        intensity={2}
-        distance={9}
+        position={[0, 2.8, 1.6]}
+        intensity={3}
+        distance={13}
         decay={1.5}
         color="#FFD9A0"
       />
-      <group ref={crown} position={[0, LOW_Y, 0.4]} scale={1.35}>
+      <group ref={crown} position={[0, LOW_Y, 0.4]} scale={1.8}>
         {geo.strands.map((g, i) => (
           <mesh key={i} geometry={g} material={mats.crown} />
         ))}
