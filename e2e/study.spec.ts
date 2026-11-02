@@ -49,6 +49,7 @@ test.describe("shareable word links", () => {
     await page.keyboard.press("Escape");
     await expect(page).not.toHaveURL(/#hb-m1-radiance$/);
 
+    await page.goto("about:blank");
     await page.goto("/#hb-m2-firstborn");
     await expect(page.getByRole("dialog", { name: "Firstborn" })).toBeVisible({
       timeout: 10_000,
