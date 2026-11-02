@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useRef, type RefObject } from "react";
-import type { Group, ShaderMaterial } from "three";
+import {
+  MeshStandardMaterial,
+  type Group,
+  type Mesh,
+  type ShaderMaterial,
+} from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import { Squall } from "../primitives/Squall";
+import { OliveTree } from "../primitives/Garden";
 import { Carved } from "../primitives/Salem";
 import {
   DUSK,
@@ -34,7 +40,16 @@ const RIVER_Z = -7;
 const LAND_Z = -9.4;
 const MARCH = 11;
 const CROSS = 3;
-const SCALE = 0.44;
+const SCALE = 0.62;
+const SPACING = 1.35;
+const MOUND = 0.34;
+const GROVE: [number, number, number][] = [
+  [-3.6, -10.4, 1.1],
+  [-2.1, -11.2, 0.8],
+  [2.5, -10.6, 1],
+  [4, -11.4, 1.2],
+  [0.9, -12.2, 0.7],
+];
 /** Formation offsets (x, z), when each one falls (s), and robe; the first two are Joshua and Caleb, who never do. */
 const PEOPLE: [number, number, number, string][] = [
   [-0.22, -0.3, Infinity, "#E2D6BE"],
@@ -96,16 +111,32 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
   const people = useRef<Group>(null);
+  const mounds = useRef<(Mesh | null)[]>([]);
   const fades = useRef<RefObject<number>[]>([]);
   const halos = useRef<(ShaderMaterial | null)[]>([]);
   const landGlow = useRef<ShaderMaterial | null>(null);
   const river = useMemo(() => makeDuskWater({ round: false }), []);
-  useEffect(() => () => river.dispose(), [river]);
+  const sand = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: "#A87A52",
+        roughness: 1,
+        flatShading: true,
+      }),
+    [],
+  );
+  useEffect(
+    () => () => {
+      river.dispose();
+      sand.dispose();
+    },
+    [river, sand],
+  );
   const spread = mobile ? 0.7 : 1;
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(Math.sin(t * 0.07) * 0.2, -0.05, mobile ? 5.4 : 4.2);
-    camera.lookAt(0, -0.85, -8);
+    camera.position.set(Math.sin(t * 0.07) * 0.2, 0.05, mobile ? 4.6 : 3);
+    camera.lookAt(0, -0.8, -8);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 1, p) + smoothstep(16.6, 18, p);
     const cross = easeInOutCubic((p - MARCH) / CROSS);
@@ -121,11 +152,18 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
       const down = faithful ? 0 : easeOutCubic((p - falls) / 0.9);
       const sink = faithful ? 0 : smoothstep(falls + 1, falls + 3.2, p);
       g.position.set(
-        dx * spread,
+        dx * SPACING * spread,
         GROUND + Math.abs(step) * 0.012 - sink * 0.12,
         z,
       );
       g.rotation.set(-down * Math.PI * 0.48, 0, step * 0.03);
+      const mound = mounds.current[i];
+      if (mound)
+        mound.scale.set(
+          Math.max(0.001, sink) * MOUND,
+          Math.max(0.001, sink) * MOUND * 0.3,
+          Math.max(0.001, sink) * MOUND * 1.5,
+        );
       const f = fades.current[i];
       if (f) f.current = 1 - sink;
       const h = halos.current[i];
@@ -188,6 +226,24 @@ export function ThresholdScene({ mobile, effects }: SceneProps) {
       >
         <planeGeometry args={[44, 2.2]} />
       </mesh>
+      {GROVE.map(([x, z, s]) => (
+        <OliveTree key={z} position={[x, GROUND, z]} scale={s} />
+      ))}
+      {PEOPLE.map(([dx, dz, falls], i) =>
+        falls === Infinity ? null : (
+          <mesh
+            key={i}
+            ref={(m) => {
+              mounds.current[i] = m;
+            }}
+            material={sand}
+            position={[dx * SPACING * spread, GROUND, marchZ(falls) + dz - 0.5]}
+            scale={0.001}
+          >
+            <sphereGeometry args={[1, 7, 5]} />
+          </mesh>
+        ),
+      )}
       <group ref={people}>
         {PEOPLE.map(([, , , robe], i) => (
           <Walker

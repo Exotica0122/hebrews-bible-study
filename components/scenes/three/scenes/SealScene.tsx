@@ -39,26 +39,26 @@ const RAYS = 16;
 
 /** The seal's device, a sun in glory: rim, inner ring, rays and a central boss, as relief height 0–1 at radius `u` (0–1 of the face) and angle `a`. */
 function device(u: number, a: number) {
-  const band = (lo: number, hi: number, soft = 0.015) =>
+  const band = (lo: number, hi: number, soft = 0.022) =>
     smoothstep(lo - soft, lo + soft, u) *
     (1 - smoothstep(hi - soft, hi + soft, u));
   const rim = band(0.9, 0.99);
   const ring = band(0.8, 0.84);
-  const boss = 1 - smoothstep(0.17, 0.2, u);
+  const boss = 1 - smoothstep(0.165, 0.205, u);
   const sector = (a / (Math.PI * 2)) * RAYS;
   const i = Math.round(sector);
   const long = i % 2 === 0;
   const off = Math.abs(sector - i) * ((Math.PI * 2) / RAYS) * u;
   const width = long ? 0.045 : 0.028;
   const ray =
-    (1 - smoothstep(width - 0.01, width + 0.01, off)) *
+    (1 - smoothstep(width - 0.016, width + 0.016, off)) *
     band(0.27, long ? 0.72 : 0.6, 0.02);
   return Math.max(rim, ring, boss, ray);
 }
 
 /** A disc meshed in rings so its surface can carry the device: the seal's face (relief standing out) or the wax (the same device pressed in). */
-function discGeometry(radius: number, rings: number) {
-  const g = new RingGeometry(0.0001, radius, 160, rings);
+function discGeometry(radius: number, spokes: number, rings: number) {
+  const g = new RingGeometry(0.0001, radius, spokes, rings);
   g.rotateX(-Math.PI / 2);
   return g;
 }
@@ -73,7 +73,7 @@ function pressWax(g: RingGeometry, k: number) {
     const r = Math.hypot(x, z);
     const a = Math.atan2(z, x);
     const edge =
-      WAX_R * (0.94 + 0.04 * Math.sin(a * 5 + 1) + 0.025 * Math.sin(a * 11));
+      WAX_R * (0.97 + 0.012 * Math.sin(a * 3 + 1) + 0.008 * Math.sin(a * 7));
     const dome = Math.pow(1 - smoothstep(edge * 0.72, edge, r), 0.6);
     const u = r / FACE_R;
     const well =
@@ -117,7 +117,6 @@ const HANDLE: [number, number][] = [
   [0, 0.62],
 ];
 const HEAD: [number, number][] = [
-  [0, 0],
   [FACE_R, 0],
   [FACE_R + 0.03, 0.04],
   [FACE_R + 0.03, 0.22],
@@ -126,6 +125,17 @@ const HEAD: [number, number][] = [
   [0.5, 0.56],
   [0.44, 0.64],
   [0, 0.64],
+];
+
+const PLINTH: [number, number][] = [
+  [2.34, -1.8],
+  [2.1, -0.2],
+  [2.1, -0.16],
+  [2.22, -0.13],
+  [2.24, -0.05],
+  [2.2, -0.005],
+  [2.14, 0],
+  [0, 0],
 ];
 
 /** “The exact imprint of his nature”: on a stone above the clouds a gold signet comes down into warm wax and lifts away, then turns its face to show the sun in glory it has pressed there, line for line. */
@@ -138,9 +148,9 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
   useResetCameraOnUnmount();
 
   const geo = useMemo(() => {
-    const wax = discGeometry(WAX_R, 90);
+    const wax = discGeometry(WAX_R, mobile ? 260 : 380, mobile ? 120 : 170);
     pressWax(wax, 0);
-    const face = discGeometry(FACE_R, 70);
+    const face = discGeometry(FACE_R, 380, 140);
     cutFace(face);
     return {
       wax,
@@ -153,8 +163,12 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         HEAD.map(([r, y]) => new Vector2(r, y)),
         64,
       ),
+      plinth: new LatheGeometry(
+        PLINTH.map(([r, y]) => new Vector2(r, y)),
+        96,
+      ),
     };
-  }, []);
+  }, [mobile]);
   useEffect(() => () => Object.values(geo).forEach((g) => g.dispose()), [geo]);
 
   useSceneTime((t, dt, { camera }) => {
@@ -193,7 +207,7 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
       setUniform(
         glow.current,
         "uAlpha",
-        0.1 + 0.35 * press * (1 - lift) + 0.18 * show,
+        0.03 + 0.2 * press * (1 - lift) + 0.04 * show,
       );
   });
 
@@ -204,16 +218,11 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         <HeavenSky horizonY={-1} stars={mobile ? 260 : 500} />
       </group>
       <CloudFloor y={-2.6} warm={[0, 0]} />
-      <mesh position={[0, -0.9, 0]}>
-        <cylinderGeometry args={[2.1, 2.3, 1.8, 24]} />
-        <meshStandardMaterial color="#8E7C66" roughness={0.95} flatShading />
-      </mesh>
-      <mesh position={[0, -0.02, 0]}>
-        <cylinderGeometry args={[2.15, 2.1, 0.06, 24]} />
-        <meshStandardMaterial color="#A8957A" roughness={0.9} flatShading />
+      <mesh geometry={geo.plinth}>
+        <meshStandardMaterial color="#6E6254" roughness={0.9} />
       </mesh>
       <hemisphereLight args={["#F3D38A", "#241E17", 0.5]} />
-      <directionalLight position={[-3, 5, 3]} intensity={2.2} color="#FFE4B0" />
+      <directionalLight position={[-4, 3, 2]} intensity={2.8} color="#FFE4B0" />
       <pointLight
         position={[2.5, 1.5, -2]}
         intensity={10}
@@ -259,7 +268,7 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
         position={[0, 0.3, -3]}
         size={12}
         color="#B7892C"
-        alpha={0.12}
+        alpha={0.04}
         power={2.5}
         renderOrder={1}
       />
@@ -279,13 +288,13 @@ export function SealScene({ mobile, effects, drag }: SceneProps) {
       <group ref={turntable}>
         <mesh geometry={geo.wax} position={[0, TOP, 0]}>
           <meshPhysicalMaterial
-            color="#C98A26"
-            emissive="#5A3208"
-            emissiveIntensity={0.25}
-            roughness={0.35}
-            clearcoat={0.6}
-            clearcoatRoughness={0.25}
-            envMapIntensity={0.9}
+            color="#A32A1C"
+            emissive="#2E0805"
+            emissiveIntensity={0.4}
+            roughness={0.5}
+            clearcoat={0.25}
+            clearcoatRoughness={0.5}
+            envMapIntensity={0.55}
           />
         </mesh>
       </group>

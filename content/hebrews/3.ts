@@ -929,7 +929,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "16–19",
     scene: "threshold",
-    art: "3D · R3F — a company of people walks across the dunes toward a green land glowing beyond the Jordan; one by one they fall and settle into the sand, and only two cross into the light.",
+    art: "3D · R3F — a company of people walks across the dunes toward a green land glowing beyond the Jordan; one by one they fall, each leaving a low mound in the sand, and only two cross into the light among the olive trees.",
     en: {
       title: "Unable to enter because of unbelief",
       quote: "“So we see that they were unable to enter because of unbelief.”",
