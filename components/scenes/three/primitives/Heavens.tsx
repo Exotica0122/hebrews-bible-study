@@ -14,6 +14,7 @@ import {
   MeshStandardMaterial,
   PlaneGeometry,
   Shape,
+  ShapeGeometry,
   SphereGeometry,
   type BufferGeometry,
   type Group,
@@ -21,7 +22,10 @@ import {
   type PointLight,
   type ShaderMaterial,
 } from "three";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import {
+  mergeGeometries,
+  mergeVertices,
+} from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { Sky } from "./Earth";
 import { Glow } from "./Glow";
 import { Starfield } from "./Starfield";
@@ -178,7 +182,7 @@ export function CloudFloor({
 }) {
   const [wx, wz] = warm;
   const geometry = useMemo(() => {
-    const g = new PlaneGeometry(width, near - far, 180, 110);
+    const g = new PlaneGeometry(width, near - far, 280, 170);
     g.rotateX(-Math.PI / 2);
     g.translate(0, 0, (near + far) / 2);
     const pos = g.getAttribute("position");
@@ -228,13 +232,20 @@ function heapGeometry(seed: number, puffs: number) {
     const a = i * 2.39996 + seed;
     const r = Math.sqrt((i + 0.5) / puffs);
     const size = 0.55 - r * 0.25 + hash2(i, seed) * 0.15;
-    const g = new IcosahedronGeometry(size, 5);
+    const sphere = new IcosahedronGeometry(size, 5);
+    sphere.deleteAttribute("normal");
+    sphere.deleteAttribute("uv");
+    const g = mergeVertices(sphere, 1e-4);
+    sphere.dispose();
     const pos = g.getAttribute("position");
     for (let k = 0; k < pos.count; k++) {
       const x = pos.getX(k);
       const y = pos.getY(k);
       const z = pos.getZ(k);
-      const n = 1 + (noise2(x * 5 + i, y * 5 + z * 3) - 0.5) * 0.18;
+      const n =
+        1 +
+        (noise2(x * 5 + i, y * 5 + z * 3) - 0.5) * 0.14 +
+        (noise2(x * 13 + i, y * 13 - z * 7) - 0.5) * 0.04;
       pos.setXYZ(
         k,
         x * n + Math.cos(a) * r * 1.1,
@@ -506,34 +517,66 @@ export function Throne({
 /** Height of the throne's light above the dais base, for placing things relative to it. */
 export const throneSeat = (steps = 3) => steps * 0.22 + 0.5;
 
-/** A wing in profile: a long leading edge sweeping up to the tip, the trailing edge cut into feathers. */
-function wingGeometry() {
+const FEATHER_ROWS: readonly (readonly [number, number, number, number])[] = [
+  [15, 1, 0.13, 0],
+  [12, 0.6, 0.125, 0.016],
+  [9, 0.33, 0.12, 0.032],
+];
+
+/** One feather along +y, cupped back in z, shaded from its root to a gold-touched tip. */
+function featherGeometry(length: number, width: number, shade: number) {
   const s = new Shape();
   s.moveTo(0, 0);
-  s.bezierCurveTo(0.2, 0.35, 0.5, 0.78, 0.95, 0.95);
-  const feathers = 7;
-  const tip: [number, number] = [0.95, 0.95];
-  const end: [number, number] = [0.3, -0.55];
-  for (let i = 0; i < feathers; i++) {
-    const t0 = i / feathers;
-    const t1 = (i + 1) / feathers;
-    const x0 = tip[0] + (end[0] - tip[0]) * t0;
-    const y0 = tip[1] + (end[1] - tip[1]) * t0;
-    const x1 = tip[0] + (end[0] - tip[0]) * t1;
-    const y1 = tip[1] + (end[1] - tip[1]) * t1;
-    s.quadraticCurveTo((x0 + x1) / 2 + 0.09, (y0 + y1) / 2 - 0.05, x1, y1);
+  s.quadraticCurveTo(width, length * 0.35, width * 0.72, length * 0.8);
+  s.quadraticCurveTo(width * 0.4, length, 0, length);
+  s.quadraticCurveTo(-width * 0.6, length * 0.92, -width * 0.8, length * 0.7);
+  s.quadraticCurveTo(-width, length * 0.3, 0, 0);
+  const g = new ShapeGeometry(s, 6);
+  g.deleteAttribute("uv");
+  const pos = g.getAttribute("position");
+  const root = new Color(HEAVEN.wing).multiplyScalar(0.76 * shade);
+  const tip = new Color(HEAVEN.wing).multiplyScalar(shade);
+  const gold = new Color(HEAVEN.gold);
+  const c = new Color();
+  const colors: number[] = [];
+  for (let i = 0; i < pos.count; i++) {
+    const k = pos.getY(i) / length;
+    pos.setZ(i, -0.1 * k * k * length);
+    c.copy(root)
+      .lerp(tip, Math.min(1, k * 1.5))
+      .lerp(gold, Math.max(0, k - 0.72) * 0.9);
+    colors.push(c.r, c.g, c.b);
   }
-  s.quadraticCurveTo(0.08, -0.35, 0, -0.08);
-  s.closePath();
-  const g = new ExtrudeGeometry(s, {
-    depth: 0.02,
-    bevelEnabled: true,
-    bevelSize: 0.012,
-    bevelThickness: 0.012,
-    bevelSegments: 1,
-  });
-  g.translate(0, 0, -0.01);
+  g.setAttribute("color", new Float32BufferAttribute(colors, 3));
+  g.computeVertexNormals();
   return g;
+}
+
+/** A wing of overlapping feathers: long primaries under two rows of coverts, fanned from a curved bone that rises to the tip. */
+function wingGeometry() {
+  const parts: BufferGeometry[] = [];
+  const bone = (t: number): [number, number] => {
+    const m = 1 - t;
+    return [
+      3 * m * m * t * 0.2 + 3 * m * t * t * 0.5 + t * t * t * 0.95,
+      3 * m * m * t * 0.35 + 3 * m * t * t * 0.78 + t * t * t * 0.95,
+    ];
+  };
+  FEATHER_ROWS.forEach(([count, reach, width, lift], row) => {
+    for (let i = 0; i < count; i++) {
+      const k = i / (count - 1);
+      const length = (0.46 + 0.5 * k) * reach * (0.94 + 0.12 * hash2(i, row));
+      const shade = (0.86 + row * 0.07) * (0.94 + 0.1 * hash2(row, i));
+      const g = featherGeometry(length, width, Math.min(shade, 1));
+      g.rotateZ(-(0.72 + 2.2 * k));
+      const [x, y] = bone(1 - k * 0.88);
+      g.translate(x, y, lift + i * 0.0015);
+      parts.push(g);
+    }
+  });
+  const merged = mergeGeometries(parts);
+  parts.forEach((p) => p.dispose());
+  return merged;
 }
 
 interface AngelProps {
@@ -573,13 +616,11 @@ export function Angel({
   const feather = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: HEAVEN.wing,
-        roughness: 0.6,
-        metalness: 0.1,
+        vertexColors: true,
+        roughness: 0.7,
         emissive: "#B7892C",
-        emissiveIntensity: 0.18,
+        emissiveIntensity: 0.1,
         side: DoubleSide,
-        flatShading: true,
         transparent: fading,
       }),
     [fading],

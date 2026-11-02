@@ -19,10 +19,10 @@ const MV: Movement[] = [
       title: "God has spoken by his Son",
       quote: "“He is the radiance of the glory of God…”",
       sref: "Hebrews 1:3",
-      cap: "Scene: one beam leaves the sun and reaches toward you. You cannot separate the sunbeam from the sun.",
+      cap: "Scene: the sun breaks through the clouds and its rays fan across the sky. You cannot separate the sunbeam from the sun.",
       altQuote: "“…and the exact imprint of his nature.”",
       altCap:
-        "Scene: a seal presses into warm gold wax. The mark matches the seal exactly, as the Son matches the Father.",
+        "Scene: a seal presses into warm red wax. The mark matches the seal exactly, as the Son matches the Father.",
       snips: [
         "Long ago, at many times and in many ways, God spoke…",
         "…in these last days he has spoken to us by his Son",
@@ -90,10 +90,10 @@ const MV: Movement[] = [
       title: "하나님이 아들로 말씀하셨다",
       quote: "“그는 하나님의 영광의 광채시요…”",
       sref: "히브리서 1:3",
-      cap: "장면: 한 줄기 빛이 해에서 나와 당신에게 닿습니다. 햇살은 해와 분리될 수 없습니다.",
+      cap: "장면: 해가 구름을 뚫고 나와 햇살이 하늘에 퍼집니다. 햇살은 해와 분리될 수 없습니다.",
       altQuote: "“…하나님의 본체대로의 모습이십니다”",
       altCap:
-        "장면: 인장이 따뜻한 금빛 밀랍에 눌립니다. 아들이 아버지와 같으시듯, 자국은 인장과 정확히 일치합니다.",
+        "장면: 인장이 따뜻한 붉은 밀랍에 눌립니다. 아들이 아버지와 같으시듯, 자국은 인장과 정확히 일치합니다.",
       snips: [
         "하나님께서 옛날에는 예언자들을 통하여, 여러 번에 걸쳐 여러 가지 방법으로…",
         "…이 마지막 날에는 아들을 통하여 우리에게 말씀하셨습니다",
@@ -385,7 +385,7 @@ const MV: Movement[] = [
       title: "The Son vs the angels",
       quote: "“Let all God’s angels worship him.”",
       sref: "Hebrews 1:6",
-      cap: "Scene: many small lights bow in a wide arc beneath one central light.",
+      cap: "Scene: angels stand in a ring around a throne of light, and kneel one by one.",
       snips: [
         "“You are my Son, today I have begotten you”",
         "“Let all God’s angels worship him”",
@@ -422,7 +422,7 @@ const MV: Movement[] = [
       title: "아들과 천사들",
       quote: "“하나님의 천사들은 모두 그에게 경배하여라”",
       sref: "히브리서 1:6",
-      cap: "장면: 작은 빛들이 한 중심 빛 아래 넓은 호를 그리며 엎드립니다.",
+      cap: "장면: 천사들이 빛의 보좌를 둘러서 있다가, 하나씩 무릎을 꿇습니다.",
       snips: [
         "“너는 내 아들이다. 내가 오늘 너를 낳았다”",
         "“하나님의 천사들은 모두 그에게 경배하여라”",
@@ -571,7 +571,7 @@ const MV: Movement[] = [
       title: "Servants vs the throne",
       quote: "“Your throne, O God, is forever and ever.”",
       sref: "Hebrews 1:8",
-      cap: "Scene: flames flicker and move like wind; beside them a throne of light stands still.",
+      cap: "Scene: angels of wind and flame are never still; beside them a throne of light stands unmoved.",
       snips: [
         "“He makes his angels winds, and his ministers a flame of fire”",
         "“Your throne, O God, is forever and ever”",
@@ -613,7 +613,7 @@ const MV: Movement[] = [
       title: "종들과 보좌",
       quote: "“하나님, 주님의 보좌는 영원무궁하며”",
       sref: "히브리서 1:8",
-      cap: "장면: 불꽃은 바람처럼 흔들리고, 그 곁에 빛의 보좌가 흔들림 없이 서 있습니다.",
+      cap: "장면: 바람과 불꽃의 천사들은 쉬지 않고 움직이고, 그 곁에 빛의 보좌가 흔들림 없이 서 있습니다.",
       snips: [
         "“천사들을 바람으로 삼으시고, 시중꾼들을 불꽃으로 삼으신다”",
         "“하나님, 주님의 보좌는 영원무궁하며”",
@@ -761,7 +761,7 @@ const MV: Movement[] = [
       title: "The heavens perish, you remain",
       quote: "“They will perish, but you remain.”",
       sref: "Hebrews 1:11 · Psalm 102:25–27",
-      cap: "Scene: the heavens fold and wear out like an old garment, while one light holds perfectly still.",
+      cap: "Scene: the heavens are rolled up like a robe, and the throne’s light stays where it always was.",
       snips: [
         "“You, Lord, laid the foundation of the earth”",
         "“They will perish, but you remain”",
@@ -803,7 +803,7 @@ const MV: Movement[] = [
       title: "하늘은 없어져도 주님은 영원하심",
       quote: "“그것들은 없어질지라도, 주님께서는 영원히 존재하십니다”",
       sref: "히브리서 1:11 · 시편 102:25–27",
-      cap: "장면: 하늘이 낡은 옷처럼 접히고 해어지지만, 한 빛은 조금도 움직이지 않습니다.",
+      cap: "장면: 하늘이 두루마기처럼 말려 올라가도, 보좌의 빛은 언제나 있던 그 자리에 있습니다.",
       snips: [
         "“주님께서는 태초에 땅의 기초를 놓으셨습니다”",
         "“그것들은 없어질지라도, 주님께서는 영원히 존재하십니다”",
@@ -928,7 +928,7 @@ const MV: Movement[] = [
       quote:
         "“Sit at my right hand until I make your enemies a footstool for your feet.”",
       sref: "Hebrews 1:13 · Psalm 110:1",
-      cap: "Scene: one light rises to the highest place; everything else settles beneath it.",
+      cap: "Scene: the throne stands high above the clouds, and ministering angels are sent out from it.",
       snips: [
         "“Sit at my right hand until I make your enemies a footstool”",
         "Ministering spirits sent out to serve",
@@ -966,7 +966,7 @@ const MV: Movement[] = [
       quote:
         "“내가 네 원수들을 네 발 아래에 굴복시킬 때까지, 너는 내 오른쪽에 앉아 있어라”",
       sref: "히브리서 1:13 · 시편 110:1",
-      cap: "장면: 한 빛이 가장 높은 자리에 오르고, 다른 모든 것은 그 아래에 놓입니다.",
+      cap: "장면: 보좌가 구름 위 높은 곳에 있고, 섬기는 천사들이 거기서 보내심을 받습니다.",
       snips: [
         "“내가 네 원수들을 네 발 아래에 굴복시킬 때까지, 너는 내 오른쪽에 앉아 있어라”",
         "구원의 상속자가 될 사람들을 섬기도록 보내심을 받은 영들",
