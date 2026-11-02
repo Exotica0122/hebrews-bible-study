@@ -948,7 +948,7 @@ const MV: Movement[] = [
     num: "IV",
     range: "14–18",
     scene: "freed",
-    art: "3D · R3F — captives kneel chained to a prison wall; light comes down among them, the chains break and scatter, and the captives rise with their hands lifted.",
+    art: "3D · R3F — captives kneel in a prison, their wrists chained to rings in the floor; light comes down among them, the chains break and scatter, and they rise one by one with open hands. Christ is shown only as light.",
     en: {
       title: "Made like his brothers",
       quote:

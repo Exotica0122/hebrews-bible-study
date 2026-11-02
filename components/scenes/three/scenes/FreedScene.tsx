@@ -39,7 +39,8 @@ const LAND = 5;
 const BREAK = 5.3;
 const RISE = 6.2;
 const RISE_TIME = 1.2;
-const LINKS = 11;
+const LINKS = 9;
+const RING_Z = 0.86;
 /** Where each captive kneels, their robe, how far their hands lift, and how long after the first they rise (s). */
 const CAPTIVES: [number, string, number, number][] = [
   [-2.2, "#6B5442", 0.5, 0.5],
@@ -55,14 +56,15 @@ function hash(n: number) {
   return x - Math.floor(x);
 }
 
-/** Where each link hangs on its chain from the wall ring down to the captive's wrists, and where it flies when the chain breaks. */
+/** Where each link hangs on its chain from the floor ring up to the captive's wrists, and where it flies when the chain breaks. */
 const LINK_REST = CAPTIVES.flatMap(([cx], c) =>
   Array.from({ length: LINKS }, (_, i) => {
     const k = (i + 0.5) / LINKS;
-    const a = new Vector3(cx, 1.55, WALL_Z + 0.08);
-    const b = new Vector3(cx + Math.sign(cx) * 0.08, 0.34, 0.5);
+    const wrist = cx - Math.sign(cx) * 0.09;
+    const a = new Vector3(wrist, 0.03, RING_Z);
+    const b = new Vector3(wrist, 0.3, 0.66);
     const p = a.clone().lerp(b, k);
-    p.y -= 0.22 * Math.sin(k * Math.PI);
+    p.y -= 0.05 * Math.sin(k * Math.PI);
     const tangent = b.clone().sub(a).normalize();
     const n = c * LINKS + i;
     return {
@@ -97,7 +99,7 @@ const BLOCKS = (() => {
   return out;
 })();
 
-/** “That through death he might destroy the one who has the power of death, and deliver all those who through fear of death were subject to lifelong slavery”: captives kneel chained to a prison wall; light comes down among them, the chains break and scatter, and the captives rise. */
+/** “That through death he might destroy the one who has the power of death, and deliver all those who through fear of death were subject to lifelong slavery”: captives kneel chained in a prison; light comes down among them, the chains break and scatter, and the captives rise. */
 export function FreedScene({ mobile, effects }: SceneProps) {
   useResetCameraOnUnmount();
   const haze = useRef(1);
@@ -116,8 +118,8 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   const flash = useRef<ShaderMaterial | null>(null);
   const geo = useMemo(
     () => ({
-      link: new TorusGeometry(0.06, 0.018, 6, 14).scale(1.5, 1, 1),
-      ring: new TorusGeometry(0.1, 0.025, 8, 18),
+      link: new TorusGeometry(0.05, 0.016, 6, 14).scale(1.4, 1, 1),
+      ring: new TorusGeometry(0.11, 0.03, 8, 18),
       block: new BoxGeometry(0.58, 0.28, 0.3),
     }),
     [],
@@ -125,9 +127,9 @@ export function FreedScene({ mobile, effects }: SceneProps) {
   const mats = useMemo(
     () => ({
       iron: new MeshStandardMaterial({
-        color: "#6E655A",
-        metalness: 0.6,
-        roughness: 0.45,
+        color: "#B4AA9A",
+        metalness: 0.25,
+        roughness: 0.5,
       }),
       stone: new MeshStandardMaterial({
         color: "#FFFFFF",
@@ -328,7 +330,8 @@ export function FreedScene({ mobile, effects }: SceneProps) {
           key={x}
           geometry={geo.ring}
           material={mats.iron}
-          position={[x * spread, 1.58, WALL_Z + 0.05]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[(x - Math.sign(x) * 0.09) * spread, 0.03, RING_Z]}
         />
       ))}
       <instancedMesh
