@@ -16,6 +16,7 @@ import { SceneEffects } from "../primitives/SceneEffects";
 import { Glow } from "../primitives/Glow";
 import { Embers } from "../primitives/Earth";
 import { Squall } from "../primitives/Squall";
+import { Flagstones } from "../primitives/Stonework";
 import { Carved } from "../primitives/Salem";
 import { Flame } from "../primitives/Sanctuary";
 import { MoonLights, NIGHT, NightSky } from "../primitives/Road";
@@ -78,15 +79,6 @@ export function GatherScene({ mobile, effects }: SceneProps) {
       }),
     [],
   );
-  const paving = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: "#6E665C",
-        roughness: 1,
-        flatShading: true,
-      }),
-    [],
-  );
   const clay = useMemo(
     () => new MeshStandardMaterial({ color: "#9A6440", roughness: 0.8 }),
     [],
@@ -95,10 +87,9 @@ export function GatherScene({ mobile, effects }: SceneProps) {
     () => () => {
       block.dispose();
       stone.dispose();
-      paving.dispose();
       clay.dispose();
     },
-    [block, stone, paving, clay],
+    [block, stone, clay],
   );
   useEffect(() => {
     const m = wall.current;
@@ -122,8 +113,8 @@ export function GatherScene({ mobile, effects }: SceneProps) {
   const spread = mobile ? 0.75 : 1;
 
   useSceneTime((t, _dt, { camera }) => {
-    camera.position.set(Math.sin(t * 0.07) * 0.2, 1.3, mobile ? 8.4 : 6.4);
-    camera.lookAt(0, 0.75, 0);
+    camera.position.set(Math.sin(t * 0.07) * 0.2, 1.25, mobile ? 8.4 : 5.6);
+    camera.lookAt(0, 0.62, 0);
     const p = t % PERIOD;
     haze.current = 1 - smoothstep(0, 0.9, p) + smoothstep(14.8, 16, p);
     children.current?.children.forEach((g, i) => {
@@ -150,7 +141,7 @@ export function GatherScene({ mobile, effects }: SceneProps) {
         stars={mobile ? 90 : 160}
         moon={null}
       />
-      <MoonLights moon={[4, 8, 3]} intensity={0.5} fill={0.35} />
+      <MoonLights moon={[4, 8, 3]} intensity={0.9} fill={0.7} />
       <instancedMesh
         ref={wall}
         args={[block, stone, BLOCKS.length]}
@@ -175,17 +166,17 @@ export function GatherScene({ mobile, effects }: SceneProps) {
         power={1.8}
         renderOrder={4}
       />
-      <mesh
-        material={paving}
-        rotation={[-Math.PI / 2, 0, 0]}
+      <Flagstones
         position={[0, 0, 1]}
-      >
-        <planeGeometry args={[30, 7]} />
-      </mesh>
+        width={30}
+        depth={7}
+        size={0.62}
+        color="#8A8074"
+      />
       <pointLight
-        position={[0, 1.2, WALL_Z + 0.6]}
-        intensity={5}
-        distance={6}
+        position={[0, 1, WALL_Z + 1]}
+        intensity={11}
+        distance={8.5}
         decay={1.5}
         color="#FFC27A"
       />
