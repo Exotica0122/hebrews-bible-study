@@ -1,35 +1,60 @@
 import { describe, expect, it } from "vitest";
+import type { SearchEntry } from "@/content/search";
 import { MAX_RECENT, parseRecent, withRecent } from "./searchHistory";
 
+const entry = (v: number, extra: Partial<SearchEntry> = {}): SearchEntry => ({
+  kind: "verse",
+  chapter: 6,
+  ref: `Hebrews 6:${v}`,
+  text: `Verse ${v}`,
+  target: `hb-v${v}`,
+  ...extra,
+});
+
 describe("withRecent", () => {
-  it("puts the newest search first", () => {
-    expect(withRecent(["anchor"], "6:19")).toEqual(["6:19", "anchor"]);
+  it("puts the newest item first", () => {
+    const list = withRecent(withRecent([], entry(19)), entry(20));
+    expect(list.map((e) => e.ref)).toEqual(["Hebrews 6:20", "Hebrews 6:19"]);
   });
 
-  it("moves a repeat to the front, ignoring case and keeping the new spelling", () => {
-    expect(withRecent(["6:19", "anchor"], "Anchor")).toEqual([
-      "Anchor",
-      "6:19",
-    ]);
+  it("moves a repeat to the front with its latest wording", () => {
+    const list = withRecent(
+      withRecent(withRecent([], entry(19)), entry(20)),
+      entry(19, { text: "Reworded" }),
+    );
+    expect(list.map((e) => e.text)).toEqual(["Reworded", "Verse 20"]);
   });
 
-  it("trims the query and ignores a blank one", () => {
-    expect(withRecent([], "  faith  ")).toEqual(["faith"]);
-    expect(withRecent(["faith"], "   ")).toEqual(["faith"]);
+  it("keeps items that share a target but differ in kind or chapter", () => {
+    const list = withRecent(
+      withRecent([], entry(1)),
+      entry(1, { kind: "summary" }),
+    );
+    expect(withRecent(list, entry(1, { chapter: 7 }))).toHaveLength(3);
+  });
+
+  it("stores no search-only fields and caps long text", () => {
+    const [saved] = withRecent(
+      [],
+      entry(19, { also: "ankura", text: "x".repeat(1000) }),
+    );
+    expect(saved).not.toHaveProperty("also");
+    expect(saved.text.length).toBeLessThan(1000);
   });
 
   it("forgets the oldest past the limit", () => {
-    const full = Array.from({ length: MAX_RECENT }, (_, i) => `q${i}`);
-    const next = withRecent(full, "new");
-    expect(next).toHaveLength(MAX_RECENT);
-    expect(next[0]).toBe("new");
-    expect(next).not.toContain(`q${MAX_RECENT - 1}`);
+    let list = withRecent([], entry(0));
+    for (let v = 1; v <= MAX_RECENT; v++) list = withRecent(list, entry(v));
+    expect(list).toHaveLength(MAX_RECENT);
+    expect(list[0].ref).toBe(`Hebrews 6:${MAX_RECENT}`);
+    expect(list.map((e) => e.ref)).not.toContain("Hebrews 6:0");
   });
 });
 
 describe("parseRecent", () => {
   it("reads a stored list", () => {
-    expect(parseRecent('["anchor","6:19"]')).toEqual(["anchor", "6:19"]);
+    const list = withRecent([], entry(19));
+    expect(parseRecent(JSON.stringify(list))).toEqual(list);
   });
 
   it("treats missing or damaged data as empty", () => {
@@ -38,9 +63,16 @@ describe("parseRecent", () => {
     expect(parseRecent('{"a":1}')).toEqual([]);
   });
 
-  it("drops anything that is not a string and caps the length", () => {
-    expect(parseRecent('["a",1,null]')).toEqual(["a"]);
-    const long = JSON.stringify(Array(MAX_RECENT + 3).fill("a"));
+  it("drops the plain queries of the earlier format", () => {
+    expect(parseRecent('["for","enligh"]')).toEqual([]);
+  });
+
+  it("drops malformed items and caps the length", () => {
+    const good = entry(19);
+    expect(parseRecent(JSON.stringify([good, { ref: "x" }, null]))).toEqual([
+      good,
+    ]);
+    const long = JSON.stringify(Array(MAX_RECENT + 3).fill(good));
     expect(parseRecent(long)).toHaveLength(MAX_RECENT);
   });
 });

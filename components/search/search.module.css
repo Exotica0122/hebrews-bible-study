@@ -214,21 +214,21 @@
   background: var(--gold-16);
   box-shadow: inset 2px 0 0 var(--gold);
 }
-.recentQuery {
+.recent .result {
   flex: 1;
   min-width: 0;
-  min-height: 44px;
-  padding: 0 8px 0 16px;
-  overflow: hidden;
-  border: 0;
+  padding-right: 4px;
+}
+.recent .result[aria-selected="true"] {
   background: none;
-  color: var(--ink);
-  font: 400 17px var(--font-text);
-  text-align: left;
+  box-shadow: none;
+}
+.recent .ref,
+.recent .title,
+.recent .text {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  cursor: pointer;
-  touch-action: manipulation;
 }
 .remove {
   display: flex;

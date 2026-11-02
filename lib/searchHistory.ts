@@ -1,37 +1,65 @@
 import { useCallback, useSyncExternalStore } from "react";
+import type { SearchEntry } from "@/content/search";
 import type { Lang } from "@/content/types";
 
 export const MAX_RECENT = 6;
+const MAX_TEXT = 160;
+
+export type RecentEntry = Omit<SearchEntry, "also">;
 
 const KEY_PREFIX = "hb-search-history-";
-const NONE: string[] = [];
+const NONE: RecentEntry[] = [];
 
 const listeners = new Set<() => void>();
-const cache = new Map<Lang, string[]>();
+const cache = new Map<Lang, RecentEntry[]>();
 
-export function withRecent(list: string[], query: string): string[] {
-  const q = query.trim();
-  if (!q) return list;
-  const lower = q.toLowerCase();
-  return [q, ...list.filter((item) => item.toLowerCase() !== lower)].slice(
+export const entryKey = (e: RecentEntry) =>
+  `${e.chapter}-${e.kind}-${e.target}`;
+
+export function withRecent(
+  list: RecentEntry[],
+  entry: SearchEntry,
+): RecentEntry[] {
+  const { kind, chapter, ref, title, text, target } = entry;
+  const recent = {
+    kind,
+    chapter,
+    ref,
+    title,
+    text: text.slice(0, MAX_TEXT),
+    target,
+  };
+  const key = entryKey(recent);
+  return [recent, ...list.filter((e) => entryKey(e) !== key)].slice(
     0,
     MAX_RECENT,
   );
 }
 
-export function parseRecent(raw: string | null): string[] {
+function isRecentEntry(value: unknown): value is RecentEntry {
+  if (typeof value !== "object" || value === null) return false;
+  const e = value as Record<string, unknown>;
+  return (
+    typeof e.kind === "string" &&
+    typeof e.chapter === "number" &&
+    typeof e.ref === "string" &&
+    typeof e.text === "string" &&
+    typeof e.target === "string" &&
+    (e.title === undefined || typeof e.title === "string")
+  );
+}
+
+export function parseRecent(raw: string | null): RecentEntry[] {
   try {
     const list: unknown = JSON.parse(raw ?? "[]");
     if (!Array.isArray(list)) return [];
-    return list
-      .filter((item): item is string => typeof item === "string")
-      .slice(0, MAX_RECENT);
+    return list.filter(isRecentEntry).slice(0, MAX_RECENT);
   } catch {
     return [];
   }
 }
 
-function getRecent(lang: Lang): string[] {
+function getRecent(lang: Lang): RecentEntry[] {
   let list = cache.get(lang);
   if (!list) {
     try {
@@ -44,7 +72,7 @@ function getRecent(lang: Lang): string[] {
   return list;
 }
 
-function setRecent(lang: Lang, list: string[]) {
+function setRecent(lang: Lang, list: RecentEntry[]) {
   cache.set(lang, list);
   try {
     window.localStorage.setItem(KEY_PREFIX + lang, JSON.stringify(list));
@@ -52,18 +80,19 @@ function setRecent(lang: Lang, list: string[]) {
   listeners.forEach((l) => l());
 }
 
-export function rememberSearch(lang: Lang, query: string) {
-  setRecent(lang, withRecent(getRecent(lang), query));
+export function rememberEntry(lang: Lang, entry: SearchEntry) {
+  setRecent(lang, withRecent(getRecent(lang), entry));
 }
 
-export function forgetSearch(lang: Lang, query: string) {
+export function forgetEntry(lang: Lang, entry: RecentEntry) {
+  const key = entryKey(entry);
   setRecent(
     lang,
-    getRecent(lang).filter((item) => item !== query),
+    getRecent(lang).filter((e) => entryKey(e) !== key),
   );
 }
 
-export function clearSearches(lang: Lang) {
+export function clearRecent(lang: Lang) {
   setRecent(lang, []);
 }
 
@@ -81,7 +110,7 @@ function subscribe(onChange: () => void) {
   };
 }
 
-export function useRecentSearches(lang: Lang): string[] {
+export function useRecentEntries(lang: Lang): RecentEntry[] {
   return useSyncExternalStore(
     subscribe,
     useCallback(() => getRecent(lang), [lang]),
