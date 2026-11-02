@@ -83,3 +83,24 @@ describe.each(QUIZ_CHAPTERS.map((n) => [n]))("chapter %i questions", (n) => {
     expect(kinds).toEqual(new Set(["choice", "truefalse", "which"]));
   });
 });
+
+describe("multiple-choice answers", () => {
+  it("never give away the right answer by its length", async () => {
+    const qs = (await getQuizzes([...QUIZ_CHAPTERS])).filter(
+      (q) => q.kind === "choice",
+    );
+    // Where the right answer falls when the options are sorted by length.
+    const ranks = [0, 0, 0, 0];
+    for (const q of qs) {
+      if (q.kind !== "choice") continue;
+      for (const lang of ["en", "ko"] as const) {
+        const opts = q[lang].options;
+        const sorted = [...opts].sort((a, b) => a.length - b.length);
+        if (lang === "en") ranks[sorted.indexOf(opts[0])]++;
+      }
+    }
+    for (const r of ranks) expect(r / qs.length).toBeLessThan(0.45);
+    expect(ranks[3] / qs.length).toBeGreaterThan(0.12);
+    expect(ranks[0] / qs.length).toBeGreaterThan(0.12);
+  });
+});

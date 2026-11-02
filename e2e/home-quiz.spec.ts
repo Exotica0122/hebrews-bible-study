@@ -1,4 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+/** Answers every question in the round with its first option. */
+async function answerAll(page: Page, total: number, pick = 0) {
+  for (let i = 1; i <= total; i++) {
+    await page.getByRole("radio").nth(pick).click();
+    await page.getByRole("button", { name: "Check" }).click();
+    await page
+      .getByRole("button", { name: i < total ? "Continue" : "See results" })
+      .click();
+  }
+}
 
 test.describe("home page", () => {
   test("offers reading and the quiz, and lists every chapter", async ({
@@ -52,12 +63,13 @@ test.describe("quiz", () => {
       .click();
     for (let i = 1; i <= 5; i++) {
       await expect(page.getByText(`${i} of 5`)).toBeVisible();
-      await page.locator("main [class*=options] button").first().click();
+      await page.getByRole("radio").first().click();
+      await page.getByRole("button", { name: "Check" }).click();
       await expect(
         page.getByRole("link", { name: /^Read Hebrews/ }),
       ).toBeVisible();
       await page
-        .getByRole("button", { name: i < 5 ? "Next question" : "See results" })
+        .getByRole("button", { name: i < 5 ? "Continue" : "See results" })
         .click();
     }
     await expect(page.getByText("Your round")).toBeVisible();
@@ -94,9 +106,10 @@ test.describe("quiz", () => {
       .getByRole("button", { name: "Start · 17 questions from 2 chapters" })
       .click();
     for (let i = 1; i <= 17; i++) {
-      await page.locator("main [class*=options] button").first().click();
+      await page.getByRole("radio").first().click();
+      await page.getByRole("button", { name: "Check" }).click();
       await page
-        .getByRole("button", { name: i < 17 ? "Next question" : "See results" })
+        .getByRole("button", { name: i < 17 ? "Continue" : "See results" })
         .click();
     }
     await expect(page.locator("main li")).toHaveCount(17);
@@ -121,5 +134,71 @@ test.describe("quiz", () => {
   test("chapters without a quiz are not found", async ({ page }) => {
     const res = await page.goto("/quiz/12");
     expect(res?.status()).toBe(404);
+  });
+
+  test("an answer is chosen first and only marked on Check", async ({
+    page,
+  }) => {
+    await page.goto("/quiz/3");
+    const check = page.getByRole("button", { name: "Check" });
+    await expect(check).toBeDisabled();
+    const options = page.getByRole("radio");
+    await options.nth(0).click();
+    await expect(options.nth(0)).toHaveAttribute("aria-checked", "true");
+    await options.nth(1).click();
+    await expect(options.nth(0)).toHaveAttribute("aria-checked", "false");
+    await expect(options.nth(1)).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByText(/^Read Hebrews/)).toHaveCount(0);
+    await check.click();
+    await expect(page.getByText(/^(That’s right|Not quite)$/)).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /^Read Hebrews 3:/ }),
+    ).toBeVisible();
+    // Once checked, the answers are locked.
+    await expect(options.nth(0)).toHaveAttribute("aria-disabled", "true");
+    await options.nth(0).click({ force: true });
+    await expect(options.nth(1)).toHaveAttribute("aria-checked", "true");
+  });
+
+  test("the keyboard picks with numbers and checks with Enter", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "no hardware keyboard");
+    await page.goto("/quiz/5");
+    await expect(page.getByText("1 of 9")).toBeVisible();
+    await page.keyboard.press("2");
+    await expect(page.getByRole("radio").nth(1)).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("button", { name: "Continue" })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("2 of 9")).toBeVisible();
+  });
+
+  test("after a review, retake the same questions or the full quiz", async ({
+    page,
+  }) => {
+    await page.goto("/quiz/8");
+    await expect(page.getByText("1 of 8")).toBeVisible();
+    // The last option is never right for a true/false statement that is true,
+    // so pick per question until at least one is missed.
+    await answerAll(page, 8, 1);
+    const review = page.getByRole("button", { name: /^Review the/ });
+    test.skip(
+      (await review.count()) === 0,
+      "every answer happened to be right",
+    );
+    await review.click();
+    const missed = Number(
+      (await page.getByText(/^1 of \d+$/).textContent())?.split(" of ")[1],
+    );
+    await answerAll(page, missed);
+    await expect(
+      page.getByRole("button", { name: "Retake these questions" }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Retake the full quiz" }).click();
+    await expect(page.getByText("1 of 8")).toBeVisible();
   });
 });

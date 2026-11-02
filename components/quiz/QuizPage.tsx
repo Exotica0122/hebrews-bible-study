@@ -48,6 +48,7 @@ interface Plan {
 interface SavedRound {
   path: string;
   plan: Plan;
+  basePlan: Plan | null;
   mode: Mode;
   phase: "play" | "results";
   items: { id: string; order: number[] }[];
@@ -113,6 +114,10 @@ export function QuizPage({ chapter }: QuizPageProps) {
   // A chapter's own quiz takes the whole chapter by default.
   const [length, setLength] = useState<Length>(chapter ? "all" : 5);
   const [plan, setPlan] = useState<Plan | null>(null);
+  /** The last chapter round, so a review can still be retaken as the full quiz. */
+  const [basePlan, setBasePlan] = useState<Plan | null>(null);
+  /** The answer picked but not yet checked. */
+  const [selected, setSelected] = useState<number | null>(null);
   const [items, setItems] = useState<RoundItem[]>([]);
   const [answers, setAnswers] = useState<number[]>([]);
   const [index, setIndex] = useState(0);
@@ -140,6 +145,8 @@ export function QuizPage({ chapter }: QuizPageProps) {
         next.length === "all" ? pool.length : next.length,
       );
       setPlan({ ...next, only });
+      if (next.mode === "new") setBasePlan(next);
+      setSelected(null);
       setItems(round);
       setAnswers([]);
       setIndex(0);
@@ -174,6 +181,7 @@ export function QuizPage({ chapter }: QuizPageProps) {
         }
         setMode(saved.mode);
         setPlan(saved.plan ?? null);
+        setBasePlan(saved.basePlan ?? null);
         setItems(restored);
         setAnswers(saved.answers);
         setIndex(saved.index);
@@ -192,6 +200,7 @@ export function QuizPage({ chapter }: QuizPageProps) {
       writeSaved({
         path,
         plan,
+        basePlan,
         mode,
         phase,
         items: items.map((i) => ({ id: i.question.id, order: i.order })),
@@ -199,7 +208,7 @@ export function QuizPage({ chapter }: QuizPageProps) {
         index,
       });
     }
-  }, [path, plan, mode, phase, items, answers, index]);
+  }, [path, plan, basePlan, mode, phase, items, answers, index]);
 
   // Move focus with the reader: to each new question, then to "Next".
   useEffect(() => {
@@ -212,10 +221,10 @@ export function QuizPage({ chapter }: QuizPageProps) {
     if (answered) nextRef.current?.focus({ preventScroll: true });
   }, [answered]);
 
-  const choose = (i: number) => {
-    if (answers[index] !== undefined) return;
+  const check = () => {
+    if (answers[index] !== undefined || selected === null) return;
     const next = [...answers];
-    next[index] = i;
+    next[index] = selected;
     setAnswers(next);
   };
 
@@ -236,10 +245,41 @@ export function QuizPage({ chapter }: QuizPageProps) {
 
   const next = () => {
     if (index < items.length - 1) {
+      setSelected(null);
       setIndex(index + 1);
       window.scrollTo({ top: 0 });
     } else finish();
   };
+
+  // The key handler reads the latest check/next without re-subscribing.
+  const keys = useRef({ check: () => {}, next: () => {} });
+  useEffect(() => {
+    keys.current = { check, next };
+  });
+  const optionCount = items[index]?.order.length ?? 0;
+  useEffect(() => {
+    if (phase !== "play") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("input, textarea, [role=dialog]")) return;
+      const n = Number(e.key);
+      if (!answered && n >= 1 && n <= optionCount) {
+        e.preventDefault();
+        setSelected(items[index].order[n - 1]);
+        return;
+      }
+      if (e.key !== "Enter") return;
+      // Buttons and links other than the answers handle Enter themselves.
+      const control = target?.closest("a, button");
+      if (control && control.getAttribute("role") !== "radio") return;
+      e.preventDefault();
+      if (answered) keys.current.next();
+      else keys.current.check();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase, answered, optionCount, items, index]);
 
   const backToSetup = (nextMode: Mode = "new") => {
     writeSaved(null);
@@ -289,7 +329,9 @@ export function QuizPage({ chapter }: QuizPageProps) {
               index={index}
               items={items}
               answers={answers}
-              onChoose={choose}
+              selected={selected}
+              onSelect={setSelected}
+              onCheck={check}
               onNext={next}
               onEnd={() => backToSetup()}
               headingRef={headingRef}
@@ -315,10 +357,17 @@ export function QuizPage({ chapter }: QuizPageProps) {
                     .map((item) => item.question.id),
                 });
               }}
+              review={plan?.mode === "review"}
               onRetake={() => {
                 writeSaved(null);
                 if (plan) void start(plan);
                 else backToSetup("new");
+              }}
+              onRetakeFull={() => {
+                writeSaved(null);
+                void start(
+                  basePlan ?? { mode: "new", chapters: picked, length },
+                );
               }}
               onChange={() => backToSetup("new")}
             />
@@ -524,7 +573,9 @@ function Question({
   index,
   items,
   answers,
-  onChoose,
+  selected,
+  onSelect,
+  onCheck,
   onNext,
   onEnd,
   headingRef,
@@ -536,7 +587,9 @@ function Question({
   index: number;
   items: RoundItem[];
   answers: number[];
-  onChoose: (i: number) => void;
+  selected: number | null;
+  onSelect: (i: number) => void;
+  onCheck: () => void;
   onNext: () => void;
   onEnd: () => void;
   headingRef: React.RefObject<HTMLHeadingElement | null>;
@@ -581,6 +634,8 @@ function Question({
       {q.kind === "which" && <p className={s.quote}>{q[lang].q}</p>}
 
       <div
+        role="radiogroup"
+        aria-label={t.chooseAnswer}
         className={`${s.options} ${q.kind === "truefalse" ? s.tf : ""} ${q.kind === "which" ? s.which : ""}`}
       >
         {item.order.map((i, pos) => {
@@ -589,58 +644,74 @@ function Question({
             if (i === right) cls += ` ${s.right}`;
             else if (i === picked) cls += ` ${s.wrong}`;
             else cls += ` ${s.dim}`;
-          }
+          } else if (i === selected) cls += ` ${s.selected}`;
           return (
             <button
               key={i}
               type="button"
+              role="radio"
               className={cls}
+              aria-checked={done ? i === picked : i === selected}
               aria-disabled={done || undefined}
-              aria-pressed={done ? i === picked : undefined}
-              onClick={() => onChoose(i)}
+              onClick={() => !done && onSelect(i)}
             >
-              {q.kind === "choice" && (
-                <span className={s.letter} aria-hidden="true">
-                  {"ABCD"[pos]}
-                </span>
-              )}
+              <span className={s.letter} aria-hidden="true">
+                {pos + 1}
+              </span>
               <span>{answerLabel(item, i, lang, t)}</span>
             </button>
           );
         })}
       </div>
 
-      <div role="status" aria-live="polite">
-        {done && (
-          <div className={s.explain}>
-            <p className={`${s.verdict} ${ok ? s.verdictOk : s.verdictNo}`}>
-              {ok ? t.correct : t.incorrect}
-            </p>
-            {!ok && (
-              <p className={s.answer}>
-                {t.answerIs}: {rightAnswer(item, lang, t)}
-              </p>
-            )}
-            <p className={s.why}>{q[lang].why}</p>
-            <Link href={readHref(q)} className={s.read}>
-              {t.readPassage(verseRef(q, t))} →
-            </Link>
-          </div>
-        )}
-      </div>
-
       {done && (
-        <div className={s.actions}>
-          <button
-            ref={nextRef}
-            type="button"
-            className={`hb-btn hb-btn-gold ${s.primary}`}
-            onClick={onNext}
-          >
-            {last ? t.seeResults : t.nextQuestion}
-          </button>
+        <div className={s.explain}>
+          <p className={s.why}>{q[lang].why}</p>
+          <Link href={readHref(q)} className={s.read}>
+            {t.readPassage(verseRef(q, t))} →
+          </Link>
         </div>
       )}
+
+      <div className={`${s.checkBar} ${done ? (ok ? s.barOk : s.barNo) : ""}`}>
+        <div className={s.checkInner}>
+          <div className={s.barMsg} role="status" aria-live="polite">
+            {done ? (
+              <>
+                <p className={s.verdict}>{ok ? t.correct : t.incorrect}</p>
+                {!ok && (
+                  <p className={s.barAnswer}>
+                    {t.answerIs}: {rightAnswer(item, lang, t)}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className={s.hint}>
+                {selected === null ? t.chooseAnswer : t.checkHint}
+              </p>
+            )}
+          </div>
+          {done ? (
+            <button
+              ref={nextRef}
+              type="button"
+              className={`hb-btn ${s.barBtn} ${ok ? s.barBtnOk : s.barBtnNo}`}
+              onClick={onNext}
+            >
+              {last ? t.seeResults : t.continueQuiz}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={`hb-btn hb-btn-gold ${s.barBtn}`}
+              disabled={selected === null}
+              onClick={onCheck}
+            >
+              {t.checkAnswer}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -653,7 +724,9 @@ function Results({
   open,
   setOpen,
   onReview,
+  review,
   onRetake,
+  onRetakeFull,
   onChange,
 }: {
   t: UiStrings;
@@ -663,7 +736,9 @@ function Results({
   open: number | null;
   setOpen: (i: number | null) => void;
   onReview: () => void;
+  review: boolean;
   onRetake: () => void;
+  onRetakeFull: () => void;
   onChange: () => void;
 }) {
   const score = items.filter((item, i) => isCorrect(item, answers[i])).length;
@@ -740,8 +815,17 @@ function Results({
           className={`hb-btn ${missedNow > 0 ? s.ghost : "hb-btn-gold"} ${s.primary}`}
           onClick={onRetake}
         >
-          {t.retake}
+          {review ? t.retakeReview : t.retake}
         </button>
+        {review && (
+          <button
+            type="button"
+            className={`hb-btn ${s.ghost} ${s.primary}`}
+            onClick={onRetakeFull}
+          >
+            {t.retakeFull}
+          </button>
+        )}
         <button
           type="button"
           className={`hb-btn ${s.ghost} ${s.primary}`}
