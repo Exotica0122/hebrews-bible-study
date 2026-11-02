@@ -48,7 +48,8 @@ Fixed, because the page depends on them:
 - **Palette constants.** Export them from the chapter's own primitives file.
 - **Hero scene.** Add a new `hero<Name>` scene id. Map the setting to it in `STAGES` (`components/hero/Hero.tsx`), and to an art note in `HERO_ART` (`components/ChapterPage.tsx`).
 - **Christ is shown only as light,** never as a human figure or human outline, even a faceless or glowing one. Check the scene as well as the `art` note, and say so in the note.
-- **One scene per movement**, each a concrete image from that passage rather than an abstract metaphor the text doesn't use.
+- **One scene per movement**, each a concrete image from that passage rather than an abstract metaphor the text doesn't use. Start from what the movement argues, and when redoing a chapter, don't copy the old scene if another image says it better.
+- **A ground for the type.** Hero and caption type is always pale parchment, so even a light theme needs a dark ground under the text. Show that in the sketches, not dark type on a pale ground.
 - **Legibility.** The hero title and the movement captions overlay the scene, so they must stay readable on it. Panels are about 2:1 with the quote over the lower half, and the hero's title block is about 530 px tall. A quote can reach three lines on a phone, so compose for that instead of cropping the sketch to fit.
 
 ### Choose the direction with the user
@@ -71,6 +72,10 @@ Write `content/hebrews/<n>.ts` in the shape of the existing chapters: movements 
 - A still per scene, rendered from the scene itself. Add the id and the second of its loop to catch (the hold, after the event) to `MOMENTS` in `e2e/tools/scene-stills.mjs`, add the chapter to `CHAPTERS`, then run `node e2e/tools/scene-stills.mjs <ids>` on the real GPU. Reduced-motion, loading and no-WebGL users see only this, so pick a moment that reads on its own, and rerun it whenever the scene changes.
 - A scene can time out while rendering a still under load. Rerun only the ids that failed.
 - Loops of 14–18 s: fade in, the event, a hold, then fade out. Mutate memoised three.js objects through `primitives/mutate.ts` (React Compiler lint).
+- In a canvas-mask shader where a value picks a colour, never fade with `globalAlpha`: it walks through the other colours. Reveal by clipping instead.
+- Make the subject read at the hold: an object that leaves the view before the hold isn't in the still. Move people smoothly rather than in whole steps, and have them enter from somewhere.
+- Share vertices (`mergeVertices`) before computing normals on `IcosahedronGeometry`, or a smooth form shades flat. Check for coplanar surfaces if a face speckles.
+- On phones, use `primitives/route.ts` for a closer view that travels along a wide scene, and check that both halves of the idea appear.
 
 ## 6. Tests and docs
 
@@ -81,6 +86,7 @@ Update everything that names the latest chapter:
 - `e2e/search-landing.spec.ts`: `CHAPTERS`.
 - `e2e/structure.spec.ts`: a render test for the new chapter.
 - `e2e/interactions.spec.ts`: coming-soon routes shift to the next chapter.
+- Any spec that quotes a caption or scene text you changed. Search `e2e/` for the old words.
 - The README's live-chapters line.
 
 ## 7. Verify
@@ -101,6 +107,8 @@ It opens real Chrome on the GPU, so the post-processing stack is on as visitors 
 
 If you changed a shared primitive (`SceneEffects`, `Glow`, `Earth`, ...), shoot the earlier chapters again too.
 
+Check tall objects at the top of the live panels, which are wider than the sketches. Compare inlays and layered colour against stained glass, which the site doesn't use. If a caption or `art` note no longer describes the scene, rewrite it in both languages.
+
 ### Check on iOS
 
 Boot the iPhone simulator and run this against the dev server. It shoots the hero and every scene in real Safari, then checks real touch taps and sideways scrolling in Playwright WebKit:
@@ -119,4 +127,4 @@ Run `pnpm exec playwright test` last. Read its pass and fail counts from a file 
 pnpm exec playwright test --reporter=line > <scratch>/pw.txt 2>&1; echo "exit $?"; tail -5 <scratch>/pw.txt
 ```
 
-Judge a failure on a production build before calling it a site bug: dev-server load causes timing failures. List anything you couldn't verify in the PR's "Needs review" checklist.
+Close the simulator's Safari first (`xcrun simctl terminate booted com.apple.mobilesafari`) and wait for `uptime` to settle, because load causes false timing failures. Judge a failure on a production build before calling it a site bug. A test that fails every time when run alone is real. List anything you couldn't verify in the PR's "Needs review" checklist.
