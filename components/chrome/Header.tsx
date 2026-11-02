@@ -83,7 +83,7 @@ export function Header({
     chapter === undefined
       ? lang === "ko"
         ? t.chaptersBtn
-        : `Ch 1–${CHAPTER_COUNT}`
+        : "Ch"
       : lang === "ko"
         ? chLabel
         : `Ch ${chapter}`;

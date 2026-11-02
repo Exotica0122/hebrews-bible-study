@@ -4,17 +4,23 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   QUIZ_CHAPTERS,
+  QUIZ_COUNTS,
   chapterOf,
   getQuizzes,
   type QuizQuestion,
 } from "@/content/quiz";
-import { CHAPTER_COUNT } from "@/content/hebrews";
+import { CHAPTER_COUNT, LATEST_LIVE, chapterTitle } from "@/content/hebrews";
 import type { Lang } from "@/content/types";
 import type { UiStrings } from "@/content/ui";
 import { Header } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
 import { useLang } from "@/lib/lang";
-import { saveRound, useQuizProgress } from "@/lib/quizProgress";
+import {
+  knownIn,
+  saveRound,
+  useQuizProgress,
+  type QuizProgress,
+} from "@/lib/quizProgress";
 import {
   ROUND_LENGTHS,
   buildRound,
@@ -27,9 +33,21 @@ import s from "./quiz.module.css";
 
 type Mode = "new" | "review";
 type Phase = "setup" | "loading" | "play" | "results";
+/** A number of questions, or every question in the chosen chapters. */
+type Length = RoundLength | "all";
+
+/** Everything needed to build a round again: "Retake this quiz" replays it. */
+interface Plan {
+  mode: Mode;
+  chapters: number[];
+  length: Length;
+  /** For a review, the exact questions it covers. */
+  only?: string[];
+}
 
 interface SavedRound {
   path: string;
+  plan: Plan;
   mode: Mode;
   phase: "play" | "results";
   items: { id: string; order: number[] }[];
@@ -92,7 +110,9 @@ export function QuizPage({ chapter }: QuizPageProps) {
   const [picked, setPicked] = useState<number[]>(
     chapter ? [chapter] : [...QUIZ_CHAPTERS],
   );
-  const [length, setLength] = useState<RoundLength>(5);
+  // A chapter's own quiz takes the whole chapter by default.
+  const [length, setLength] = useState<Length>(chapter ? "all" : 5);
+  const [plan, setPlan] = useState<Plan | null>(null);
   const [items, setItems] = useState<RoundItem[]>([]);
   const [answers, setAnswers] = useState<number[]>([]);
   const [index, setIndex] = useState(0);
@@ -103,30 +123,29 @@ export function QuizPage({ chapter }: QuizPageProps) {
   const missed = progress.missed;
 
   const start = useCallback(
-    async (
-      nextMode: Mode,
-      chapters: number[],
-      len: number,
-      only?: string[],
-    ) => {
+    async (next: Plan) => {
       setPhase("loading");
-      setMode(nextMode);
-      const missedNow = new Set(only ?? missed);
-      const pool =
-        nextMode === "review"
-          ? (
-              await getQuizzes([...new Set([...missedNow].map(chapterOf))])
-            ).filter((q) => missedNow.has(q.id))
-          : await getQuizzes(chapters);
+      setMode(next.mode);
+      let pool: QuizQuestion[];
+      let only = next.only;
+      if (next.mode === "review") {
+        const ids = new Set(only ?? missed);
+        only = [...ids];
+        pool = (await getQuizzes([...new Set(only.map(chapterOf))])).filter(
+          (q) => ids.has(q.id),
+        );
+      } else pool = await getQuizzes(next.chapters);
       const round = buildRound(
         pool,
-        nextMode === "review" ? Math.min(pool.length, 10) : len,
+        next.length === "all" ? pool.length : next.length,
       );
+      setPlan({ ...next, only });
       setItems(round);
       setAnswers([]);
       setIndex(0);
       setOpen(null);
       setPhase(round.length ? "play" : "setup");
+      window.scrollTo({ top: 0 });
     },
     [missed],
   );
@@ -148,11 +167,13 @@ export function QuizPage({ chapter }: QuizPageProps) {
         });
         if (restored.length !== saved.items.length) {
           writeSaved(null);
-          if (chapter) void start("new", [chapter], 5);
+          if (chapter)
+            void start({ mode: "new", chapters: [chapter], length: "all" });
           else setPhase("setup");
           return;
         }
         setMode(saved.mode);
+        setPlan(saved.plan ?? null);
         setItems(restored);
         setAnswers(saved.answers);
         setIndex(saved.index);
@@ -160,14 +181,17 @@ export function QuizPage({ chapter }: QuizPageProps) {
       })();
     } else if (chapter) {
       // Deferred so the first paint is the "preparing" state, not a cascade.
-      queueMicrotask(() => void start("new", [chapter], 5));
+      queueMicrotask(
+        () => void start({ mode: "new", chapters: [chapter], length: "all" }),
+      );
     }
   }, [path, chapter, start]);
 
   useEffect(() => {
-    if (phase === "play" || phase === "results") {
+    if ((phase === "play" || phase === "results") && plan) {
       writeSaved({
         path,
+        plan,
         mode,
         phase,
         items: items.map((i) => ({ id: i.question.id, order: i.order })),
@@ -175,7 +199,7 @@ export function QuizPage({ chapter }: QuizPageProps) {
         index,
       });
     }
-  }, [path, mode, phase, items, answers, index]);
+  }, [path, plan, mode, phase, items, answers, index]);
 
   // Move focus with the reader: to each new question, then to "Next".
   useEffect(() => {
@@ -247,11 +271,12 @@ export function QuizPage({ chapter }: QuizPageProps) {
               length={length}
               setLength={setLength}
               missedCount={missed.length}
-              onStart={() =>
+              progress={progress}
+              onStart={(len) =>
                 void start(
-                  mode === "review" && missed.length ? "review" : "new",
-                  picked,
-                  length,
+                  mode === "review" && missed.length
+                    ? { mode: "review", chapters: [], length: "all" }
+                    : { mode: "new", chapters: picked, length: len },
                 )
               }
             />
@@ -281,16 +306,21 @@ export function QuizPage({ chapter }: QuizPageProps) {
               setOpen={setOpen}
               onReview={() => {
                 writeSaved(null);
-                void start(
-                  "review",
-                  [],
-                  10,
-                  items
+                void start({
+                  mode: "review",
+                  chapters: [],
+                  length: "all",
+                  only: items
                     .filter((item, i) => !isCorrect(item, answers[i]))
                     .map((item) => item.question.id),
-                );
+                });
               }}
-              onAgain={() => backToSetup("new")}
+              onRetake={() => {
+                writeSaved(null);
+                if (plan) void start(plan);
+                else backToSetup("new");
+              }}
+              onChange={() => backToSetup("new")}
             />
           )}
         </div>
@@ -309,6 +339,7 @@ function Setup({
   length,
   setLength,
   missedCount,
+  progress,
   onStart,
 }: {
   t: UiStrings;
@@ -316,13 +347,18 @@ function Setup({
   setMode: (m: Mode) => void;
   picked: number[];
   setPicked: (p: number[]) => void;
-  length: RoundLength;
-  setLength: (l: RoundLength) => void;
+  length: Length;
+  setLength: (l: Length) => void;
   missedCount: number;
-  onStart: () => void;
+  progress: QuizProgress;
+  onStart: (length: Length) => void;
 }) {
+  const { lang } = useLang();
   const review = mode === "review" && missedCount > 0;
-  const all = picked.length === QUIZ_CHAPTERS.length;
+  const pool = picked.reduce((n, c) => n + (QUIZ_COUNTS[c] ?? 0), 0);
+  // A length the selection can't fill becomes "all".
+  const effective: Length = length !== "all" && length >= pool ? "all" : length;
+  const count = effective === "all" ? pool : effective;
   const toggle = (n: number) =>
     setPicked(
       picked.includes(n)
@@ -367,44 +403,65 @@ function Setup({
       ) : (
         <>
           <div className={s.field}>
-            <span className={s.label} id="hb-quiz-chapters">
-              {t.chaptersLabel(picked.length)}
-            </span>
+            <div className={s.fieldHead}>
+              <span className={s.label} id="hb-quiz-chapters">
+                {t.chaptersLabel(picked.length)}
+              </span>
+              <span className={s.quick}>
+                <button
+                  type="button"
+                  className={s.textBtn}
+                  disabled={picked.length === QUIZ_CHAPTERS.length}
+                  onClick={() => setPicked([...QUIZ_CHAPTERS])}
+                >
+                  {t.selectAll}
+                </button>
+                <button
+                  type="button"
+                  className={s.textBtn}
+                  disabled={picked.length === 0}
+                  onClick={() => setPicked([])}
+                >
+                  {t.clearAll}
+                </button>
+              </span>
+            </div>
             <div
-              className={s.chips}
+              className={s.cards}
               role="group"
               aria-labelledby="hb-quiz-chapters"
             >
-              {Array.from({ length: CHAPTER_COUNT }, (_, i) => i + 1).map(
-                (n) => {
-                  const live = QUIZ_CHAPTERS.includes(n);
-                  return (
-                    <button
-                      key={n}
-                      type="button"
-                      className={s.chip}
-                      aria-pressed={live ? picked.includes(n) : undefined}
-                      aria-label={
-                        live
-                          ? t.chapterName(n)
-                          : `${t.chapterName(n)} · ${t.comingSoon}`
-                      }
-                      disabled={!live}
-                      onClick={() => toggle(n)}
-                    >
+              {QUIZ_CHAPTERS.map((n) => {
+                const on = picked.includes(n);
+                const known = knownIn(progress, n);
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    className={s.card}
+                    aria-pressed={on}
+                    onClick={() => toggle(n)}
+                  >
+                    <span className={s.cardNum}>
+                      <span className="hb-sr">{t.chapterName(n)} · </span>
                       {n}
-                    </button>
-                  );
-                },
-              )}
+                    </span>
+                    <span className={s.check} aria-hidden="true">
+                      {on ? "✓" : ""}
+                    </span>
+                    <span className={s.cardTitle}>{chapterTitle(n, lang)}</span>
+                    <span className={s.cardMeta}>
+                      {t.chapterQs(QUIZ_COUNTS[n], known)}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-            <button
-              type="button"
-              className={s.textBtn}
-              onClick={() => setPicked(all ? [] : [...QUIZ_CHAPTERS])}
-            >
-              {all ? t.clearAll : t.selectAll}
-            </button>
+            {LATEST_LIVE < CHAPTER_COUNT && (
+              <p className={s.note}>
+                {t.searchLater(LATEST_LIVE + 1, CHAPTER_COUNT)}
+              </p>
+            )}
           </div>
 
           <div className={s.field}>
@@ -412,7 +469,7 @@ function Setup({
               {t.lengthLabel}
             </span>
             <div
-              className={s.seg}
+              className={`${s.seg} ${s.seg3}`}
               role="group"
               aria-labelledby="hb-quiz-length"
             >
@@ -420,13 +477,23 @@ function Setup({
                 <button
                   key={n}
                   type="button"
-                  aria-pressed={length === n}
+                  aria-pressed={effective === n}
+                  disabled={n >= pool}
                   onClick={() => setLength(n)}
                 >
                   <b>{t.lengthOpt(n)}</b>
                   <small>{t.lengthSub(n)}</small>
                 </button>
               ))}
+              <button
+                type="button"
+                aria-pressed={effective === "all"}
+                disabled={pool === 0}
+                onClick={() => setLength("all")}
+              >
+                <b>{t.lengthAll(pool)}</b>
+                <small>{t.lengthAllSub}</small>
+              </button>
             </div>
           </div>
         </>
@@ -436,10 +503,14 @@ function Setup({
         <button
           type="button"
           className={`hb-btn hb-btn-gold ${s.primary}`}
-          disabled={!review && picked.length === 0}
-          onClick={onStart}
+          disabled={!review && pool === 0}
+          onClick={() => onStart(effective)}
         >
-          {review ? t.startReview : t.startRound}
+          {review
+            ? t.startReview
+            : pool === 0
+              ? t.pickChapter
+              : t.startCount(count, picked.length)}
         </button>
       </div>
     </div>
@@ -582,7 +653,8 @@ function Results({
   open,
   setOpen,
   onReview,
-  onAgain,
+  onRetake,
+  onChange,
 }: {
   t: UiStrings;
   lang: Lang;
@@ -591,7 +663,8 @@ function Results({
   open: number | null;
   setOpen: (i: number | null) => void;
   onReview: () => void;
-  onAgain: () => void;
+  onRetake: () => void;
+  onChange: () => void;
 }) {
   const score = items.filter((item, i) => isCorrect(item, answers[i])).length;
   const missedNow = items.length - score;
@@ -665,9 +738,16 @@ function Results({
         <button
           type="button"
           className={`hb-btn ${missedNow > 0 ? s.ghost : "hb-btn-gold"} ${s.primary}`}
-          onClick={onAgain}
+          onClick={onRetake}
         >
-          {t.anotherRound}
+          {t.retake}
+        </button>
+        <button
+          type="button"
+          className={`hb-btn ${s.ghost} ${s.primary}`}
+          onClick={onChange}
+        >
+          {t.changeSelection}
         </button>
       </div>
     </div>

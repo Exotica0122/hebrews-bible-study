@@ -47,7 +47,9 @@ test.describe("quiz", () => {
     page,
   }) => {
     await page.goto("/quiz");
-    await page.getByRole("button", { name: "Start round" }).click();
+    await page
+      .getByRole("button", { name: "Start · 5 questions from 11 chapters" })
+      .click();
     for (let i = 1; i <= 5; i++) {
       await expect(page.getByText(`${i} of 5`)).toBeVisible();
       await page.locator("main [class*=options] button").first().click();
@@ -66,12 +68,47 @@ test.describe("quiz", () => {
     ).toBeVisible();
   });
 
-  test("a chapter quiz starts straight away on that chapter", async ({
+  test("a chapter quiz takes every question in that chapter", async ({
     page,
   }) => {
     await page.goto("/quiz/7");
-    await expect(page.getByText("1 of 5")).toBeVisible();
+    await expect(page.getByText("1 of 9")).toBeVisible();
     await expect(page.getByText(/^Hebrews 7:/).first()).toBeVisible();
+  });
+
+  test("the selection sets the round, and results offer a retake or a new selection", async ({
+    page,
+  }) => {
+    await page.goto("/quiz");
+    await page.getByRole("button", { name: "None" }).click();
+    await expect(
+      page.getByRole("button", { name: "Choose at least one chapter" }),
+    ).toBeDisabled();
+    await page.getByRole("button", { name: /^Hebrews 2 ·/ }).click();
+    await page.getByRole("button", { name: /^Hebrews 8 ·/ }).click();
+    await expect(
+      page.getByRole("button", { name: /^10 questions/ }),
+    ).toBeEnabled();
+    await page.getByRole("button", { name: /^All 17/ }).click();
+    await page
+      .getByRole("button", { name: "Start · 17 questions from 2 chapters" })
+      .click();
+    for (let i = 1; i <= 17; i++) {
+      await page.locator("main [class*=options] button").first().click();
+      await page
+        .getByRole("button", { name: i < 17 ? "Next question" : "See results" })
+        .click();
+    }
+    await expect(page.locator("main li")).toHaveCount(17);
+    await page.getByRole("button", { name: "Retake this quiz" }).click();
+    await expect(page.getByText("1 of 17")).toBeVisible();
+    await page.getByRole("button", { name: "End" }).click();
+    await expect(
+      page.getByRole("button", { name: /^Hebrews 2 ·/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("button", { name: /^Hebrews 1 ·/ }),
+    ).toHaveAttribute("aria-pressed", "false");
   });
 
   test("each chapter page links to its quiz", async ({ page }) => {
