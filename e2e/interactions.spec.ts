@@ -136,7 +136,7 @@ test("scene toggle swaps the radiance quote for the seal", async ({ page }) => {
   await altBtn.scrollIntoViewIfNeeded();
   await altBtn.click();
   await expect(m1).toContainText("…and the exact imprint of his nature.");
-  await expect(m1).toContainText("a seal presses into warm gold wax");
+  await expect(m1).toContainText("a seal presses into warm red wax");
   await m1.getByRole("button", { name: "Radiance", exact: true }).click();
   await expect(m1).toContainText("He is the radiance of the glory of God…");
 });
