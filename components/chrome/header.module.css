@@ -229,13 +229,43 @@
   }
 }
 
-@media (max-width: 379px) {
+@media (max-width: 479px) {
   .inner {
-    gap: 6px;
+    gap: 8px;
   }
   .header .inner {
     padding-left: 12px;
     padding-right: 12px;
+  }
+  .left {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .brand {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    line-height: 44px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chapterBtn,
+  .lang {
+    flex: none;
+  }
+}
+
+@media (max-width: 389px) {
+  .inner {
+    gap: 6px;
+  }
+  .header .inner {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .activeLabel {
+    display: none;
   }
   .left {
     gap: 4px;
@@ -244,7 +274,7 @@
     font-size: 22px;
   }
   .chapterBtn {
-    padding: 0 6px;
+    padding: 0 4px;
     letter-spacing: 0.12em;
   }
   .langBtn {
