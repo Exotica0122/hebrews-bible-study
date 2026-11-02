@@ -76,6 +76,73 @@ const T = {
       thread: "Cross-references",
       summary: "Summary",
     },
+    home: "Home",
+    chaptersBtn: "Chapters",
+    homeLede:
+      "A bilingual small-group study of the letter to the Hebrews, one chapter at a time, with word studies, commentary and a quiz to help it stick.",
+    continueReading: "Continue reading",
+    startReading: "Start reading",
+    practice: "Practice",
+    takeQuiz: "Take a quiz",
+    quizNew: "5 questions · about 3 minutes",
+    quizLast: (score: number, total: number, missed: number) =>
+      `Last round ${score} of ${total}` +
+      (missed ? ` · ${missed} to review` : ""),
+    chaptersTitle: "The chapters",
+    masteryKey: "Quiz questions you’ve answered right, per chapter",
+    mastery: (known: number, total: number) =>
+      `${known} of ${total} quiz questions right`,
+    quiz: "Quiz",
+    quizTitle: "Practice",
+    quizLede:
+      "Test yourself on the ideas of each chapter, then read why each answer is right.",
+    roundLabel: "Round",
+    newRound: "New round",
+    newRoundSub: "From the chapters you choose",
+    reviewRound: "Review missed",
+    reviewSub: (n: number) => `${n} ${n === 1 ? "question" : "questions"}`,
+    reviewNote:
+      "Only the questions you got wrong last time. Answer one correctly and it leaves the pile.",
+    chaptersLabel: (n: number) => `Chapters · ${n} selected`,
+    selectAll: "Select all",
+    clearAll: "Clear",
+    lengthLabel: "Length",
+    lengthOpt: (n: number) => `${n} questions`,
+    lengthSub: (n: number) => `About ${Math.round(n * 0.6)} minutes`,
+    startRound: "Start round",
+    startReview: "Start review",
+    preparing: "Getting the questions ready…",
+    endRound: "End",
+    counter: (i: number, n: number) => `${i} of ${n}`,
+    kinds: { choice: "Meaning", truefalse: "True or false", which: "Which chapter?" },
+    whichPrompt: "Which chapter says this?",
+    trueLabel: "True",
+    falseLabel: "False",
+    correct: "That’s right",
+    incorrect: "Not quite",
+    answerIs: "Answer",
+    readPassage: (ref: string) => `Read ${ref}`,
+    nextQuestion: "Next question",
+    seeResults: "See results",
+    resultsEyebrow: "Your round",
+    resultMsg: (score: number, total: number): string =>
+      score === total
+        ? "Every one. These ideas are sticking."
+        : score / total >= 0.6
+          ? "Good round. The ones you missed are saved for review."
+          : "These are worth another read. Your misses are saved for review.",
+    tapToSee: "Tap a question to see why",
+    markRight: "Right",
+    markWrong: "Missed",
+    reviewMissed: (n: number) =>
+      n === 1 ? "Review the one you missed" : `Review the ${n} you missed`,
+    anotherRound: "New round",
+    verseRef: (n: number, verses: string) => `Hebrews ${n}:${verses}`,
+    chapterName: (n: number) => `Hebrews ${n}`,
+    testYourself: (n: number) => `Test yourself on Hebrews ${n}`,
+    testYourselfBody:
+      "A few questions on this chapter’s ideas, with an explanation for every answer.",
+    startQuiz: "Start the quiz",
   },
   ko: {
     brand: "히브리서",
@@ -151,6 +218,71 @@ const T = {
       thread: "관련 구절",
       summary: "요약",
     },
+    home: "홈",
+    chaptersBtn: "장",
+    homeLede:
+      "히브리서를 한 장씩 함께 읽는 두 언어 소그룹 성경 공부입니다. 단어 연구와 주석, 그리고 오래 기억하도록 돕는 퀴즈가 있습니다.",
+    continueReading: "이어 읽기",
+    startReading: "읽기 시작",
+    practice: "연습",
+    takeQuiz: "퀴즈 풀기",
+    quizNew: "5문제 · 약 3분",
+    quizLast: (score: number, total: number, missed: number) =>
+      `지난 라운드 ${total}문제 중 ${score}개 정답` +
+      (missed ? ` · 복습할 문제 ${missed}개` : ""),
+    chaptersTitle: "장 목록",
+    masteryKey: "장별로 맞힌 퀴즈 문제",
+    mastery: (known: number, total: number) =>
+      `퀴즈 ${total}문제 중 ${known}개 정답`,
+    quiz: "퀴즈",
+    quizTitle: "연습",
+    quizLede: "각 장의 내용을 스스로 확인하고, 답마다 그 이유를 읽어 보세요.",
+    roundLabel: "라운드",
+    newRound: "새 라운드",
+    newRoundSub: "고른 장에서 출제",
+    reviewRound: "틀린 문제 복습",
+    reviewSub: (n: number) => `${n}문제`,
+    reviewNote:
+      "지난번에 틀린 문제만 나옵니다. 한 번 맞히면 복습 목록에서 빠집니다.",
+    chaptersLabel: (n: number) => `장 · ${n}개 선택`,
+    selectAll: "모두 선택",
+    clearAll: "모두 해제",
+    lengthLabel: "길이",
+    lengthOpt: (n: number) => `${n}문제`,
+    lengthSub: (n: number) => `약 ${Math.round(n * 0.6)}분`,
+    startRound: "시작하기",
+    startReview: "복습 시작",
+    preparing: "문제를 준비하는 중…",
+    endRound: "그만하기",
+    counter: (i: number, n: number) => `${n}문제 중 ${i}번째`,
+    kinds: { choice: "의미", truefalse: "맞다 · 틀리다", which: "몇 장일까요?" },
+    whichPrompt: "몇 장에 나오는 내용일까요?",
+    trueLabel: "맞다",
+    falseLabel: "틀리다",
+    correct: "맞았습니다",
+    incorrect: "아쉽습니다",
+    answerIs: "정답",
+    readPassage: (ref: string) => `${ref} 읽기`,
+    nextQuestion: "다음 문제",
+    seeResults: "결과 보기",
+    resultsEyebrow: "이번 라운드",
+    resultMsg: (score: number, total: number): string =>
+      score === total
+        ? "모두 맞혔습니다. 잘 기억하고 있습니다."
+        : score / total >= 0.6
+          ? "잘했습니다. 틀린 문제는 복습 목록에 저장했습니다."
+          : "다시 읽어 볼 만합니다. 틀린 문제는 복습 목록에 저장했습니다.",
+    tapToSee: "문제를 누르면 설명이 보입니다",
+    markRight: "정답",
+    markWrong: "오답",
+    reviewMissed: (n: number) => `틀린 ${n}문제 복습하기`,
+    anotherRound: "새 라운드",
+    verseRef: (n: number, verses: string) => `히브리서 ${n}:${verses}`,
+    chapterName: (n: number) => `히브리서 ${n}장`,
+    testYourself: (n: number) => `히브리서 ${n}장 퀴즈`,
+    testYourselfBody:
+      "이 장의 내용을 묻는 몇 가지 문제와, 답마다 설명이 있습니다.",
+    startQuiz: "퀴즈 시작하기",
   },
 };
 

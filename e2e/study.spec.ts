@@ -4,7 +4,7 @@ test.describe("chapter menu keyboard", () => {
   test("arrow keys, Home and End move between chapters and Enter follows", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const button = page.getByRole("button", { name: /Chapter 1/ });
     await button.focus();
     await page.keyboard.press("Enter");
@@ -39,7 +39,7 @@ test.describe("shareable word links", () => {
   test("opening a word sets the hash and a hash link opens the word", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const key = page
       .locator("#hb-m1")
       .getByRole("button", { name: "radiance", exact: true });
@@ -50,7 +50,7 @@ test.describe("shareable word links", () => {
     await expect(page).not.toHaveURL(/#hb-m1-radiance$/);
 
     await page.goto("about:blank");
-    await page.goto("/#hb-m2-firstborn");
+    await page.goto("/1#hb-m2-firstborn");
     await expect(page.getByRole("dialog", { name: "Firstborn" })).toBeVisible({
       timeout: 10_000,
     });
@@ -65,7 +65,7 @@ test.describe("shareable word links", () => {
     context,
   }, testInfo) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.goto("/");
+    await page.goto("/1");
     const key = page
       .locator("#hb-m1")
       .getByRole("button", { name: "heir of all things", exact: true });
@@ -84,7 +84,7 @@ test.describe("shareable word links", () => {
 test("print layout hides chrome and prints every word study and cross-reference", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await page.emulateMedia({ media: "print" });
   await expect(page.locator("header")).toBeHidden();
   await expect(page.locator("#hb-book")).toBeHidden();
@@ -98,7 +98,7 @@ test("page scroll is locked behind the mobile word sheet", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "sheet is mobile only");
-  await page.goto("/");
+  await page.goto("/1");
   const key = page
     .locator("#hb-m1")
     .getByRole("button", { name: "prophets", exact: true });
@@ -122,7 +122,7 @@ test("a back-to-top button appears after the hero and returns to the top", async
   page,
 }) => {
   test.slow();
-  await page.goto("/");
+  await page.goto("/1");
   const top = page.getByRole("button", { name: "Back to top" });
   await expect(top).toBeHidden();
   await page.locator("#hb-m2").scrollIntoViewIfNeeded();

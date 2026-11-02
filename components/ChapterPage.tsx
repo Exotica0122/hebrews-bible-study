@@ -25,6 +25,8 @@ import { BookIndex } from "@/components/book/BookIndex";
 import { WordSheet } from "@/components/sheet/WordSheet";
 import { BackToTop } from "@/components/chrome/BackToTop";
 import { ChapterSteps } from "@/components/chrome/ChapterSteps";
+import { QuizInvite } from "@/components/quiz/QuizInvite";
+import { rememberReading } from "@/lib/lastRead";
 import {
   parseThreadHash,
   parseWordHash,
@@ -100,6 +102,9 @@ export function ChapterPage({
   const progressRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const active = useScrollSpy(sectionIds, progressRef);
+  useEffect(() => {
+    rememberReading(chapter.number, active);
+  }, [chapter.number, active]);
 
   const closeWord = useCallback(() => {
     setWord((w) => {
@@ -210,7 +215,6 @@ export function ChapterPage({
         activeLabel={activeLabel}
         progressRef={progressRef}
         onGo={go}
-        onTop={() => scrollToTop(reduced)}
       />
       <main ref={mainRef}>
         <Hero
@@ -253,6 +257,7 @@ export function ChapterPage({
           <Appendix appendix={appendix} reduceMotion={reduceMotion} />
         )}
         <Summary summary={summary} title={copy.summaryTitle} />
+        <QuizInvite chapter={chapter.number} />
         <BookIndex current={chapter.number} />
       </main>
       <Footer quote={copy.footQuote} />

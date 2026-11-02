@@ -1,0 +1,254 @@
+/* Hero: a night ground under parchment type, like every chapter hero. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--night);
+  color: var(--parchment);
+  border-bottom: var(--double-rule);
+}
+.stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.stageGlow {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: min(900px, 160vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(243, 211, 138, 0.18) 0,
+    rgba(183, 137, 44, 0.06) 24%,
+    rgba(20, 17, 13, 0) 52%
+  );
+}
+.heroInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-height: clamp(460px, 68svh, 640px);
+  justify-content: flex-end;
+  padding-top: 72px;
+  padding-bottom: clamp(48px, 8vw, 88px);
+  text-align: center;
+}
+.heroEyebrow {
+  color: var(--gold-bright);
+  letter-spacing: 0.22em;
+}
+.heroTitle {
+  margin: 0;
+  font: 500 clamp(64px, 11vw, 128px) / 0.95 var(--font-display);
+  letter-spacing: 0.01em;
+  color: var(--parchment);
+}
+.verse {
+  margin: 8px 0 0;
+  max-width: 34em;
+}
+.verse p {
+  margin: 0;
+  font: italic 400 clamp(18px, 2.2vw, 21px) / 1.55 var(--font-text);
+  color: var(--parchment);
+  text-wrap: balance;
+}
+.verse cite {
+  display: block;
+  margin-top: 10px;
+  font: 500 12px/16px var(--font-text);
+  font-style: normal;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+/* The two ways in. */
+.paths {
+  background: var(--vellum);
+}
+.pathsInner {
+  display: grid;
+  gap: 28px;
+  padding-top: clamp(36px, 6vw, 64px);
+  padding-bottom: clamp(40px, 6vw, 72px);
+}
+.lede {
+  max-width: 640px;
+  font: italic 400 19px/30px var(--font-text);
+  color: var(--ink-muted);
+}
+.pathGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 12px;
+}
+.path {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 22px 22px 22px 24px;
+  text-decoration: none;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+.path:active {
+  transform: scale(0.985);
+}
+.pathKicker {
+  font: 500 12px/16px var(--font-text);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.pathTitle {
+  grid-column: 1;
+  font: 600 clamp(26px, 3vw, 32px) / 1.1 var(--font-display);
+}
+.pathSub {
+  grid-column: 1;
+  font: 400 16px/22px var(--font-text);
+}
+.pathArrow {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  font: 400 26px/1 var(--font-text);
+  transition: transform 160ms var(--ease-out);
+}
+.pathRead {
+  background: var(--vellum);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--gold-55);
+}
+.pathRead .pathKicker {
+  color: var(--rubric);
+}
+.pathRead .pathSub {
+  color: var(--ink-muted);
+}
+.pathQuiz {
+  background: var(--ink);
+  color: var(--vellum);
+}
+.pathQuiz .pathKicker {
+  color: var(--gold-bright);
+}
+.pathQuiz .pathSub {
+  color: var(--dust);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pathRead:hover {
+    color: var(--ink);
+    background: var(--vellum-deep);
+  }
+  .pathQuiz:hover {
+    color: var(--vellum);
+    background: var(--night-2);
+  }
+  .path:hover .pathArrow {
+    transform: translateX(4px);
+  }
+}
+
+/* Chapter grid. */
+.chaptersInner {
+  padding-top: var(--section-pad);
+  padding-bottom: var(--section-pad);
+}
+.chaptersHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+.chaptersCount {
+  font: italic 400 16px/22px var(--font-text);
+  color: var(--ink-muted);
+}
+.grid {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 168px), 1fr));
+  gap: 10px;
+}
+@media (max-width: 479px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  height: 100%;
+  min-height: 150px;
+  padding: 14px 14px 16px;
+  border: 1px solid var(--ink);
+  background: var(--vellum);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 140ms ease;
+}
+.tile:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover {
+    color: var(--ink);
+    background: var(--vellum-deep);
+  }
+}
+.tileNum {
+  font: 500 40px/1 var(--font-display);
+}
+.tileTitle {
+  font: 400 15px/20px var(--font-text);
+  color: var(--ink-muted);
+  text-wrap: balance;
+}
+.tileBar {
+  display: block;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 12px;
+}
+.tileSoon {
+  border: 1px dashed var(--gold-text);
+  background: transparent;
+  color: var(--gold-text);
+}
+.tileSoon .tileTitle {
+  font-style: italic;
+  color: var(--gold-text);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tileSoon:hover {
+    color: var(--gold-text);
+    background: var(--gold-12);
+  }
+}
+.key {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  font: 400 15px/20px var(--font-text);
+  color: var(--ink-muted);
+}
+.keyBar {
+  display: block;
+  width: 72px;
+  flex: none;
+}

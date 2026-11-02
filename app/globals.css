@@ -49,6 +49,10 @@ canvas {
   --parchment: #eee4cf;
   --dust: #a89a82;
   --ember: #c8553d;
+  /* Quiz feedback: a muted olive for right answers, beside the rubric red. */
+  --sage: #4f6b3a;
+  --sage-wash: #e3e6c9;
+  --rubric-wash: #f1d7cc;
 
   --gold-12: rgba(183, 137, 44, 0.12);
   --gold-16: rgba(183, 137, 44, 0.16);
@@ -211,4 +215,16 @@ a:focus-visible,
   .hb-btn-outline:hover {
     background: var(--gold-16);
   }
+}
+
+.hb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }

@@ -15,7 +15,7 @@ test.describe("search", () => {
   test("a verse jumps to that exact verse in another chapter", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await input.fill("6:19");
     await page
@@ -29,7 +29,7 @@ test.describe("search", () => {
   });
 
   test("a word in the current chapter glows at its verse", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await page.evaluate(() => {
       const glows: string[] = [];
       Object.assign(window, { glows });
@@ -75,12 +75,12 @@ test.describe("search", () => {
       .getByRole("option", { name: /Radiance/ })
       .first()
       .click();
-    await expect(page).toHaveURL(/\/#?hb-m1-radiance$|\/#hb-m1-radiance$/);
+    await expect(page).toHaveURL(/\/1#hb-m1-radiance$/);
     await expect(page.getByRole("dialog", { name: "Radiance" })).toBeVisible();
   });
 
   test("a cross-reference opens its panel", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await input.fill("Jer 31");
     const option = page
@@ -111,14 +111,14 @@ test.describe("search", () => {
   });
 
   test("an unwritten chapter says it is coming soon", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await input.fill("12:1");
     await expect(page.getByText("Hebrews 12 is coming soon.")).toBeVisible();
   });
 
   test("nothing found says so", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await input.fill("sparrow");
     await expect(page.getByText(/No matches for “sparrow”/)).toBeVisible();
@@ -126,7 +126,7 @@ test.describe("search", () => {
 
   test("a failed index load offers a retry", async ({ page }) => {
     await page.route("**/search-index/en", (route) => route.abort());
-    await page.goto("/");
+    await page.goto("/1");
     await openSearch(page);
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByRole("alert")).toContainText("couldn’t load");
@@ -150,7 +150,7 @@ test.describe("search", () => {
   test("Cancel or Escape returns to the same place", async ({
     page,
   }, testInfo) => {
-    await page.goto("/");
+    await page.goto("/1");
     await page.evaluate(() => window.scrollTo(0, 2000));
     await openSearch(page);
     if (testInfo.project.name === "mobile")
@@ -171,7 +171,7 @@ test.describe("recently viewed", () => {
     page.getByRole("group", { name: "Recently viewed" });
 
   test("a fresh search shows no history", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await openSearch(page);
     await expect(page.getByText("Hebrews 1–11", { exact: true })).toBeVisible();
     await expect(recent(page)).toHaveCount(0);
@@ -180,7 +180,7 @@ test.describe("recently viewed", () => {
   test("opened items are remembered, newest first, across reloads", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await pick(page, await openSearch(page), "1:3");
     await pick(page, await openSearch(page), "1:5");
     await page.reload();
@@ -192,7 +192,7 @@ test.describe("recently viewed", () => {
   });
 
   test("it remembers the item, not the unfinished query", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await pick(page, await openSearch(page), "radianc");
     await openSearch(page);
     const option = recent(page).getByRole("option");
@@ -201,7 +201,7 @@ test.describe("recently viewed", () => {
   });
 
   test("a search with no result adds nothing", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await pick(page, input, "1:3");
     await (await openSearch(page)).fill("sparrow");
@@ -210,10 +210,10 @@ test.describe("recently viewed", () => {
   });
 
   test("an item goes straight back to its place", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await pick(page, await openSearch(page), "6:19");
     await expect(page).toHaveURL(/\/6#hb-v19$/);
-    await page.goto("/");
+    await page.goto("/1");
     await openSearch(page);
     await recent(page)
       .getByRole("option", { name: /Hebrews 6:19/ })
@@ -224,7 +224,7 @@ test.describe("recently viewed", () => {
   });
 
   test("one can be removed, or all cleared", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await pick(page, await openSearch(page), "1:3");
     const input = await openSearch(page);
     await pick(page, input, "1:5");
@@ -242,7 +242,7 @@ test.describe("recently viewed", () => {
   test("the plain queries of the earlier format are dropped", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await page.evaluate(() =>
       window.localStorage.setItem("hb-search-history-en", '["for","enligh"]'),
     );
@@ -252,13 +252,13 @@ test.describe("recently viewed", () => {
   });
 
   test("each language keeps its own history", async ({ page, context }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await pick(page, await openSearch(page), "1:3");
     await context.addCookies([
       { name: "hb-lang", value: "ko", domain: "localhost", path: "/" },
     ]);
     await page.evaluate(() => window.localStorage.setItem("hb-lang", "ko"));
-    await page.goto("/");
+    await page.goto("/1");
     await page.getByRole("button", { name: "검색", exact: true }).click();
     await expect(page.getByRole("group", { name: "최근 본 항목" })).toHaveCount(
       0,
@@ -303,7 +303,7 @@ test.describe("search on a keyboard", () => {
   test.skip(({ isMobile }) => isMobile, "desktop only");
 
   test("the shortcut opens it and arrows pick a result", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await page.keyboard.press("ControlOrMeta+k");
     const input = page.getByRole("combobox", { name: "Search" });
     await expect(input).toBeFocused();
@@ -320,13 +320,13 @@ test.describe("search on a keyboard", () => {
   test("arrows walk recent items and nothing is chosen until then", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await input.fill("1:3");
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/#hb-v3$/);
     await expect(page.getByRole("dialog")).toBeHidden();
-    await page.evaluate(() => history.replaceState(null, "", "/"));
+    await page.evaluate(() => history.replaceState(null, "", "/1"));
     await page.keyboard.press("ControlOrMeta+k");
     await expect(input).toHaveValue("");
     const option = page.getByRole("option", { name: /Hebrews 1:3/ });
@@ -341,7 +341,7 @@ test.describe("search on a keyboard", () => {
   });
 
   test("the query survives reopening, selected", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const input = await openSearch(page);
     await input.fill("anchor");
     await page.keyboard.press("Escape");

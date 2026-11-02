@@ -46,7 +46,7 @@ pnpm dev          # http://localhost:3000
 ## Project layout
 
 ```
-app/                     routes: / (chapter 1), /[chapter], not-found
+app/                     routes: / (home), /[chapter], /quiz, /quiz/[chapter], not-found
 components/
   movement/              scripture, commentary, word-study asides, threads
   scenes/three/          R3F scenes and shared primitives; registry.ts maps scene ids to components
@@ -54,6 +54,7 @@ components/
   scenes/fallback/       CSS starfield for the intro and coming-soon pages
 content/
   hebrews/<n>.ts         one file per chapter, en + ko
+  quiz/<n>.ts            quiz questions per chapter, en + ko
   ui.ts                  interface strings
   parse.ts               verse markup parser
 e2e/                     Playwright specs; e2e/tools/ holds screenshot scripts
@@ -67,6 +68,8 @@ e2e/                     Playwright specs; e2e/tools/ holds screenshot scripts
 2. Mark key words in verses as `[key|display text]`. Each `key` needs an entry in `words.en` and `words.ko`.
 3. Register the loader and a short title in `content/hebrews/index.ts`.
 4. Give each movement a `scene` id; new scenes go in `components/scenes/three/scenes/` and `registry.ts`.
+5. Write 8–12 quiz questions in `content/quiz/<n>.ts` (see `content/quiz/types.ts`), register the loader and count in
+   `content/quiz/index.ts`, and keep each question to what the chapter's commentary and summary say.
 
 Claude Code users can run the `add-chapter` skill in `.claude/skills/`, which walks through these steps from the study notes.
 

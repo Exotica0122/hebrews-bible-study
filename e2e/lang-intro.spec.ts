@@ -4,7 +4,7 @@ test.describe("server-rendered language", () => {
   test("a Korean cookie renders Korean from the first byte", async ({
     request,
   }) => {
-    const res = await request.get("/", {
+    const res = await request.get("/1", {
       headers: { cookie: "hb-lang=ko; hb-intro=1" },
     });
     const html = await res.text();
@@ -17,11 +17,11 @@ test.describe("server-rendered language", () => {
     page,
     context,
   }) => {
-    await page.goto("/");
+    await page.goto("/1");
     await page.getByRole("button", { name: "한국어" }).click();
     const cookie = (await context.cookies()).find((c) => c.name === "hb-lang");
     expect(cookie?.value).toBe("ko");
-    const res = await page.request.get("/");
+    const res = await page.request.get("/1");
     expect(await res.text()).toContain("히브리서 1장");
   });
 });
@@ -32,7 +32,7 @@ test.describe("intro veil", () => {
     context,
   }) => {
     await context.clearCookies();
-    await page.goto("/");
+    await page.goto("/1");
     const veil = page.locator("[data-intro]");
     await expect(veil).toBeVisible();
     // The veil is server-rendered but its timer starts at hydration, which a busy dev server can delay.
@@ -40,14 +40,14 @@ test.describe("intro veil", () => {
     expect(
       (await context.cookies()).find((c) => c.name === "hb-intro")?.value,
     ).toBe("1");
-    const res = await page.request.get("/");
+    const res = await page.request.get("/1");
     expect(await res.text()).not.toContain("data-intro");
   });
 
   test("is skipped under reduced motion", async ({ page, context }) => {
     await context.clearCookies();
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
+    await page.goto("/1");
     await expect(page.locator("[data-intro]")).toBeHidden();
     await expect(
       page.getByRole("heading", { level: 1, name: "Hebrews 1" }),
@@ -59,7 +59,7 @@ test.describe("intro veil", () => {
     context,
   }) => {
     await context.clearCookies();
-    await page.goto("/#hb-m1-radiance");
+    await page.goto("/1#hb-m1-radiance");
     await expect(page.locator("[data-intro]")).toHaveCount(0, {
       timeout: 15_000,
     });
@@ -70,7 +70,7 @@ test.describe("intro veil", () => {
 
   test("a click skips it", async ({ page, context }) => {
     await context.clearCookies();
-    await page.goto("/");
+    await page.goto("/1");
     const veil = page.locator("[data-intro]");
     await expect(veil).toBeVisible();
     await veil.click();

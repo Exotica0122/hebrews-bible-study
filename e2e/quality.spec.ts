@@ -18,7 +18,7 @@ async function litPixels(page: Page, selector: string) {
 }
 
 test("a tier-0 GPU gets the stills and no canvas", async ({ page }) => {
-  await page.goto("/?gpu=0");
+  await page.goto("/1?gpu=0");
   await page.locator('[data-scene="m1"]').scrollIntoViewIfNeeded();
   await page.waitForTimeout(3000);
   expect(await canvases(page)).toBe(0);
@@ -30,7 +30,7 @@ test("a tier-0 GPU gets the stills and no canvas", async ({ page }) => {
 test("a tier-3 GPU renders the post-processed radiance scene", async ({
   page,
 }) => {
-  await page.goto("/?gpu=3&scenetest");
+  await page.goto("/1?gpu=3&scenetest");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
   await expect
@@ -46,7 +46,7 @@ test("a tier-3 GPU renders the post-processed radiance scene", async ({
 test("a tier-2 GPU renders scenes without post-processing", async ({
   page,
 }) => {
-  await page.goto("/?gpu=2&scenetest");
+  await page.goto("/1?gpu=2&scenetest");
   const panel = page.locator('[data-scene="m2"]');
   await panel.scrollIntoViewIfNeeded();
   await expect
@@ -56,7 +56,7 @@ test("a tier-2 GPU renders scenes without post-processing", async ({
 });
 
 test("component styles override the shared classes", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await expect(page.locator("#hb-top .hb-eyebrow")).toHaveCSS(
     "color",
     "rgb(217, 174, 78)",
