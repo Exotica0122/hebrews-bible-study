@@ -55,12 +55,10 @@ const T = {
     searchLoading: "Getting the study ready…",
     searchFailed: "Search couldn’t load.",
     searchRetry: "Try again",
-    searchScope: (n: number) => `Search Hebrews 1–${n}`,
-    searchExamples: [
-      ["A word", "anchor"],
-      ["A verse", "6:19"],
-      ["A title", "Behind the curtain"],
-    ],
+    searchScope: (n: number) => `Hebrews 1–${n}`,
+    searchRecent: "Recently viewed",
+    searchClear: "Clear",
+    searchRemove: (ref: string) => `Remove ${ref}`,
     searchNone: (q: string, n: number) =>
       `No matches for “${q}” in Hebrews 1–${n}.`,
     searchSoon: (n: number) => `Hebrews ${n} is coming soon.`,
@@ -132,12 +130,10 @@ const T = {
     searchLoading: "공부 내용을 준비하는 중…",
     searchFailed: "검색을 불러오지 못했습니다.",
     searchRetry: "다시 시도",
-    searchScope: (n: number) => `히브리서 1–${n}장 검색`,
-    searchExamples: [
-      ["단어", "닻"],
-      ["구절", "6:19"],
-      ["제목", "휘장 안"],
-    ],
+    searchScope: (n: number) => `히브리서 1–${n}장`,
+    searchRecent: "최근 본 항목",
+    searchClear: "지우기",
+    searchRemove: (ref: string) => `${ref} 삭제`,
     searchNone: (q: string, n: number) =>
       `히브리서 1–${n}장에서 “${q}”을(를) 찾지 못했습니다.`,
     searchSoon: (n: number) => `히브리서 ${n}장은 준비 중입니다.`,

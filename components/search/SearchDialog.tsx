@@ -22,6 +22,14 @@ import {
 import type { Lang, Segment } from "@/content/types";
 import { chapterHref } from "@/lib/chapters";
 import { useLang } from "@/lib/lang";
+import {
+  clearRecent,
+  entryKey,
+  forgetEntry,
+  rememberEntry,
+  useRecentEntries,
+  type RecentEntry,
+} from "@/lib/searchHistory";
 import s from "./search.module.css";
 
 const GROUP_LIMIT = 4;
@@ -57,6 +65,53 @@ function Marked({ segments }: { segments: Segment[] }) {
   );
 }
 
+function Result({
+  entry,
+  id,
+  selected,
+  terms,
+  brief,
+  onPick,
+  onHover,
+}: {
+  entry: RecentEntry;
+  id: string;
+  selected: boolean;
+  terms: string[];
+  brief?: boolean;
+  onPick: (e: MouseEvent<HTMLAnchorElement>) => void;
+  onHover: () => void;
+}) {
+  const href = entry.target
+    ? `${chapterHref(entry.chapter)}#${entry.target}`
+    : chapterHref(entry.chapter);
+  return (
+    <Link
+      id={id}
+      role="option"
+      aria-selected={selected}
+      tabIndex={-1}
+      href={href}
+      prefetch={false}
+      className={s.result}
+      onClick={onPick}
+      onMouseMove={onHover}
+    >
+      <span className={s.ref}>{entry.ref}</span>
+      {entry.title && (
+        <span className={s.title}>
+          <Marked segments={snippet(entry.title, terms, 200)} />
+        </span>
+      )}
+      {entry.text && !(brief && entry.title) && (
+        <span className={s.text}>
+          <Marked segments={snippet(entry.text, terms)} />
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function SearchDialog({ chapter }: { chapter: number }) {
   const { lang, t } = useLang();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -75,6 +130,7 @@ export function SearchDialog({ chapter }: { chapter: number }) {
   const [attempt, setAttempt] = useState(0);
   const [active, setActive] = useState(0);
   const [expanded, setExpanded] = useState<SearchGroupKind | null>(null);
+  const recent = useRecentEntries(lang);
 
   const deferred = useDeferredValue(query);
   const entries = loaded?.lang === lang ? loaded.entries : null;
@@ -95,6 +151,8 @@ export function SearchDialog({ chapter }: { chapter: number }) {
   );
   const shownCount = groups.reduce((n, g) => n + g.shown.length, 0);
   const totalCount = groups.reduce((n, g) => n + g.hits.length, 0);
+  const browsing = query.trim().length === 0;
+  const optionCount = browsing ? recent.length : shownCount;
 
   useEffect(() => {
     if (!open || entries) return;
@@ -115,7 +173,7 @@ export function SearchDialog({ chapter }: { chapter: number }) {
   }, [open, lang, entries, attempt]);
 
   const show = () => {
-    setActive(0);
+    setActive(inputRef.current?.value.trim() ? 0 : -1);
     setOpen(true);
     dialogRef.current?.showModal();
     inputRef.current?.select();
@@ -142,22 +200,31 @@ export function SearchDialog({ chapter }: { chapter: number }) {
 
   const onInputKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing) return;
-    if (shownCount === 0) return;
+    if (optionCount === 0) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      moveTo((active + 1) % shownCount);
+      moveTo((active + 1) % optionCount);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      moveTo((active - 1 + shownCount) % shownCount);
+      moveTo(active <= 0 ? optionCount - 1 : active - 1);
     } else if (e.key === "Enter") {
       e.preventDefault();
       document.getElementById(optionId(active))?.click();
     }
   };
 
-  const onPick = (e: MouseEvent<HTMLAnchorElement>, entry: SearchEntry) => {
+  const search = (next: string) => {
+    setQuery(next);
+    setActive(next.trim() ? 0 : -1);
+    setExpanded(null);
+    listRef.current?.scrollTo({ top: 0 });
+  };
+
+  const onPick = (e: MouseEvent<HTMLAnchorElement>, entry: RecentEntry) => {
+    rememberEntry(lang, entry);
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     hide();
+    search("");
     if (entry.chapter !== chapter) return;
     e.preventDefault();
     if (!entry.target) {
@@ -177,7 +244,8 @@ export function SearchDialog({ chapter }: { chapter: number }) {
     LATEST_LIVE < CHAPTER_COUNT
       ? t.searchLater(LATEST_LIVE + 1, CHAPTER_COUNT)
       : null;
-  const isEmpty = entries !== null && totalCount === 0 && typed.length > 1;
+  const isEmpty =
+    !browsing && entries !== null && totalCount === 0 && typed.length > 1;
   let optionIndex = 0;
 
   return (
@@ -216,10 +284,10 @@ export function SearchDialog({ chapter }: { chapter: number }) {
               ref={inputRef}
               className={s.input}
               role="combobox"
-              aria-expanded={shownCount > 0}
+              aria-expanded={optionCount > 0}
               aria-controls={`${baseId}-list`}
               aria-activedescendant={
-                shownCount > 0 ? optionId(active) : undefined
+                optionCount > 0 && active >= 0 ? optionId(active) : undefined
               }
               aria-label={t.search}
               placeholder={t.searchPlaceholder}
@@ -229,12 +297,7 @@ export function SearchDialog({ chapter }: { chapter: number }) {
               autoCorrect="off"
               spellCheck={false}
               enterKeyHint="search"
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setActive(0);
-                setExpanded(null);
-                listRef.current?.scrollTo({ top: 0 });
-              }}
+              onChange={(e) => search(e.target.value)}
               onKeyDown={onInputKey}
             />
             <kbd className={s.esc}>Esc</kbd>
@@ -245,7 +308,57 @@ export function SearchDialog({ chapter }: { chapter: number }) {
 
           <div ref={listRef} className={s.results}>
             <div id={`${baseId}-list`} role="listbox" aria-label={t.search}>
+              {open && browsing && recent.length > 0 && (
+                <div role="group" aria-label={t.searchRecent}>
+                  <div className={s.recentHead}>
+                    <span className="hb-eyebrow" aria-hidden="true">
+                      {t.searchRecent}
+                    </span>
+                    <button
+                      type="button"
+                      className={s.clear}
+                      onClick={() => {
+                        clearRecent(lang);
+                        setActive(-1);
+                        inputRef.current?.focus();
+                      }}
+                    >
+                      {t.searchClear}
+                    </button>
+                  </div>
+                  {recent.map((entry, i) => (
+                    <div key={entryKey(entry)} className={s.recent}>
+                      <Result
+                        entry={entry}
+                        id={optionId(i)}
+                        selected={i === active}
+                        terms={[]}
+                        brief
+                        onPick={(e) => onPick(e, entry)}
+                        onHover={() => {
+                          if (i !== active) setActive(i);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className={s.remove}
+                        aria-label={t.searchRemove(entry.ref)}
+                        onClick={() => {
+                          forgetEntry(lang, entry);
+                          setActive(-1);
+                          inputRef.current?.focus();
+                        }}
+                      >
+                        <svg viewBox="0 0 20 20" aria-hidden="true">
+                          <path d="M5.5 5.5 14.5 14.5M14.5 5.5 5.5 14.5" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               {open &&
+                !browsing &&
                 groups.map((g) => (
                   <div
                     key={g.kind}
@@ -257,38 +370,18 @@ export function SearchDialog({ chapter }: { chapter: number }) {
                     </div>
                     {g.shown.map((entry) => {
                       const i = optionIndex++;
-                      const href = entry.target
-                        ? `${chapterHref(entry.chapter)}#${entry.target}`
-                        : chapterHref(entry.chapter);
                       return (
-                        <Link
-                          key={`${entry.chapter}-${entry.kind}-${entry.target}`}
+                        <Result
+                          key={entryKey(entry)}
+                          entry={entry}
                           id={optionId(i)}
-                          role="option"
-                          aria-selected={i === active}
-                          tabIndex={-1}
-                          href={href}
-                          prefetch={false}
-                          className={s.result}
-                          onClick={(e) => onPick(e, entry)}
-                          onMouseMove={() => {
+                          selected={i === active}
+                          terms={terms}
+                          onPick={(e) => onPick(e, entry)}
+                          onHover={() => {
                             if (i !== active) setActive(i);
                           }}
-                        >
-                          <span className={s.ref}>{entry.ref}</span>
-                          {entry.title && (
-                            <span className={s.title}>
-                              <Marked
-                                segments={snippet(entry.title, terms, 200)}
-                              />
-                            </span>
-                          )}
-                          {entry.text && (
-                            <span className={s.text}>
-                              <Marked segments={snippet(entry.text, terms)} />
-                            </span>
-                          )}
-                        </Link>
+                        />
                       );
                     })}
                     {g.hits.length > g.shown.length && (
@@ -322,10 +415,10 @@ export function SearchDialog({ chapter }: { chapter: number }) {
                 </button>
               </div>
             )}
-            {open && !failed && !entries && (
+            {open && !failed && !entries && !browsing && (
               <p className={s.notice}>{t.searchLoading}</p>
             )}
-            {open && entries && soon !== null && (
+            {open && entries && !browsing && soon !== null && (
               <p className={s.notice}>{t.searchSoon(soon)}</p>
             )}
             {open && isEmpty && soon === null && (
@@ -334,32 +427,15 @@ export function SearchDialog({ chapter }: { chapter: number }) {
                 {later && <p>{later}</p>}
               </div>
             )}
-            {open && entries && typed.length === 0 && (
-              <div className={s.notice}>
-                <p>{t.searchScope(LIVE_COUNT)}</p>
-                <ul className={s.examples}>
-                  {t.searchExamples.map(([label, example]) => (
-                    <li key={label}>
-                      <button
-                        type="button"
-                        className={s.example}
-                        onClick={() => {
-                          setQuery(example);
-                          inputRef.current?.focus();
-                        }}
-                      >
-                        {label}: {example}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
           <div className={s.foot}>
             <span aria-live="polite">
-              {totalCount > 0 ? t.searchCount(totalCount) : ""}
+              {browsing
+                ? t.searchScope(LIVE_COUNT)
+                : totalCount > 0
+                  ? t.searchCount(totalCount)
+                  : ""}
             </span>
             <span className={s.keys}>
               ↑↓ {t.searchKeys.move} · ↵ {t.searchKeys.go} · Esc{" "}
