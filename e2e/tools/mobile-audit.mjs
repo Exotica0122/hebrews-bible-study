@@ -7,7 +7,7 @@ const browser = await chromium.launch({
     "--ignore-gpu-blocklist",
   ],
 });
-const base = process.env.BASE_URL ?? "http://localhost:3000/";
+const base = process.env.BASE_URL ?? "http://localhost:3000/1";
 // overflow check at several widths
 for (const w of [320, 360, 390, 430]) {
   const ctx = await browser.newContext({

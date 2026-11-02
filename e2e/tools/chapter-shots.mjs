@@ -13,7 +13,7 @@ if (!chapter || !out) {
   process.exit(1);
 }
 const base = process.env.BASE_URL ?? "http://localhost:3000";
-const url = `${base}/${chapter === "1" ? "" : chapter}`;
+const url = `${base}/${chapter}`;
 const swift = flag === "--swiftshader";
 /** Waits between shots, so each scene is caught at several points in its 14–18 s loop. */
 const BEATS = [2500, 4500, 4500, 4500];

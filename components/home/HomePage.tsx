@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import {
   CHAPTER_COUNT,
   LIVE_COUNT,
@@ -28,6 +29,7 @@ export function HomePage({ verse }: HomePageProps) {
   const { lang, t } = useLang();
   const lastRead = useLastRead();
   const progress = useQuizProgress();
+  const heroRef = useRef<HTMLElement>(null);
 
   const reading =
     lastRead && isLive(lastRead.chapter) ? lastRead.chapter : null;
@@ -52,8 +54,13 @@ export function HomePage({ verse }: HomePageProps) {
     <>
       <Header />
       <main>
-        <section className={s.hero} aria-labelledby="hb-home-title">
-          <HomeStage />
+        <section
+          id="hb-top"
+          ref={heroRef}
+          className={s.hero}
+          aria-labelledby="hb-home-title"
+        >
+          <HomeStage hostRef={heroRef} />
           <div className={`hb-container ${s.heroInner}`}>
             <div className={`hb-eyebrow ${s.heroEyebrow}`}>
               {t.introEyebrow}

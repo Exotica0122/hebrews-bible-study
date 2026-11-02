@@ -7,7 +7,7 @@ for (const [name, w, h] of [
   ["mobile", 390, 844],
 ]) {
   for (const [label, url] of [
-    ["ours", process.env.BASE_URL ?? "http://localhost:3000/"],
+    ["ours", process.env.BASE_URL ?? "http://localhost:3000/1"],
     ["proto", PROTO],
   ].filter(([, url]) => url)) {
     const page = await browser.newPage({

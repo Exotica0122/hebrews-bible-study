@@ -11,19 +11,25 @@
   inset: 0;
   pointer-events: none;
 }
-.stageGlow {
+.stillLayer {
   position: absolute;
-  left: 50%;
-  top: 38%;
-  width: min(900px, 160vw);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(243, 211, 138, 0.18) 0,
-    rgba(183, 137, 44, 0.06) 24%,
-    rgba(20, 17, 13, 0) 52%
-  );
+  inset: 0;
+  transition: opacity 800ms ease;
+}
+.stillHidden {
+  opacity: 0;
+}
+/* The scene is daylit, so shade the title area for the parchment type. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 52% 40% at 50% 70%,
+      rgba(20, 17, 13, 0.55),
+      rgba(20, 17, 13, 0) 100%
+    ),
+    linear-gradient(rgba(20, 17, 13, 0) 45%, rgba(20, 17, 13, 0.72));
 }
 .heroInner {
   position: relative;
@@ -31,7 +37,7 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  min-height: clamp(460px, 68svh, 640px);
+  min-height: clamp(520px, 78svh, 760px);
   justify-content: flex-end;
   padding-top: 72px;
   padding-bottom: clamp(48px, 8vw, 88px);

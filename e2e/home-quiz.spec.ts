@@ -32,6 +32,9 @@ test.describe("home page", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Hebrews 4" }),
     ).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem("hb-last-read")))
+      .toContain('"chapter":4');
     await page.goto("/");
     await expect(
       page.getByRole("link", { name: /Continue reading.*Hebrews 4/ }),

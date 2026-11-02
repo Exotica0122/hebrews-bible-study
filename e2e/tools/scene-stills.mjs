@@ -24,6 +24,7 @@ const HEROES = {
 };
 /** Seconds into each loop, at the hold after the event and before the fade out. */
 const MOMENTS = {
+  heroHome: 10,
   hero: 3,
   heroEarth: 8,
   heroCamp: 8,
@@ -120,10 +121,17 @@ const VIEWS = [
 ];
 
 function targets() {
-  const list = [];
+  // The home page hero: Jerusalem at dawn, caught once the morning holds.
+  const list = [
+    {
+      scene: "heroHome",
+      url: `${base}/?scenetest&gpu=3&still`,
+      panel: "#hb-top",
+    },
+  ];
   for (const n of CHAPTERS) {
     const src = readFileSync(`content/hebrews/${n}.ts`, "utf8");
-    const url = `${base}/${n === 1 ? "" : n}?scenetest&gpu=3&still`;
+    const url = `${base}/${n}?scenetest&gpu=3&still`;
     const setting = src.match(/^ {2}setting: "(\w+)"/m)[1];
     list.push({ scene: HEROES[setting], url, panel: "#hb-top" });
     [...src.matchAll(/^ {4}scene: "(\w+)"/gm)].forEach(([, scene], i) => {

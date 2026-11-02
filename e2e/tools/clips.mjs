@@ -9,7 +9,7 @@ const offsets = (process.argv[6] || "0,900,1800,2700,3600")
 const PROTO = process.env.PROTO_URL;
 const browser = await chromium.launch();
 for (const [label, url] of [
-  ["ours", process.env.BASE_URL ?? "http://localhost:3000/"],
+  ["ours", process.env.BASE_URL ?? "http://localhost:3000/1"],
   ["proto", PROTO],
 ].filter(([, url]) => url)) {
   const page = await browser.newPage({

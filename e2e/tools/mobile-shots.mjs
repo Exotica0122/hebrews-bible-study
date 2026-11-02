@@ -7,7 +7,7 @@ const browser = await chromium.launch({
     "--ignore-gpu-blocklist",
   ],
 });
-const base = process.env.BASE_URL ?? "http://localhost:3000/";
+const base = process.env.BASE_URL ?? "http://localhost:3000/1";
 // mobile with 3D
 let ctx = await browser.newContext({
   ...devices["Pixel 7"],
