@@ -11,6 +11,19 @@ async function answerAll(page: Page, total: number, pick = 0) {
   }
 }
 
+test("the header quiz link opens the chapter's quiz, or the quiz page off a chapter", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "hidden on phones");
+  const quiz = page.getByRole("banner").getByRole("link", { name: "Quiz" });
+  await page.goto("/1");
+  await expect(quiz).toHaveAttribute("href", "/quiz/1");
+  await page.goto("/");
+  await expect(quiz).toHaveAttribute("href", "/quiz");
+  await page.getByRole("button", { name: "Chapters" }).click();
+  await expect(page.getByRole("menu").getByRole("menuitem")).toHaveCount(13);
+});
+
 test.describe("home page", () => {
   test("offers reading and the quiz, and lists every chapter", async ({
     page,
