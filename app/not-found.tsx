@@ -11,7 +11,7 @@ export default function NotFound() {
         There is no such page
       </h1>
       <p style={{ font: "400 19px/30px var(--font-text)", marginTop: 16 }}>
-        <Link href="/">Back to Hebrews 1</Link>
+        <Link href="/">Back to the home page</Link>
       </p>
     </main>
   );

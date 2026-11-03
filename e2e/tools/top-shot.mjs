@@ -31,7 +31,7 @@ for (const [name, ctxOpts] of [
     },
   });
   const page = await ctx.newPage();
-  await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+  await page.goto("http://localhost:3000/1", { waitUntil: "networkidle" });
   await page.locator("#hb-m3 h2").scrollIntoViewIfNeeded();
   await page.waitForTimeout(600);
   const box = await page

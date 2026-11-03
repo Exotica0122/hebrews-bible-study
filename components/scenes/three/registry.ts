@@ -1,6 +1,7 @@
 import type { ComponentType, RefObject } from "react";
 import type { SceneId } from "../types";
 import { HeroScene } from "./scenes/HeroScene";
+import { HeroHomeScene } from "./scenes/HeroHomeScene";
 import { HeroRoadScene } from "./scenes/HeroRoadScene";
 import { RadianceScene } from "./scenes/RadianceScene";
 import { SealScene } from "./scenes/SealScene";
@@ -102,6 +103,7 @@ export interface SceneProps {
 
 export const registry: Record<SceneId, ComponentType<SceneProps>> = {
   hero: HeroScene,
+  heroHome: HeroHomeScene,
   heroEarth: HeroRoadScene,
   heroCamp: HeroCampScene,
   radiance: RadianceScene,

@@ -9,7 +9,7 @@ interface Entry {
   target: string;
 }
 
-const pathOf = (n: number) => (n === 1 ? "/" : `/${n}`);
+const pathOf = (n: number) => `/${n}`;
 
 const ready = (page: Page) =>
   page.waitForFunction(
@@ -196,7 +196,7 @@ test.describe("reading the results", () => {
 });
 
 test("a landed cross-reference can still be tabbed to", async ({ page }) => {
-  await page.goto("/#hb-t-m1-john");
+  await page.goto("/1#hb-t-m1-john");
   const chip = page.locator("#hb-t-m1-john");
   await expect(chip).toHaveAttribute("aria-expanded", "true");
   expect(await chip.evaluate((el: HTMLElement) => el.tabIndex)).toBe(0);

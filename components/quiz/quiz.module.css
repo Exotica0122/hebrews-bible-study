@@ -1,0 +1,550 @@
+/* One readable column, phone first: a round should fit between bus stops. */
+.main {
+  background: var(--vellum);
+  min-height: calc(100svh - var(--header-h));
+}
+.column {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px) clamp(16px, 5vw, 32px) clamp(48px, 8vw, 96px);
+}
+.loading {
+  font: italic 400 18px/28px var(--font-text);
+  color: var(--ink-muted);
+}
+
+.setup,
+.play,
+.results {
+  display: grid;
+  gap: 28px;
+}
+.intro {
+  display: grid;
+  gap: 8px;
+}
+.title {
+  margin: 0;
+  font: 500 clamp(44px, 7vw, 60px) / 1.02 var(--font-display);
+}
+.lede {
+  font: italic 400 18px/28px var(--font-text);
+  color: var(--ink-muted);
+  text-wrap: pretty;
+}
+
+.field {
+  display: grid;
+  gap: 10px;
+}
+.label {
+  font: 500 12px/16px var(--font-text);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--ink);
+}
+.seg button {
+  display: grid;
+  gap: 2px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+.seg button + button {
+  border-left: 1px solid var(--ink);
+}
+.seg b {
+  font: 600 17px/22px var(--font-text);
+}
+.seg small {
+  font: 400 13px/18px var(--font-text);
+  color: var(--ink-muted);
+}
+.seg button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--vellum);
+}
+.seg button[aria-pressed="true"] small {
+  color: var(--dust);
+}
+.seg button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.fieldHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.quick {
+  display: flex;
+  gap: 16px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  gap: 8px;
+}
+@media (max-width: 479px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 116px;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid var(--gold-55);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 120ms var(--ease-out);
+}
+.card:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: var(--gold-text);
+  }
+}
+.card[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--vellum-deep);
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+.cardNum {
+  font: 500 32px/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+.card[aria-pressed="true"] .cardNum {
+  color: var(--ink);
+}
+.check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--gold-55);
+  font: 600 13px/1 var(--font-text);
+  color: var(--vellum);
+}
+.card[aria-pressed="true"] .check {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+.cardTitle {
+  font: 400 15px/20px var(--font-text);
+  color: var(--ink);
+  text-wrap: balance;
+}
+.cardMeta {
+  margin-top: auto;
+  padding-top: 8px;
+  font: italic 400 13px/18px var(--font-text);
+  color: var(--ink-muted);
+}
+.note {
+  font: italic 400 15px/20px var(--font-text);
+  color: var(--ink-muted);
+}
+.seg3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.textBtn {
+  justify-self: start;
+  min-height: 40px;
+  cursor: pointer;
+  font: 500 16px var(--font-text);
+  color: var(--gold-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.textBtn:disabled {
+  color: var(--dust);
+  text-decoration: none;
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .textBtn:not(:disabled):hover {
+    color: var(--rubric);
+  }
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+}
+.primary {
+  width: 100%;
+  height: 52px;
+}
+.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ghost {
+  border-color: var(--ink);
+  background: transparent;
+  color: var(--ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ghost:hover {
+    background: var(--gold-12);
+  }
+}
+
+/* A question. */
+.playBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: -16px;
+}
+.counter {
+  font: 500 12px/16px var(--font-text);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.progress {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+}
+.progress i {
+  height: 4px;
+  background: var(--gold-35);
+}
+.progress i.cur {
+  background: var(--ink);
+}
+.progress i.ok {
+  background: var(--sage);
+}
+.progress i.no {
+  background: var(--rubric);
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-bottom: -16px;
+}
+.ref {
+  font: 500 12px/16px var(--font-text);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rubric);
+}
+.kind {
+  font: italic 400 15px/20px var(--font-text);
+  color: var(--ink-muted);
+}
+.question {
+  margin: 0;
+  font: 500 clamp(28px, 4.4vw, 36px) / 1.18 var(--font-display);
+  text-wrap: balance;
+}
+.question:focus {
+  outline: none;
+}
+.quote {
+  margin-top: -12px;
+  padding-left: 14px;
+  border-left: 2px solid var(--gold);
+  font: italic 400 19px/30px var(--font-text);
+  color: var(--ink);
+}
+
+.options {
+  display: grid;
+  gap: 8px;
+}
+.tf,
+.which {
+  grid-template-columns: 1fr 1fr;
+}
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 14px;
+  border: 1px solid var(--gold-55);
+  background: var(--vellum);
+  cursor: pointer;
+  text-align: left;
+  font: 400 17px/24px var(--font-text);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    opacity 160ms ease,
+    transform 140ms var(--ease-out);
+}
+.option:active:not([aria-disabled="true"]) {
+  transform: scale(0.985);
+}
+.option[aria-disabled="true"] {
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .option:not([aria-disabled="true"]):hover {
+    border-color: var(--gold-text);
+    background: var(--vellum-deep);
+  }
+}
+.tf .option,
+.which .option {
+  justify-content: center;
+  text-align: center;
+  font: 600 22px/28px var(--font-display);
+}
+.letter {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border: 1px solid currentColor;
+  font: 600 13px/1 var(--font-text);
+  color: var(--gold-text);
+}
+.right {
+  border-color: var(--sage);
+  background: var(--sage-wash);
+}
+.right .letter {
+  border-color: var(--sage);
+  background: var(--sage);
+  color: var(--vellum);
+}
+.wrong {
+  border-color: var(--rubric);
+  background: var(--rubric-wash);
+}
+.wrong .letter {
+  border-color: var(--rubric);
+  background: var(--rubric);
+  color: var(--vellum);
+}
+.dim {
+  opacity: 0.5;
+}
+
+.explain {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  background: var(--parchment);
+  box-shadow: inset 0 0 0 1px var(--gold-35);
+  animation: hb-quiz-rise 240ms var(--ease-out);
+}
+@keyframes hb-quiz-rise {
+  from {
+    opacity: 0.4;
+    transform: translateY(6px);
+  }
+}
+.verdict {
+  font: 600 24px/1.1 var(--font-display);
+}
+.verdictOk {
+  color: var(--sage);
+}
+.verdictNo {
+  color: var(--rubric);
+}
+.answer {
+  font: 600 17px/24px var(--font-text);
+  color: var(--sage);
+}
+.why {
+  font: 400 17px/27px var(--font-text);
+  text-wrap: pretty;
+}
+.read {
+  justify-self: start;
+  font: 500 16px/24px var(--font-text);
+  text-underline-offset: 3px;
+}
+
+/* Results. */
+.score {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.big {
+  margin: 0;
+  font: 500 clamp(80px, 14vw, 112px) / 1.1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.big small {
+  font-size: 0.45em;
+  color: var(--ink-muted);
+}
+.review {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--gold-55);
+}
+.row {
+  border-bottom: 1px solid var(--gold-35);
+}
+.row > button {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 2px 12px;
+  width: 100%;
+  padding: 14px 0;
+  cursor: pointer;
+  text-align: left;
+}
+.mark {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  font: 600 13px/1 var(--font-text);
+  color: var(--vellum);
+}
+.markOk {
+  background: var(--sage);
+}
+.markNo {
+  background: var(--rubric);
+}
+.rowQ {
+  font: 400 17px/24px var(--font-text);
+}
+.rowRef {
+  font: 500 11px/16px var(--font-text);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.rowWhy {
+  display: grid;
+  gap: 8px;
+  padding: 0 0 18px 36px;
+}
+
+/* Select, then check: the chosen answer before it is marked. */
+.selected {
+  border-color: var(--ink);
+  background: var(--vellum-deep);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.selected .letter {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--vellum);
+}
+
+/* The bar at the foot of the screen: Check, then the verdict and Continue. */
+.checkBar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin: 0 calc(-1 * clamp(16px, 5vw, 32px));
+  padding: 14px clamp(16px, 5vw, 32px)
+    calc(14px + env(safe-area-inset-bottom, 0px));
+  background: var(--vellum);
+  border-top: 1px solid var(--gold-55);
+  transition: background-color 180ms ease;
+}
+.barOk {
+  background: var(--sage-wash);
+  border-top-color: var(--sage);
+}
+.barNo {
+  background: var(--rubric-wash);
+  border-top-color: var(--rubric);
+}
+.checkInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.barMsg {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.barOk .verdict {
+  color: var(--sage);
+}
+.barNo .verdict {
+  color: var(--rubric);
+}
+.barAnswer {
+  font: 500 16px/22px var(--font-text);
+  color: var(--ink);
+}
+.hint {
+  font: italic 400 16px/22px var(--font-text);
+  color: var(--ink-muted);
+}
+.barBtn {
+  flex: 1 1 200px;
+  height: 52px;
+}
+.barBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.barBtnOk {
+  border-color: var(--sage);
+  background: var(--sage);
+  color: var(--vellum);
+  font-weight: 600;
+}
+.barBtnNo {
+  border-color: var(--rubric);
+  background: var(--rubric);
+  color: var(--vellum);
+  font-weight: 600;
+}
+
+/* A question fills the screen so the Check bar rests at its foot. */
+.play {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--header-h) - clamp(28px, 5vw, 56px));
+}
+.checkBar {
+  margin-top: auto;
+}

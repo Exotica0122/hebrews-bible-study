@@ -7,7 +7,7 @@ const ctx = await browser.newContext({
   deviceScaleFactor: 2,
 });
 const page = await ctx.newPage();
-await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+await page.goto("http://localhost:3000/1", { waitUntil: "networkidle" });
 await page.getByRole("button", { name: "한국어" }).click();
 await page.waitForTimeout(600);
 await page.locator("#hb-map").scrollIntoViewIfNeeded();

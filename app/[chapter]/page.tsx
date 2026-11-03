@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { CHAPTER_COUNT, getChapter, isLive } from "@/content/hebrews";
 import { ChapterPage } from "@/components/ChapterPage";
 import { ComingSoon } from "@/components/soon/ComingSoon";
@@ -11,8 +11,8 @@ function parseChapter(raw: string): number | null {
 }
 
 export function generateStaticParams() {
-  return Array.from({ length: CHAPTER_COUNT - 1 }, (_, i) => ({
-    chapter: String(i + 2),
+  return Array.from({ length: CHAPTER_COUNT }, (_, i) => ({
+    chapter: String(i + 1),
   }));
 }
 
@@ -33,7 +33,6 @@ export default async function Chapter({ params }: PageProps<"/[chapter]">) {
   const { chapter } = await params;
   const n = parseChapter(chapter);
   if (n === null) notFound();
-  if (n === 1) redirect("/");
   const content = await getChapter(n);
   if (content) return <ChapterPage chapter={content} />;
   return <ComingSoon chapter={n} />;

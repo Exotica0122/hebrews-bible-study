@@ -151,6 +151,28 @@
   }
 }
 
+.menuLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gold-35);
+}
+.menuLink {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font: 500 16px var(--font-text);
+  color: var(--gold-text);
+  text-underline-offset: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .menuLink:hover {
+    color: var(--rubric);
+  }
+}
+
 .nav {
   display: flex;
   gap: 2px;

@@ -10,7 +10,7 @@ import {
 } from "react";
 import { CHAPTER_COUNT, LIVE_COUNT, isLive } from "@/content/hebrews";
 import { useLang } from "@/lib/lang";
-import { chapterHref } from "@/lib/chapters";
+import { QUIZ_HREF, chapterHref } from "@/lib/chapters";
 import { useEscape } from "@/lib/hooks";
 import { SearchDialog } from "@/components/search/SearchDialog";
 import s from "./header.module.css";
@@ -21,13 +21,13 @@ export interface NavItem {
 }
 
 interface HeaderProps {
-  chapter: number;
+  /** The chapter being read; omitted on the home and quiz pages. */
+  chapter?: number;
   navItems?: NavItem[];
   activeId?: string;
   activeLabel?: string;
   progressRef?: RefObject<HTMLDivElement | null>;
   onGo?: (id: string) => void;
-  onTop?: () => void;
 }
 
 export function Header({
@@ -37,7 +37,6 @@ export function Header({
   activeLabel = "",
   progressRef,
   onGo,
-  onTop,
 }: HeaderProps) {
   const { lang, t, setLang } = useLang();
   const [open, setOpen] = useState(false);
@@ -48,13 +47,14 @@ export function Header({
     if (!open) return;
     const items =
       menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]');
-    items?.[chapter - 1]?.focus();
+    items?.[(chapter ?? 1) - 1]?.focus();
   }, [open, chapter]);
 
   const onMenuKey = (e: KeyboardEvent) => {
     const items = [
-      ...(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ??
-        []),
+      ...(menuRef.current?.querySelectorAll<HTMLElement>(
+        '[data-chapter-grid] [role="menuitem"]',
+      ) ?? []),
     ];
     const i = items.indexOf(document.activeElement as HTMLElement);
     if (items.length === 0) return;
@@ -73,8 +73,20 @@ export function Header({
     items[next].focus();
   };
 
-  const chLabel = lang === "ko" ? `${chapter}장` : `Chapter ${chapter}`;
-  const chShort = lang === "ko" ? chLabel : `Ch ${chapter}`;
+  const chLabel =
+    chapter === undefined
+      ? t.chaptersBtn
+      : lang === "ko"
+        ? `${chapter}장`
+        : `Chapter ${chapter}`;
+  const chShort =
+    chapter === undefined
+      ? lang === "ko"
+        ? t.chaptersBtn
+        : "Ch"
+      : lang === "ko"
+        ? chLabel
+        : `Ch ${chapter}`;
   const bookName = (n: number) =>
     lang === "ko" ? `히브리서 ${n}장` : `Hebrews ${n}`;
 
@@ -82,15 +94,9 @@ export function Header({
     <header className={s.header}>
       <div className={`hb-container ${s.inner}`}>
         <div className={s.left}>
-          {onTop ? (
-            <button type="button" className={s.brand} onClick={onTop}>
-              {t.brand}
-            </button>
-          ) : (
-            <Link href="/" className={s.brand}>
-              {t.brand}
-            </Link>
-          )}
+          <Link href="/" className={s.brand}>
+            {t.brand}
+          </Link>
           <button
             type="button"
             className={`hb-eyebrow ${s.chapterBtn}`}
@@ -121,7 +127,7 @@ export function Header({
                 <span className="hb-eyebrow">{t.chapters}</span>
                 <span className={s.legend}>{t.chLegend(LIVE_COUNT)}</span>
               </div>
-              <div className={s.grid}>
+              <div className={s.grid} data-chapter-grid="">
                 {Array.from({ length: CHAPTER_COUNT }, (_, i) => i + 1).map(
                   (n) => {
                     const cls = isLive(n)
@@ -149,6 +155,30 @@ export function Header({
                   },
                 )}
               </div>
+              <div className={s.menuLinks}>
+                <Link
+                  role="menuitem"
+                  href="/"
+                  className={s.menuLink}
+                  onClick={() => setOpen(false)}
+                >
+                  {t.home}
+                </Link>
+                <Link
+                  role="menuitem"
+                  href={
+                    chapter && isLive(chapter)
+                      ? `${QUIZ_HREF}/${chapter}`
+                      : QUIZ_HREF
+                  }
+                  className={s.menuLink}
+                  onClick={() => setOpen(false)}
+                >
+                  {chapter && isLive(chapter)
+                    ? t.testYourself(chapter)
+                    : t.takeQuiz}
+                </Link>
+              </div>
             </div>
           </>
         )}
@@ -170,7 +200,7 @@ export function Header({
         )}
         <span className={s.activeLabel}>{activeLabel}</span>
 
-        <SearchDialog chapter={chapter} />
+        <SearchDialog chapter={chapter ?? 0} />
 
         <div role="group" aria-label="Language" className={s.lang}>
           <button

@@ -47,6 +47,7 @@ export type SceneId =
   | "sworn"
   | "forever"
   | "heroPattern"
+  | "heroHome"
   | "trueTent"
   | "pattern"
   | "second"

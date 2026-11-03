@@ -15,7 +15,7 @@ page.on("console", (m) => {
     console.log("[console error]", m.text().slice(0, 300));
 });
 await page.goto(
-  (process.env.BASE_URL ?? "http://localhost:3000/") + "?scenetest",
+  (process.env.BASE_URL ?? "http://localhost:3000/1") + "?scenetest",
   { waitUntil: "networkidle" },
 );
 await page.waitForTimeout(wait);

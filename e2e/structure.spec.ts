@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("renders the Hebrews 1 study page skeleton", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await expect(
     page.getByRole("heading", { level: 1, name: "Hebrews 1" }),
   ).toBeVisible();
@@ -287,7 +287,7 @@ test("renders Hebrews 11 with seven movements and 새번역 in Korean", async ({
 test("desktop header shows the section nav; mobile shows the active label", async ({
   page,
 }, testInfo) => {
-  await page.goto("/");
+  await page.goto("/1");
   const nav = page.getByRole("navigation", { name: "Sections" });
   if (testInfo.project.name === "desktop") {
     await expect(nav).toBeVisible();
@@ -298,7 +298,7 @@ test("desktop header shows the section nav; mobile shows the active label", asyn
 });
 
 test("shows the chapter index with chapter 1 live", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/1");
   const book = page.locator("#hb-book");
   await expect(book.getByRole("link")).toHaveCount(13);
   await expect(book).toContainText("Studying now");
@@ -306,7 +306,7 @@ test("shows the chapter index with chapter 1 live", async ({ page }) => {
 
 test("never scrolls horizontally on a 320px phone", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
-  await page.goto("/");
+  await page.goto("/1");
   const widths = await page.evaluate(async () => {
     await document.fonts.ready;
     return {

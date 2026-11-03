@@ -35,9 +35,9 @@ const notoSerifKr = Noto_Serif_KR({
 });
 
 export const metadata: Metadata = {
-  title: "Hebrews 1 · A verse-by-verse study",
+  title: "Hebrews · A verse-by-verse study",
   description:
-    "A bilingual (English / 한국어) small-group study of Hebrews 1: five movements, word studies, commentary and cross-references.",
+    "A bilingual (English / 한국어) small-group study of Hebrews, one chapter at a time, with word studies, commentary, cross-references and a quiz.",
 };
 
 export const viewport: Viewport = {

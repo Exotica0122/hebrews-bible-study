@@ -66,6 +66,10 @@ Check the rendered page before publishing, then give the user the link.
 
 Write `content/hebrews/<n>.ts` in the shape of the existing chapters: movements with en/ko copy, `[key|text]` word marks whose keys match across both languages, word studies with the Greek, chips, summary, `copy`, and `setting`. Give `snips` one line per verse. Register it in `content/hebrews/index.ts`.
 
+### Quiz questions
+
+Write `content/quiz/<n>.ts` in the shape of the existing quizzes: 8–12 questions that test the chapter's ideas, not word-for-word recall, built only from the commentary, summary and author's intention you just wrote. Mix the three kinds (choice, true/false, which chapter), write the right answer first (rounds shuffle it), make wrong options believable misreadings, and give every question an explanation in both languages. Never quote scripture from memory in a question; paraphrase, or copy the chapter's own wording. Register the loader and count in `content/quiz/index.ts`; `content/quiz/index.test.ts` checks the rest.
+
 ## 5. Scenes and fallbacks
 
 - R3F scene per movement in `components/scenes/three/scenes/`, registered in `registry.ts`, with ids in both `SceneId` unions.

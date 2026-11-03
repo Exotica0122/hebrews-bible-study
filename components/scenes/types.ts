@@ -1,5 +1,6 @@
 export type SceneId =
   | "hero"
+  | "heroHome"
   | "heroEarth"
   | "heroCamp"
   | "radiance"

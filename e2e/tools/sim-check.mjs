@@ -10,7 +10,7 @@ if (!chapter || !out) {
   process.exit(1);
 }
 const base = process.env.BASE_URL ?? "http://localhost:3000";
-const url = `${base}/${chapter === "1" ? "" : chapter}`;
+const url = `${base}/${chapter}`;
 /** Staggered so no shot lands on a loop's fade: scenes run 14–18 s. */
 const BEATS = [7000, 5000];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

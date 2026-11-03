@@ -4,7 +4,7 @@ test.describe("word studies", () => {
   test("open on tap, one at a time, close on Escape and ×", async ({
     page,
   }, testInfo) => {
-    await page.goto("/");
+    await page.goto("/1");
     const m1 = page.locator("#hb-m1");
     const radiance = m1.getByRole("button", { name: "radiance", exact: true });
     await radiance.scrollIntoViewIfNeeded();
@@ -42,7 +42,7 @@ test.describe("word studies", () => {
   });
 
   test("open with Enter and Space from the keyboard", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/1");
     const fathers = page
       .locator("#hb-m1")
       .getByRole("button", { name: "fathers", exact: true });
@@ -61,7 +61,7 @@ test.describe("word studies", () => {
       testInfo.project.name !== "mobile",
       "bottom sheet is mobile only",
     );
-    await page.goto("/");
+    await page.goto("/1");
     const glory = page
       .locator("#hb-m1")
       .getByRole("button", { name: "glory of God", exact: true });
@@ -85,7 +85,7 @@ test.describe("word studies", () => {
 test("cross-reference chips open one per movement, with Colossians open by default", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   const m1 = page.locator("#hb-m1");
   const col = m1.getByRole("button", { name: /Col 1:16–17/ });
   const john = m1.getByRole("button", { name: /John 1:1–3/ });
@@ -110,7 +110,7 @@ test("cross-reference chips open one per movement, with Colossians open by defau
 test("language toggle swaps every string and drops the English drop cap", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await expect(
     page.locator("#hb-m1 [aria-hidden] >> text=L").first(),
   ).toBeVisible();
@@ -130,7 +130,7 @@ test("language toggle swaps every string and drops the English drop cap", async 
 });
 
 test("scene toggle swaps the radiance quote for the seal", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/1");
   const m1 = page.locator("#hb-m1");
   const altBtn = m1.getByRole("button", { name: "Exact imprint", exact: true });
   await altBtn.scrollIntoViewIfNeeded();
@@ -144,7 +144,7 @@ test("scene toggle swaps the radiance quote for the seal", async ({ page }) => {
 test("chapter menu routes to a coming-soon chapter with prev, next and back", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await page.getByRole("button", { name: /Chapter 1/ }).click();
   await page.getByRole("menuitem", { name: /Hebrews 12/ }).click();
   await expect(page).toHaveURL(/\/12$/);
@@ -163,7 +163,7 @@ test("chapter menu routes to a coming-soon chapter with prev, next and back", as
 });
 
 test("side buttons step between live chapters only", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await expect(
     page.getByRole("link", { name: /^Previous chapter/ }),
   ).toHaveCount(0);
@@ -172,7 +172,7 @@ test("side buttons step between live chapters only", async ({ page }) => {
   await page
     .getByRole("link", { name: "Previous chapter · Hebrews 1" })
     .click();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/1$/);
   await page.goto("/11");
   await expect(page.getByRole("link", { name: /^Next chapter/ })).toHaveCount(
     0,
@@ -187,7 +187,7 @@ test("chapter 12 has no previous link and chapter 13 has no next link", async ({
   await page.goto("/13");
   await expect(page.getByRole("link", { name: /Hebrews 14/ })).toHaveCount(0);
   await page.goto("/1");
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/1$/);
   const res = await page.goto("/99");
   expect(res?.status()).toBe(404);
 });
@@ -196,7 +196,7 @@ test("section nav scroll-spies and the progress bar grows", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "section nav is desktop only");
-  await page.goto("/");
+  await page.goto("/1");
   const nav = page.getByRole("navigation", { name: "Sections" });
   await expect(nav.getByRole("button", { name: "Map" })).not.toHaveAttribute(
     "aria-current",
@@ -217,7 +217,7 @@ test("section nav scroll-spies and the progress bar grows", async ({
 test("word study dialogs take focus and give it back to the word", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   const key = page
     .locator("#hb-m1")
     .getByRole("button", { name: "radiance", exact: true });

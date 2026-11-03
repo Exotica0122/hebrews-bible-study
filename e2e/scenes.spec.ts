@@ -10,7 +10,7 @@ async function canvasCount(page: Page) {
 test("mounts a WebGL canvas for the hero and for miniatures near the viewport", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await expect
     .poll(() => canvasCount(page), { timeout: 15_000 })
     .toBeGreaterThanOrEqual(1);
@@ -33,7 +33,7 @@ test("keeps the number of live canvases within the budget while scrolling", asyn
     if (m.type() === "error" || /WebGL context/i.test(m.text()))
       warnings.push(m.text());
   });
-  await page.goto("/");
+  await page.goto("/1");
   const height = await page.evaluate(
     () => document.documentElement.scrollHeight,
   );
@@ -51,7 +51,7 @@ test("keeps the number of live canvases within the budget while scrolling", asyn
 });
 
 test("shows the shimmer, then hides it", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/1");
   const m1 = page.locator("#hb-m1");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
@@ -63,7 +63,7 @@ test("reduced motion shows the rendered still with a badge and mounts no canvas"
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/1");
   const m1 = page.locator("#hb-m1");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
@@ -98,7 +98,7 @@ test("without WebGL the still stays, with no badge and no errors", async ({
       return (orig as (...a: unknown[]) => unknown).call(this, type, ...rest);
     } as typeof orig;
   });
-  await page.goto("/");
+  await page.goto("/1");
   const m1 = page.locator("#hb-m1");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
@@ -112,7 +112,7 @@ test("without WebGL the still stays, with no badge and no errors", async ({
 test("the scene toggle swaps the scene without remounting the canvas", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   const m1 = page.locator("#hb-m1");
   const panel = page.locator('[data-scene="m1"]');
   await panel.scrollIntoViewIfNeeded();
@@ -135,7 +135,7 @@ test("the scene toggle swaps the scene without remounting the canvas", async ({
 test("three.js is not in the initial HTML and renders a non-blank frame", async ({
   page,
 }) => {
-  const res = await page.goto("/?scenetest");
+  const res = await page.goto("/1?scenetest");
   const html = (await res?.text()) ?? "";
   const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(
     (m) => m[1],
@@ -166,7 +166,7 @@ test("three.js is not in the initial HTML and renders a non-blank frame", async 
 test("hero fragments return home when the hero canvas unmounts", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/1");
   await expect
     .poll(async () => page.locator("#hb-top canvas").count(), {
       timeout: 15_000,

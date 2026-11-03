@@ -1,0 +1,30 @@
+.wrap {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+.bar {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+}
+.bar i {
+  height: 3px;
+  background: var(--gold-25);
+}
+.bar i.on {
+  background: var(--gold);
+}
+.label {
+  font: italic 400 15px/20px var(--font-text);
+  color: var(--ink-muted);
+}
+.night .bar i {
+  background: rgba(217, 174, 78, 0.22);
+}
+.night .bar i.on {
+  background: var(--gold-bright);
+}
+.night .label {
+  color: var(--dust);
+}

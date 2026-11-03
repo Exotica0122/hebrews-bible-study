@@ -1,0 +1,45 @@
+.section {
+  background: var(--night);
+  color: var(--parchment);
+  border-top: var(--double-rule);
+}
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px 64px;
+  padding-top: clamp(40px, 6vw, 72px);
+  padding-bottom: clamp(40px, 6vw, 72px);
+}
+.copy {
+  max-width: 620px;
+  min-width: 0;
+}
+.eyebrow {
+  color: var(--gold-bright);
+}
+.title {
+  margin-top: 10px;
+}
+.body {
+  margin-top: 12px;
+  font: italic 400 19px/30px var(--font-text);
+  color: var(--dust);
+}
+.side {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 320px);
+}
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover {
+    color: var(--night);
+  }
+}
