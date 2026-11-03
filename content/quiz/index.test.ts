@@ -12,14 +12,13 @@ import type { QuizQuestion } from "./types";
 
 const HANGUL = /[가-힣]/;
 
+function textsIn(q: QuizQuestion, lang: "en" | "ko"): string[] {
+  const c = q[lang];
+  return "options" in c ? [c.q, c.why, ...c.options, ...c.notes] : [c.q, c.why];
+}
+
 function texts(q: QuizQuestion): string[] {
-  const out: string[] = [];
-  for (const lang of ["en", "ko"] as const) {
-    const c = q[lang];
-    out.push(c.q, c.why);
-    if ("options" in c) out.push(...c.options);
-  }
-  return out;
+  return [...textsIn(q, "en"), ...textsIn(q, "ko")];
 }
 
 describe("quiz registry", () => {
@@ -68,6 +67,18 @@ describe.each(QUIZ_CHAPTERS.map((n) => [n]))("chapter %i questions", (n) => {
         expect(q.en.options.length, label).toBeLessThanOrEqual(4);
         expect(q.ko.options.length, label).toBe(q.en.options.length);
         expect(new Set(q.en.options).size, label).toBe(q.en.options.length);
+        for (const lang of ["en", "ko"] as const)
+          expect(q[lang].notes.length, `${label} ${lang} notes`).toBe(
+            q[lang].options.length - 1,
+          );
+        for (const note of q.ko.notes)
+          expect(HANGUL.test(note), `${label} note has Korean`).toBe(true);
+      }
+      for (const t of textsIn(q, "en"))
+        expect(HANGUL.test(t), `${label}: Korean in "${t}"`).toBe(false);
+      if (q.kind === "truefalse") {
+        expect(q.en.why, label).not.toMatch(/^(True|False)\b/);
+        expect(q.ko.why, label).not.toMatch(/^(참|거짓|맞|틀)/);
       }
       if (q.kind === "which") {
         expect(q.chapters[0], label).toBe(n);
@@ -102,5 +113,17 @@ describe("multiple-choice answers", () => {
     for (const r of ranks) expect(r / qs.length).toBeLessThan(0.45);
     expect(ranks[3] / qs.length).toBeGreaterThan(0.12);
     expect(ranks[0] / qs.length).toBeGreaterThan(0.12);
+  });
+});
+
+describe("true/false statements", () => {
+  it("are true about as often as false, so guessing one way doesn't pay", async () => {
+    const tf = (await getQuizzes([...QUIZ_CHAPTERS])).filter(
+      (q) => q.kind === "truefalse",
+    );
+    const share =
+      tf.filter((q) => q.kind === "truefalse" && q.answer).length / tf.length;
+    expect(share).toBeGreaterThanOrEqual(0.4);
+    expect(share).toBeLessThanOrEqual(0.6);
   });
 });

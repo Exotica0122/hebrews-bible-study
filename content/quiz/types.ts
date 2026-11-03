@@ -21,6 +21,8 @@ export interface ChoiceCopy {
   q: string;
   /** Correct answer first, then 2–3 believable misreadings. */
   options: string[];
+  /** Why each misreading is wrong, one per option after the first. */
+  notes: string[];
   why: string;
 }
 

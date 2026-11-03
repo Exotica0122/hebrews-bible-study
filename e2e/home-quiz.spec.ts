@@ -69,9 +69,7 @@ test.describe("quiz", () => {
     await expect(page.getByText("Your round")).toBeVisible();
     await expect(page.locator("main li")).toHaveCount(5);
     await page.goto("/");
-    await expect(
-      page.getByRole("link", { name: /Last round \d of 5/ }),
-    ).toBeVisible();
+    await expect(page.getByText(/Last round \d of 5/)).toBeVisible();
   });
 
   test("a chapter quiz takes every question in that chapter", async ({
@@ -79,7 +77,66 @@ test.describe("quiz", () => {
   }) => {
     await page.goto("/quiz/7");
     await expect(page.getByText("1 of 9")).toBeVisible();
+    await expect(page.getByText(/^Hebrews 7:/)).toHaveCount(0);
+    await page.getByRole("radio").first().click();
+    await page.getByRole("button", { name: "Check" }).click();
     await expect(page.getByText(/^Hebrews 7:/).first()).toBeVisible();
+  });
+
+  test("a wrong choice says why it is wrong, here and in the results", async ({
+    page,
+  }) => {
+    await page.goto("/quiz/1");
+    await expect(page.getByText("1 of 9")).toBeVisible();
+    for (let i = 1; i <= 9; i++) {
+      const radios = page.getByRole("radio");
+      const choice =
+        (await radios.count()) > 2 &&
+        !(await page.getByText("Which chapter says this?").isVisible());
+      await radios.last().click();
+      await page.getByRole("button", { name: "Check" }).click();
+      if (choice && (await page.getByText("Not quite").isVisible()))
+        await expect(page.getByText("Why not:").first()).toBeVisible();
+      await page
+        .getByRole("button", { name: i < 9 ? "Continue" : "See results" })
+        .click();
+    }
+    const missed = page.locator("main li").filter({ hasText: "✕" });
+    if ((await missed.count()) > 0)
+      await expect(page.getByText(/^You chose:/).first()).toBeVisible();
+  });
+
+  test("a round survives a trip to read the passage", async ({ page }) => {
+    await page.goto("/quiz/3");
+    await expect(page.getByText("1 of 9")).toBeVisible();
+    await page.getByRole("radio").first().click();
+    await page.getByRole("button", { name: "Check" }).click();
+    await page.getByRole("link", { name: /^Read Hebrews 3:/ }).click();
+    await expect(page).toHaveURL(/\/3#hb-/);
+    await page.goBack();
+    await expect(page.getByText("1 of 9")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+  });
+
+  test("leaving a round any other way opens the selection", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: /^Quick round/ }).click();
+    await expect(page.getByText("1 of 5")).toBeVisible();
+    await page.getByRole("radio").first().click();
+    await page.getByRole("button", { name: "Check" }).click();
+    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+    await page.goto("/");
+    await page.getByRole("link", { name: "Take a quiz" }).click();
+    await expect(page.getByRole("heading", { name: "Practice" })).toBeVisible();
+  });
+
+  test("the home page starts a quick round in one tap", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: /^Quick round/ }).click();
+    await expect(page.getByText("1 of 5")).toBeVisible();
+    await expect(page).toHaveURL(/\/quiz$/);
   });
 
   test("the selection sets the round, and results offer a retake or a new selection", async ({

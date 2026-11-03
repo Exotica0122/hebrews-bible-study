@@ -14,6 +14,11 @@ export const quiz8: QuizQuestion[] = [
         "In the Most Holy Place of the temple, which he entered at his death",
         "At the right hand of the throne only, where no sanctuary is needed",
       ],
+      notes: [
+        "It’s the other way round: Moses’ tent was the copy of the heavenly one (v5).",
+        "He doesn’t serve in an earthly temple. On earth he would not even be a priest (v4).",
+        "He is seated at the right hand, and he is also a minister in the true tent (v1–2).",
+      ],
       why: "The place where Jesus serves is not the earthly things the Levitical priests served, but heaven, a holy place no human can enter but Jesus himself. He is seated at the right hand of the Majesty, with the same authority as the one on the throne.",
     },
     ko: {
@@ -23,6 +28,11 @@ export const quiz8: QuizQuestion[] = [
         "천사들이 곁에서 섬기는, 모세의 장막을 본뜬 하늘의 복제품에서",
         "그분이 죽으실 때 들어가신 성전의 지성소에서",
         "보좌 오른쪽에서만. 그곳에는 성소가 필요 없습니다",
+      ],
+      notes: [
+        "반대입니다. 모세의 장막이 하늘에 있는 것을 본뜬 것입니다(5절).",
+        "그분은 땅의 성전에서 섬기지 않으십니다. 땅에서는 제사장도 되실 수 없었습니다(4절).",
+        "그분은 오른편에 앉아 계시면서, 참 장막에서 섬기는 분이기도 하십니다(1–2절).",
       ],
       why: "예수님이 섬기시는 곳은 레위 계통의 제사장들이 섬기던 땅의 것이 아니라, 예수님 외에는 아무도 들어갈 수 없는 거룩한 곳인 하늘입니다. 그분은 지엄하신 분의 오른쪽에 앉으셔서, 보좌에 앉으신 분과 같은 권위를 가지십니다.",
     },
@@ -40,6 +50,11 @@ export const quiz8: QuizQuestion[] = [
         "Every detail of worship must be kept exactly, or the copy loses its meaning",
         "Moses saw heaven, so the tent was heaven on earth",
       ],
+      notes: [
+        "The heavenly is the original. Moses was shown it and built a copy.",
+        "The care for detail was real, but Hebrews’ point is that the copy pointed beyond itself to Jesus.",
+        "Moses saw a pattern, not heaven brought down. The tent was a shadow, deliberately incomplete.",
+      ],
       why: "God gave Moses very specific instructions and said to make it all according to the pattern he was shown. The author stresses that because the earthly tabernacle was only a copy and shadow of the heavenly one, it was intentionally incomplete. Its completion came in Jesus Christ.",
     },
     ko: {
@@ -49,6 +64,11 @@ export const quiz8: QuizQuestion[] = [
         "하늘의 장막은 나중에 모세가 땅에 만든 장막에 맞추어 지어졌습니다",
         "예배의 모든 세부를 정확히 지켜야 하며, 그렇지 않으면 모형이 뜻을 잃습니다",
         "모세가 하늘을 보았으니, 장막은 땅 위의 하늘이었습니다",
+      ],
+      notes: [
+        "하늘의 것이 원본입니다. 모세는 그것을 보았고, 그 모형을 지었습니다.",
+        "세부를 정성껏 지킨 것은 맞지만, 히브리서의 요점은 그 모형이 자기 너머의 예수님을 가리켰다는 것입니다.",
+        "모세가 본 것은 모형이지, 땅으로 내려온 하늘이 아닙니다. 장막은 일부러 불완전하게 지은 그림자였습니다.",
       ],
       why: "하나님은 모세에게 매우 구체적인 지시를 주시고, 보여 주신 모형을 따라 모든 것을 만들라고 하셨습니다. 저자는 땅의 성막이 하늘에 있는 것의 모형과 그림자일 뿐이었기에 일부러 미완성이었다고 강조합니다. 그것은 예수 그리스도 안에서 완성되었습니다.",
     },
@@ -61,11 +81,11 @@ export const quiz8: QuizQuestion[] = [
     answer: true,
     en: {
       q: "By the law of Moses, Jesus could not have been a priest on earth at all.",
-      why: "True. Only Levi’s line could be priests, and Jesus descended from Judah. He is still a priest, but not on earthly terms. It would also be pointless for him to offer animals, grain and incense: those offerings foreshadowed what he would do.",
+      why: "Only Levi’s line could be priests, and Jesus descended from Judah. He is still a priest, but not on earthly terms. It would also be pointless for him to offer animals, grain and incense: those offerings foreshadowed what he would do.",
     },
     ko: {
       q: "모세의 율법대로라면 예수님은 땅에서는 제사장이 전혀 될 수 없으셨습니다.",
-      why: "맞습니다. 레위 계통만 제사장이 될 수 있었고, 예수님은 유다의 후손이셨습니다. 그분은 여전히 제사장이시지만, 땅의 조건에 따른 제사장이 아니십니다. 그분이 짐승과 곡식과 향을 드리는 것도 의미가 없었을 것입니다. 그 제물들은 그분이 하실 일을 미리 보여 주었기 때문입니다.",
+      why: "레위 계통만 제사장이 될 수 있었고, 예수님은 유다의 후손이셨습니다. 그분은 여전히 제사장이시지만, 땅의 조건에 따른 제사장이 아니십니다. 그분이 짐승과 곡식과 향을 드리는 것도 의미가 없었을 것입니다. 그 제물들은 그분이 하실 일을 미리 보여 주었기 때문입니다.",
     },
   },
   {
@@ -81,6 +101,11 @@ export const quiz8: QuizQuestion[] = [
         "By removing commands: love replaces the Law, so outward acts no longer matter",
         "As before, but with forgiveness given more freely",
       ],
+      notes: [
+        "That describes the old way: outward rituals that couldn’t change the heart. The new writes the law on hearts (v10).",
+        "The commands aren’t removed. They are written on the heart, so obedience grows from within.",
+        "It isn’t the same covenant made softer. It is new, with God’s law written within and sins remembered no more (v12).",
+      ],
       why: "The old covenant relied on outside-to-inside: external acts done to earn God’s favour and trigger inner change. The new covenant is inside-to-outside: the Holy Spirit transforms people through faith. Good works still happen, but as the natural fruit of a heart already changed, not a checklist to get right with God.",
     },
     ko: {
@@ -90,6 +115,11 @@ export const quiz8: QuizQuestion[] = [
         "밖에서 안으로: 바른 예배가 마음을 빚어, 순종이 자연스러워질 때까지 이끕니다",
         "계명을 없애는 방식: 사랑이 율법을 대신하니, 겉의 행동은 더 이상 중요하지 않습니다",
         "전과 같지만, 용서를 더 넉넉히 베푸는 방식입니다",
+      ],
+      notes: [
+        "그것은 옛 방식, 곧 마음을 바꾸지 못한 겉의 의식입니다. 새 언약은 법을 마음에 새깁니다(10절).",
+        "계명이 없어지는 것이 아닙니다. 마음에 새겨져서 순종이 안에서 자라납니다.",
+        "같은 언약을 부드럽게 한 것이 아닙니다. 하나님의 법을 안에 새기고, 죄를 다시 기억하지 않으시는 새 언약입니다(12절).",
       ],
       why: "옛 언약은 밖에서 안으로 가는 방식, 곧 하나님의 은혜를 얻고 속의 변화를 일으키려고 겉으로 행하는 방식에 기댔습니다. 새 언약은 안에서 밖으로 갑니다. 성령께서 믿음으로 사람을 변화시키십니다. 선한 일은 여전히 일어나지만, 하나님과 바른 관계를 맺기 위한 점검표가 아니라 이미 바뀐 마음의 자연스러운 열매입니다.",
     },
@@ -105,7 +135,12 @@ export const quiz8: QuizQuestion[] = [
         "People needed the diagnosis before the cure, and God had a set time",
         "God first wanted to see whether Israel could keep the Law if they tried harder",
         "The prophets’ words had to be gathered into Scripture before Jesus could come",
-        "The nations needed one common language first",
+        "David’s royal line had to be established first, which took generations",
+      ],
+      notes: [
+        "God knew the outcome. The Law wasn’t an experiment but a diagnosis, showing the need for a cure.",
+        "Gathering Scripture isn’t Hebrews’ reason. The Law first had to show people their condition.",
+        "David’s line mattered, but it isn’t the reason here. People needed the diagnosis before the cure.",
       ],
       why: "The study gives three reasons. The old covenant was a mirror that showed people they were too weak for God’s standards and needed a Saviour. Its tent, priests and sacrifices were a visual aid for abstract ideas like holiness, atonement and substitution. And God waited for the right moment, laying some 1,400 years of foundation so people could recognise Jesus when he came.",
     },
@@ -115,7 +150,12 @@ export const quiz8: QuizQuestion[] = [
         "사람들에게 치료 전에 진단이 필요했고, 하나님께는 정하신 때가 있었습니다",
         "하나님은 이스라엘이 더 애쓰면 율법을 지킬 수 있는지 먼저 보고 싶으셨습니다",
         "예수님이 오시기 전에 예언자들의 말씀이 성경으로 모여야 했습니다",
-        "민족들에게 먼저 하나의 공통 언어가 필요했습니다",
+        "다윗의 왕가가 먼저 세워져야 했고, 그러려면 여러 세대가 걸렸습니다",
+      ],
+      notes: [
+        "하나님은 결과를 알고 계셨습니다. 율법은 실험이 아니라 진단이었고, 치료가 필요함을 보여 주었습니다.",
+        "성경을 모으는 일이 히브리서가 말하는 이유가 아닙니다. 율법이 먼저 사람들의 상태를 보여 주어야 했습니다.",
+        "다윗의 혈통도 중요했지만, 여기서의 이유는 아닙니다. 치료 전에 진단이 필요했습니다.",
       ],
       why: "공부에서는 세 가지 이유를 듭니다. 옛 언약은 사람들이 하나님의 기준에 미치기에 너무 약하고 구원자가 필요하다는 것을 보여 주는 거울이었습니다. 그 장막과 제사장과 제사는 거룩함, 속죄, 대속 같은 추상적인 개념을 위한 시각 자료였습니다. 그리고 하나님은 알맞은 때를 기다리시며, 예수님이 오셨을 때 사람들이 그분을 알아볼 수 있도록 약 1,400년의 기초를 놓으셨습니다.",
     },
@@ -133,6 +173,11 @@ export const quiz8: QuizQuestion[] = [
         "The kingdom had split in two, and God promised to reunite it under one king",
         "Josiah had found the Book of the Law, and the people were renewing the covenant",
       ],
+      notes: [
+        "Jeremiah prophesied before and during the fall of Jerusalem, not after the return.",
+        "The split was long past. The promise answers a broken covenant, not a divided kingdom.",
+        "Josiah’s reform came first and didn’t last. The new covenant is promised after the old was broken.",
+      ],
       why: "The old covenant was conditional on obedience. Through centuries of idolatry and injustice the people broke it, and judgement came: Assyria took the north, and Babylon was taking the south. In that despair God promised to regather them and make a new covenant, writing his laws on their hearts: a permanent solution, not another condition.",
     },
     ko: {
@@ -142,6 +187,11 @@ export const quiz8: QuizQuestion[] = [
         "이스라엘이 포로에서 돌아와 성전을 다시 짓고 있었습니다",
         "나라가 둘로 갈라져 있었고, 하나님은 한 왕 아래 다시 하나 되게 하겠다고 약속하셨습니다",
         "요시야가 율법책을 찾아냈고, 백성이 언약을 새롭게 하고 있었습니다",
+      ],
+      notes: [
+        "예레미야는 예루살렘이 무너지기 전과 무너질 때 예언했지, 돌아온 뒤에 한 것이 아닙니다.",
+        "나라가 갈라진 것은 오래전 일입니다. 이 약속은 갈라진 나라가 아니라 깨진 언약에 대한 응답입니다.",
+        "요시야의 개혁이 먼저 있었지만 오래가지 못했습니다. 새 언약은 옛 언약이 깨진 뒤에 약속됩니다.",
       ],
       why: "옛 언약은 순종을 조건으로 했습니다. 수백 년 동안 우상 숭배와 불의로 백성은 그것을 깨뜨렸고, 심판이 왔습니다. 앗시리아가 북쪽을 무너뜨렸고, 바빌로니아가 남쪽을 삼키고 있었습니다. 그 절망 속에서 하나님은 그들을 다시 모으시고, 그분의 율법을 그들의 마음에 새기는 새 언약을 맺겠다고 약속하셨습니다. 또 하나의 조건이 아니라 영구한 해결책이었습니다.",
     },
@@ -154,11 +204,11 @@ export const quiz8: QuizQuestion[] = [
     answer: false,
     en: {
       q: "Because the old covenant is obsolete, it has no meaning for believers today.",
-      why: "False. Obsolete does not mean meaningless. The old covenant was a copy and shadow of the true things, and it laid the foundation for understanding God’s plan and why Jesus came.",
+      why: "Obsolete does not mean meaningless. The old covenant was a copy and shadow of the true things, and it laid the foundation for understanding God’s plan and why Jesus came.",
     },
     ko: {
       q: "옛 언약은 낡은 것이 되었으므로 오늘날 신자들에게 아무 의미가 없습니다.",
-      why: "틀립니다. 낡았다는 것이 의미가 없다는 뜻은 아닙니다. 옛 언약은 참된 것들의 모형과 그림자였고, 하나님의 계획과 예수님이 오신 이유를 이해하는 기초를 놓았습니다.",
+      why: "낡았다는 것이 의미가 없다는 뜻은 아닙니다. 옛 언약은 참된 것들의 모형과 그림자였고, 하나님의 계획과 예수님이 오신 이유를 이해하는 기초를 놓았습니다.",
     },
   },
   {
