@@ -1,120 +1,126 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { damp } from "maath/easing";
 import {
-  Color,
-  type DirectionalLight,
-  type Fog,
-  type HemisphereLight,
-  type InstancedMesh,
+  type Material,
   type Mesh,
-  type MeshStandardMaterial,
-  type ShaderMaterial,
+  PCFSoftShadowMap,
+  type PointLight,
 } from "three";
 import type { SceneProps } from "../registry";
 import { SceneEffects } from "../primitives/SceneEffects";
 import {
-  Birds,
-  City,
-  DAWN,
-  DawnSky,
-  Land,
-  MOUNT,
-  OliveGrove,
-  TempleMount,
-  placeBird,
-} from "../primitives/Jerusalem";
-import { setEmissive, setUniform } from "../primitives/mutate";
-import { STILL, smoothstep, useSceneTime } from "../primitives/Timeline";
+  ContactShadows,
+  Flame,
+  HerodianLamp,
+  LETTER,
+  Papyrus,
+  SCROLL_LINES,
+  ScrollRoll,
+  Table,
+} from "../primitives/Letter";
+import { cameraSettle, flicker, lineReveal } from "../primitives/letterMotion";
+import { setShadowMap } from "../primitives/mutate";
+import { STILL, useSceneTime } from "../primitives/Timeline";
 import { setLens, useResetCameraOnUnmount } from "../primitives/useSceneCamera";
 
-const BIRDS = 5;
-const SUN_EARLY = new Color(DAWN.sunEarly);
-const SUN_DAY = new Color(DAWN.sunDay);
-const HAZE_EARLY = new Color(DAWN.hazeEarly);
-const HAZE_DAY = new Color(DAWN.haze);
+const LIGHT = 7;
+
+function useShadows(on: boolean) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  useLayoutEffect(() => {
+    if (!on) return;
+    setShadowMap(gl, true, PCFSoftShadowMap);
+    const refresh = () =>
+      scene.traverse((o) => {
+        const m = (o as Mesh).material as Material | Material[] | undefined;
+        [m].flat().forEach((x) => x && (x.needsUpdate = true));
+      });
+    refresh();
+    return () => {
+      setShadowMap(gl, false);
+      refresh();
+    };
+  }, [gl, scene, on]);
+}
 
 /**
- * Home page: Jerusalem at dawn from the Mount of Olives. The sun rises behind
- * the viewer, reaches the temple's gilded front first, then the roofs and the
- * walls, and the morning holds. No figures; nothing stands for Christ here.
+ * Home page: the letter by lamplight. A papyrus of Hebrews 1:1–2, written as
+ * P46 has it, lies open by a Herodian lamp; the lines ink in, then the
+ * flame alone moves. No figures.
  */
 export function HeroHomeScene({ mobile, effects, pointer }: SceneProps) {
   useResetCameraOnUnmount();
+  useShadows(effects);
   const camera = useThree((s) => s.camera);
-  const sunRef = useRef<DirectionalLight>(null);
-  const hemiRef = useRef<HemisphereLight>(null);
-  const fogRef = useRef<Fog>(null);
-  const skyRef = useRef<Mesh>(null);
-  const goldRef = useRef<MeshStandardMaterial>(null);
-  const birdsRef = useRef<InstancedMesh>(null);
+  const light = useRef<PointLight>(null);
+  const reveal = useRef<number[]>(SCROLL_LINES.map(() => 0));
+  const flick = useRef(flicker(0));
 
-  useEffect(() => {
-    setLens(camera, mobile ? 50 : 36, 120);
+  useLayoutEffect(() => {
+    setLens(camera, mobile ? 44 : 30, 40);
   }, [camera, mobile]);
 
   useSceneTime((time, dt, state) => {
-    // A still is the morning hold, however slowly the renderer reaches it.
-    const t = STILL ? time + 9 : time;
-    const dawn = smoothstep(0.5, 8, t);
-    const sun = sunRef.current;
-    if (sun) {
-      sun.color.lerpColors(SUN_EARLY, SUN_DAY, dawn);
-      sun.intensity = 0.8 + 2.6 * dawn;
-      sun.position.set(-4, 2 + dawn * 12, 28);
+    const t = STILL ? time + 10 : time;
+    SCROLL_LINES.forEach((_, i) => {
+      reveal.current[i] = lineReveal(t, i, SCROLL_LINES.length);
+    });
+    const f = flicker(t);
+    flick.current = f;
+    if (light.current) {
+      light.current.intensity = LIGHT * f.power;
+      light.current.position.set(
+        LETTER.flame[0] + f.dx,
+        LETTER.flame[1] + 0.07,
+        LETTER.flame[2] + f.dy,
+      );
     }
-    if (hemiRef.current) hemiRef.current.intensity = 0.9 + 0.7 * dawn;
-    fogRef.current?.color.lerpColors(HAZE_EARLY, HAZE_DAY, dawn);
-    const sky = skyRef.current?.children[0] as Mesh | undefined;
-    if (sky) setUniform(sky.material as ShaderMaterial, "dawn", dawn);
-    if (goldRef.current)
-      setEmissive(goldRef.current, smoothstep(2.5, 6, t) * 0.5);
-    const birds = birdsRef.current;
-    if (birds)
-      for (let i = 0; i < BIRDS; i++)
-        placeBird(
-          birds,
-          i,
-          -10 + ((t * 0.55 + i * 3.7) % 22),
-          6.4 + Math.sin(t * 0.9 + i * 2.1) * 0.3 + ((i * 7) % 5) * 0.35,
-          -3 - ((i * 3) % 5) * 1.1,
-        );
 
+    const settle = cameraSettle(t);
     const p = pointer?.current ?? { x: 0, y: 0 };
     const cam = state.camera;
-    damp(
-      cam.position,
-      "x",
-      -1.6 + Math.sin(t * 0.05) * 0.5 + p.x * 0.6,
-      0.9,
-      dt,
-    );
-    damp(cam.position, "y", (mobile ? 7 : 6.2) - p.y * 0.3, 0.9, dt);
-    cam.position.z = mobile ? 17 : 15;
-    cam.lookAt(mobile ? MOUNT.x - 1.4 : 1.2, mobile ? 3.2 : 0.6, -7);
+    const lift = (1 - settle) * 0.35;
+    if (mobile) {
+      damp(cam.position, "x", 0.55 + p.x * 0.08, 0.9, dt);
+      cam.position.y = 3.0 + lift - p.y * 0.05;
+      cam.position.z = 2.9;
+      cam.lookAt(0.55, -0.6, 0.3);
+    } else {
+      damp(cam.position, "x", -0.05 + p.x * 0.15, 0.9, dt);
+      cam.position.y = 3.3 + lift - p.y * 0.08;
+      cam.position.z = 3.9;
+      cam.lookAt(-0.05, -0.2, 0.55);
+    }
   });
 
   return (
     <>
-      <fog ref={fogRef} attach="fog" args={[DAWN.hazeEarly, 18, 72]} />
-      <group ref={skyRef}>
-        <DawnSky />
-      </group>
-      <hemisphereLight ref={hemiRef} args={[DAWN.shade, DAWN.ground, 0.9]} />
-      <directionalLight
-        ref={sunRef}
-        position={[-4, 2, 28]}
-        intensity={0.8}
-        color={DAWN.sunEarly}
+      <hemisphereLight args={["#1b2233", "#120c07", 0.08]} />
+      <pointLight
+        ref={light}
+        position={[LETTER.flame[0], LETTER.flame[1] + 0.07, LETTER.flame[2]]}
+        color="#ffb766"
+        intensity={LIGHT}
+        decay={1.4}
+        castShadow={effects}
+        shadow-mapSize={[1024, 1024]}
+        shadow-bias={-0.0015}
+        shadow-normalBias={0.01}
+        shadow-camera-near={0.02}
+        shadow-camera-far={8}
       />
-      <Land segments={mobile ? 100 : 150} />
-      <City houses={mobile ? 380 : 560} />
-      <TempleMount goldRef={goldRef} />
-      <OliveGrove count={mobile ? 10 : 16} />
-      <Birds birdsRef={birdsRef} count={BIRDS} />
-      {effects && <SceneEffects bloom={0.3} threshold={0.88} vignette={0.35} />}
+      <Table mobile={mobile} />
+      <Papyrus mobile={mobile} revealRef={reveal} />
+      <ScrollRoll side={-1} />
+      <ScrollRoll side={1} />
+      <HerodianLamp />
+      <Flame flickerRef={flick} />
+      {!effects && <ContactShadows />}
+      {effects && <SceneEffects bloom={0.55} threshold={0.7} vignette={0.55} />}
     </>
   );
 }

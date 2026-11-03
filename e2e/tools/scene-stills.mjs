@@ -121,7 +121,7 @@ const VIEWS = [
 ];
 
 function targets() {
-  // The home page hero: Jerusalem at dawn, caught once the morning holds.
+  // The home page hero: the letter by lamplight, caught once the writing is in.
   const list = [
     {
       scene: "heroHome",

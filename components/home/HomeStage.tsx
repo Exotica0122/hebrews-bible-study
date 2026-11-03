@@ -6,7 +6,7 @@ import { SceneStill } from "@/components/scenes/SceneStill";
 import s from "./home.module.css";
 
 /**
- * Backdrop for the home hero: Jerusalem at dawn. The rendered still shows
+ * Backdrop for the home hero: the letter by lamplight. The rendered still shows
  * while the scene loads, under reduced motion and without WebGL.
  */
 export function HomeStage({

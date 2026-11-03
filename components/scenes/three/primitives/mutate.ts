@@ -3,7 +3,9 @@ import type {
   Material,
   MeshStandardMaterial,
   ShaderMaterial,
+  ShadowMapType,
   Texture,
+  WebGLRenderer,
 } from "three";
 
 // Frame-loop writes to memoised three.js objects go through these so the React Compiler lint allows them.
@@ -35,4 +37,18 @@ export function lerpColor(
   t: number,
 ) {
   material.color.lerpColors(from, to, t);
+}
+
+export function copyInto(target: number[], from: readonly number[]) {
+  for (let i = 0; i < from.length && i < target.length; i++)
+    target[i] = from[i];
+}
+
+export function setShadowMap(
+  gl: WebGLRenderer,
+  enabled: boolean,
+  type?: ShadowMapType,
+) {
+  gl.shadowMap.enabled = enabled;
+  if (type !== undefined) gl.shadowMap.type = type;
 }

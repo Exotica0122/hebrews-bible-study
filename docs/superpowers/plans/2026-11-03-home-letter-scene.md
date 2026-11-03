@@ -41,10 +41,12 @@
 ### Task 1: Scroll text and line layout
 
 **Files:**
+
 - Create: `components/scenes/three/primitives/letterText.ts`
 - Test: `components/scenes/three/primitives/letterText.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `type Glyph = { ch: string; over: boolean }`
   - `const SCROLL_TEXT: string`: P46's 1:1–2 in scriptio continua, with overlined nomina sacra marked in braces, e.g. `…Ο{ΘϹ}ΛΑΛΗϹΑϹ…`.
@@ -115,10 +117,12 @@ git commit   # message: the P46 source URL and any differences from SBLGNT
 ### Task 2: Motion curves
 
 **Files:**
+
 - Create: `components/scenes/three/primitives/letterMotion.ts`
 - Test: `components/scenes/three/primitives/letterMotion.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `const WRITE_START = 1.6`, `const WRITE_END = 8` (seconds)
   - `function lineReveal(t: number, line: number, count: number): number`: 0–1 progress of one line's ink. Lines run in sequence between `WRITE_START` and `WRITE_END`, each easing (`easeInOutCubic` from `Timeline.ts`).
@@ -196,9 +200,11 @@ Expected: PASS.
 ### Task 3: Procedural textures
 
 **Files:**
+
 - Create: `components/scenes/three/primitives/letterArt.ts`
 
 **Interfaces:**
+
 - Consumes: `Glyph`, `layoutLines`, `SCROLL_TEXT` (Task 1).
 - Produces:
   - `function papyrusMaps(w: number, h: number, seed: number): { color: HTMLCanvasElement; bump: HTMLCanvasElement }`
@@ -243,9 +249,11 @@ Expected: no errors.
 ### Task 4: Scene primitives
 
 **Files:**
+
 - Create: `components/scenes/three/primitives/Letter.tsx`
 
 **Interfaces:**
+
 - Consumes:
   - `papyrusMaps`, `inkMap`, `woodMaps`, `clayMap`, `contactShadow` (Task 3);
   - `layoutLines`, `SCROLL_TEXT` (Task 1);
@@ -287,6 +295,7 @@ Expected: no errors.
 ### Task 5: Compose the scene and retire Jerusalem
 
 **Files:**
+
 - Modify: `components/scenes/three/scenes/HeroHomeScene.tsx` (full rewrite)
 - Delete: `components/scenes/three/primitives/Jerusalem.tsx`
 - Modify:
@@ -296,6 +305,7 @@ Expected: no errors.
 - Test: `e2e/home-quiz.spec.ts` (existing, unchanged)
 
 **Interfaces:**
+
 - Consumes:
   - all of Task 4;
   - `lineReveal`, `flicker`, `cameraSettle`, `WRITE_END` (Task 2);
@@ -343,6 +353,7 @@ Expected: PASS.
 ### Task 6: Stills, visual QA and the owner checkpoint
 
 **Files:**
+
 - Modify: `public/scenes/heroHome.webp`, `public/scenes/mobile/heroHome.webp` (regenerated)
 
 - [ ] **Step 1: Render the stills on the real GPU**

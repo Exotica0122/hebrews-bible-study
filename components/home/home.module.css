@@ -19,17 +19,11 @@
 .stillHidden {
   opacity: 0;
 }
-/* The scene is daylit, so shade the title area for the parchment type. */
+/* Eases the scene into the section below. */
 .scrim {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      ellipse 52% 40% at 50% 70%,
-      rgba(20, 17, 13, 0.55),
-      rgba(20, 17, 13, 0) 100%
-    ),
-    linear-gradient(rgba(20, 17, 13, 0) 45%, rgba(20, 17, 13, 0.72));
+  background: linear-gradient(rgba(20, 17, 13, 0) 70%, rgba(20, 17, 13, 0.6));
 }
 .heroInner {
   position: relative;
@@ -37,7 +31,7 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  min-height: clamp(520px, 78svh, 760px);
+  min-height: max(520px, calc(100svh - var(--header-h)));
   justify-content: flex-end;
   padding-top: 72px;
   padding-bottom: clamp(48px, 8vw, 88px);
