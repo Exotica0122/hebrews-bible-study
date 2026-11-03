@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { getQuizzes } from "@/content/quiz";
 import type { QuizQuestion } from "@/content/quiz/types";
-import { buildRound, correctIndex, isCorrect, shuffle } from "./quizRound";
+import {
+  buildRound,
+  correctIndex,
+  isCorrect,
+  shuffle,
+  whyNot,
+} from "./quizRound";
 
 /** Deterministic random numbers, so rounds can be compared. */
 function seeded(seed: number) {
@@ -69,5 +75,45 @@ describe("correctIndex", () => {
       answer: false,
     } as QuizQuestion;
     expect(correctIndex(q)).toBe(1);
+  });
+});
+
+describe("whyNot", () => {
+  const choice: QuizQuestion = {
+    id: "1-x",
+    kind: "choice",
+    mid: "m1",
+    verses: "1",
+    en: {
+      q: "q",
+      options: ["right", "a", "b"],
+      notes: ["not a", "not b"],
+      why: "w",
+    },
+    ko: {
+      q: "질문",
+      options: ["정답", "가", "나"],
+      notes: ["가 아님", "나 아님"],
+      why: "설명",
+    },
+  };
+  const tf: QuizQuestion = {
+    id: "1-y",
+    kind: "truefalse",
+    mid: "m1",
+    verses: "1",
+    answer: true,
+    en: { q: "q", why: "w" },
+    ko: { q: "질문", why: "설명" },
+  };
+
+  it("explains a wrong choice in the reader's language", () => {
+    expect(whyNot(choice, 2, "en")).toBe("not b");
+    expect(whyNot(choice, 1, "ko")).toBe("가 아님");
+  });
+
+  it("has nothing to add for the right answer or other kinds", () => {
+    expect(whyNot(choice, 0, "en")).toBeNull();
+    expect(whyNot(tf, 1, "en")).toBeNull();
   });
 });

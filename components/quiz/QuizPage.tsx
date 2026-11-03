@@ -26,6 +26,7 @@ import {
   buildRound,
   correctIndex,
   isCorrect,
+  whyNot,
   type RoundItem,
   type RoundLength,
 } from "@/lib/quizRound";
@@ -58,8 +59,30 @@ interface SavedRound {
 
 /** The round in progress survives a trip to read the passage and back. */
 const SESSION_KEY = "hb-quiz-round";
+/** Set by a passage link; any other way back to the quiz starts fresh. */
+const RESUME_KEY = "hb-quiz-resume";
+
+function markResume() {
+  try {
+    window.sessionStorage.setItem(RESUME_KEY, "1");
+  } catch {}
+}
+
+function takeResume(): boolean {
+  try {
+    const on = window.sessionStorage.getItem(RESUME_KEY) === "1";
+    window.sessionStorage.removeItem(RESUME_KEY);
+    return on;
+  } catch {
+    return false;
+  }
+}
 
 function readSaved(path: string): SavedRound | null {
+  if (!takeResume()) {
+    writeSaved(null);
+    return null;
+  }
   try {
     const v = JSON.parse(
       window.sessionStorage.getItem(SESSION_KEY) ?? "null",
@@ -191,6 +214,12 @@ export function QuizPage({ chapter }: QuizPageProps) {
       // Deferred so the first paint is the "preparing" state, not a cascade.
       queueMicrotask(
         () => void start({ mode: "new", chapters: [chapter], length: "all" }),
+      );
+    } else if (new URLSearchParams(window.location.search).has("quick")) {
+      window.history.replaceState(null, "", path);
+      queueMicrotask(
+        () =>
+          void start({ mode: "new", chapters: [...QUIZ_CHAPTERS], length: 5 }),
       );
     }
   }, [path, chapter, start]);
@@ -548,7 +577,7 @@ function Setup({
         </>
       )}
 
-      <div className={s.actions}>
+      <div className={`${s.actions} ${s.startBar}`}>
         <button
           type="button"
           className={`hb-btn hb-btn-gold ${s.primary}`}
@@ -601,6 +630,15 @@ function Question({
   const right = correctIndex(q);
   const ok = picked === right;
   const last = index === items.length - 1;
+  const note = done ? whyNot(q, picked, lang) : null;
+  const feedbackRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (done)
+      feedbackRef.current?.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+  }, [done]);
   return (
     <div className={s.play}>
       <div className={s.playBar}>
@@ -625,8 +663,10 @@ function Question({
       </div>
 
       <div className={s.meta}>
-        <span className={s.ref}>{verseRef(q, t)}</span>
-        <span className={s.kind}>{t.kinds[q.kind]}</span>
+        {done && <span className={s.ref}>{verseRef(q, t)}</span>}
+        {q.kind !== "choice" && (
+          <span className={s.kind}>{t.kinds[q.kind]}</span>
+        )}
       </div>
       <h1 ref={headingRef} tabIndex={-1} className={s.question}>
         {q.kind === "which" ? t.whichPrompt : q[lang].q}
@@ -664,43 +704,45 @@ function Question({
         })}
       </div>
 
-      {done && (
-        <div className={s.explain}>
-          <p className={s.why}>{q[lang].why}</p>
-          <Link href={readHref(q)} className={s.read}>
-            {t.readPassage(verseRef(q, t))} →
-          </Link>
-        </div>
-      )}
-
-      <div className={`${s.checkBar} ${done ? (ok ? s.barOk : s.barNo) : ""}`}>
-        <div className={s.checkInner}>
-          <div className={s.barMsg} role="status" aria-live="polite">
-            {done ? (
-              <>
-                <p className={s.verdict}>{ok ? t.correct : t.incorrect}</p>
-                {!ok && (
-                  <p className={s.barAnswer}>
-                    {t.answerIs}: {rightAnswer(item, lang, t)}
-                  </p>
-                )}
-              </>
-            ) : (
-              <p className={s.hint}>
-                {selected === null ? t.chooseAnswer : t.checkHint}
+      {done ? (
+        <div
+          ref={feedbackRef}
+          className={`${s.feedback} ${ok ? s.feedbackOk : s.feedbackNo}`}
+        >
+          <div role="status" aria-live="polite">
+            <p className={s.verdict}>{ok ? t.correct : t.incorrect}</p>
+            {!ok && (
+              <p className={s.barAnswer}>
+                {t.answerIs}: {rightAnswer(item, lang, t)}
               </p>
             )}
           </div>
-          {done ? (
-            <button
-              ref={nextRef}
-              type="button"
-              className={`hb-btn ${s.barBtn} ${ok ? s.barBtnOk : s.barBtnNo}`}
-              onClick={onNext}
-            >
-              {last ? t.seeResults : t.continueQuiz}
-            </button>
-          ) : (
+          {note && (
+            <p className={s.whyNot}>
+              <b>{t.whyNot}</b> {note}
+            </p>
+          )}
+          <p className={s.why}>{q[lang].why}</p>
+          <Link href={readHref(q)} className={s.read} onClick={markResume}>
+            {t.readPassage(verseRef(q, t))} →
+          </Link>
+          <button
+            ref={nextRef}
+            type="button"
+            className={`hb-btn ${s.barBtn} ${ok ? s.barBtnOk : s.barBtnNo}`}
+            onClick={onNext}
+          >
+            {last ? t.seeResults : t.continueQuiz}
+          </button>
+        </div>
+      ) : (
+        <div className={s.checkBar}>
+          <div className={s.checkInner}>
+            <div className={s.barMsg}>
+              <p className={s.hint}>
+                {selected === null ? t.chooseAnswer : t.checkHint}
+              </p>
+            </div>
             <button
               type="button"
               className={`hb-btn hb-btn-gold ${s.barBtn}`}
@@ -709,9 +751,9 @@ function Question({
             >
               {t.checkAnswer}
             </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -785,11 +827,27 @@ function Results({
                 </button>
                 {isOpen && (
                   <div id={panel} className={s.rowWhy}>
+                    {!ok && answers[i] !== undefined && (
+                      <p className={s.chose}>
+                        {t.youChose}: {answerLabel(item, answers[i], lang, t)}
+                      </p>
+                    )}
                     <p className={s.answer}>
                       {t.answerIs}: {rightAnswer(item, lang, t)}
                     </p>
+                    {!ok &&
+                      answers[i] !== undefined &&
+                      whyNot(q, answers[i], lang) && (
+                        <p className={s.whyNot}>
+                          <b>{t.whyNot}</b> {whyNot(q, answers[i], lang)}
+                        </p>
+                      )}
                     <p className={s.why}>{q[lang].why}</p>
-                    <Link href={readHref(q)} className={s.read}>
+                    <Link
+                      href={readHref(q)}
+                      className={s.read}
+                      onClick={markResume}
+                    >
                       {t.readPassage(verseRef(q, t))} →
                     </Link>
                   </div>

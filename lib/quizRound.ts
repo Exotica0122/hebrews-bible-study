@@ -1,4 +1,5 @@
 import type { QuizQuestion } from "@/content/quiz/types";
+import type { Lang } from "@/content/types";
 import { chapterOf } from "@/content/quiz";
 
 export const ROUND_LENGTHS = [5, 10] as const;
@@ -29,6 +30,16 @@ export function shuffle<T>(list: readonly T[], rand: Rand = Math.random): T[] {
 export function correctIndex(q: QuizQuestion): number {
   if (q.kind === "truefalse") return q.answer ? 0 : 1;
   return 0;
+}
+
+/** Why a picked answer is wrong, when the question says; null otherwise. */
+export function whyNot(
+  q: QuizQuestion,
+  picked: number,
+  lang: Lang,
+): string | null {
+  if (q.kind !== "choice" || picked === 0) return null;
+  return q[lang].notes[picked - 1] ?? null;
 }
 
 export function isCorrect(item: RoundItem, picked: number): boolean {

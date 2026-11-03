@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import type { SceneId } from "../types";
 import { registry, type DragState, type PointerState } from "./registry";
 import { STILL } from "./primitives/Timeline";
+import { ReadyHoldContext, ReadyHolds } from "./readyHold";
 
 interface SceneCanvasProps {
   scene: SceneId;
@@ -48,6 +56,7 @@ function ReadyProbe({
   onUnmount: () => void;
 }) {
   const armed = useRef(false);
+  const holds = useContext(ReadyHoldContext);
   useEffect(() => {
     armed.current = true;
     return () => {
@@ -56,7 +65,7 @@ function ReadyProbe({
     };
   }, [onUnmount]);
   useFrame(() => {
-    if (!armed.current) return;
+    if (!armed.current || holds?.busy) return;
     armed.current = false;
     onReady();
   });
@@ -94,6 +103,7 @@ export default function SceneCanvas({
   onContextLost,
 }: SceneCanvasProps) {
   const Scene = registry[scene];
+  const [holds] = useState(() => new ReadyHolds());
   const maxDpr = mobile && !STILL ? 1.5 : 2;
   const [dpr, setDpr] = useState(() =>
     Math.min(
@@ -137,10 +147,12 @@ export default function SceneCanvas({
         />
       )}
       <ContextWatch onLost={onContextLost} />
-      <SceneLoop active={active}>
-        <ReadyProbe onReady={onReady} onUnmount={onUnmount} />
-        {sceneElement}
-      </SceneLoop>
+      <ReadyHoldContext value={holds}>
+        <SceneLoop active={active}>
+          <ReadyProbe onReady={onReady} onUnmount={onUnmount} />
+          {sceneElement}
+        </SceneLoop>
+      </ReadyHoldContext>
     </Canvas>
   );
 }

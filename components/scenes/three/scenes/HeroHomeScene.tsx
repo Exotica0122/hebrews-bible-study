@@ -1,11 +1,13 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useThree } from "@react-three/fiber";
 import { damp } from "maath/easing";
 import {
+  type Group,
   type Material,
   type Mesh,
+  type Texture,
   Object3D,
   PCFShadowMap,
   type PointLight,
@@ -27,6 +29,7 @@ import { cameraSettle, flicker, lineReveal } from "../primitives/letterMotion";
 import { setShadowMap } from "../primitives/mutate";
 import { STILL, useSceneTime } from "../primitives/Timeline";
 import { setLens, useResetCameraOnUnmount } from "../primitives/useSceneCamera";
+import { useReadyHold } from "../readyHold";
 
 const LIGHT = 8;
 /** Lamp share lit without shadows; Safari blacks out point-light shadow maps, so a spot casts them. */
@@ -56,9 +59,59 @@ function useShadows(on: boolean) {
  * P46 has it, lies open by a Herodian lamp; the lines ink in, then the
  * flame alone moves. No figures.
  */
+const TEXTURE_KEYS = ["map", "bumpMap", "roughnessMap", "alphaMap"] as const;
+
+function texturesIn(root: Group): Texture[] {
+  const found = new Set<Texture>();
+  root.traverse((o) => {
+    const m = (o as Mesh).material as Material | Material[] | undefined;
+    for (const mat of [m].flat()) {
+      if (!mat) continue;
+      const rec = mat as unknown as Record<string, Texture | null | undefined>;
+      for (const k of TEXTURE_KEYS) if (rec[k]) found.add(rec[k]!);
+      for (const t of (mat.userData.textures as Texture[] | undefined) ?? [])
+        found.add(t);
+    }
+  });
+  return [...found];
+}
+
+const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+
+/** Compiles shaders off the main thread and uploads textures a frame at a time, so the page stays responsive; the still shows until then. */
+function usePrepared(root: React.RefObject<Group | null>) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  const release = useReadyHold();
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void (async () => {
+      await gl.compileAsync(scene, camera);
+      for (const t of root.current ? texturesIn(root.current) : []) {
+        if (!live) return;
+        gl.initTexture(t);
+        await nextFrame();
+      }
+      if (!live) return;
+      setShown(true);
+      release();
+    })();
+    return () => {
+      live = false;
+    };
+  }, [gl, scene, camera, root, release]);
+  return shown;
+}
+
 export function HeroHomeScene({ mobile, effects, pointer }: SceneProps) {
   useResetCameraOnUnmount();
-  useShadows(effects);
+  // Phones skip shadow maps: patches under the rolls and lamp cost far less.
+  const shadows = effects && !mobile;
+  useShadows(shadows);
+  const root = useRef<Group>(null);
+  const shown = usePrepared(root);
   const camera = useThree((s) => s.camera);
   const glow = useRef<PointLight>(null);
   const spot = useRef<SpotLight>(null);
@@ -131,21 +184,25 @@ export function HeroHomeScene({ mobile, effects, pointer }: SceneProps) {
         decay={1.4}
         angle={1.25}
         penumbra={0.9}
-        castShadow={effects}
+        castShadow={shadows}
         shadow-mapSize={mobile ? [1024, 1024] : [2048, 2048]}
         shadow-bias={-0.0008}
         shadow-normalBias={0.01}
         shadow-camera-near={0.05}
         shadow-camera-far={8}
       />
-      <Table mobile={mobile} />
-      <Papyrus mobile={mobile} revealRef={reveal} />
-      <ScrollRoll side={-1} />
-      <ScrollRoll side={1} />
-      <HerodianLamp />
-      <Flame flickerRef={flick} />
-      {!effects && <ContactShadows />}
-      {effects && <SceneEffects bloom={0.55} threshold={0.7} vignette={0.55} />}
+      <group ref={root} visible={shown}>
+        <Table mobile={mobile} />
+        <Papyrus mobile={mobile} revealRef={reveal} />
+        <ScrollRoll side={-1} />
+        <ScrollRoll side={1} />
+        <HerodianLamp />
+        <Flame flickerRef={flick} />
+        {!shadows && <ContactShadows />}
+      </group>
+      {effects && shown && (
+        <SceneEffects bloom={0.55} threshold={0.7} vignette={0.55} />
+      )}
     </>
   );
 }

@@ -14,6 +14,11 @@ export const quiz2: QuizQuestion[] = [
         "Losing heart under persecution and leaving the church to escape suffering",
         "Chasing new ideas ahead of the first message",
       ],
+      notes: [
+        "Being led astray takes someone pulling you. Drifting needs no one: it happens when you stop paying attention.",
+        "Persecution comes later in the letter (10:32–36). Here the danger is quieter: carelessness, not fear.",
+        "The warning isn’t about new ideas pulling us forward. It’s about letting go of what we heard and floating off.",
+      ],
       why: "“Drift away” pictures something slipping away from its hearers, like a boat carried off by the current. Nobody drifts on purpose. It happens slowly, to people who stop paying attention. That is why the author says to pay much closer attention to what we have heard.",
     },
     ko: {
@@ -23,6 +28,11 @@ export const quiz2: QuizQuestion[] = [
         "거짓 교사들에게 일부러 이끌려 가는 것",
         "박해 속에서 낙심하여 고난을 피하려고 교회를 떠나는 것",
         "처음 들은 말씀보다 새로운 생각을 좇는 것",
+      ],
+      notes: [
+        "꾀임에 빠지려면 끌어당기는 누군가가 있어야 합니다. 떠내려가는 데에는 아무도 필요 없습니다. 주의를 멈추면 저절로 일어납니다.",
+        "박해는 편지 뒷부분에서 다룹니다(10:32–36). 여기의 위험은 더 조용합니다. 두려움이 아니라 무관심입니다.",
+        "새로운 생각에 끌려간다는 경고가 아닙니다. 들은 말씀을 놓아 버리고 떠내려가는 것을 경고합니다.",
       ],
       why: "이 말은 물살에 떠밀려 가는 배처럼 들은 것에서 점점 멀어지는 모습을 그립니다. 일부러 떠내려가는 사람은 없습니다. 주의를 기울이지 않는 사람에게 천천히 일어납니다. 그래서 저자는 들은 것에 더욱 주의를 기울이라고 말합니다.",
     },
@@ -40,6 +50,11 @@ export const quiz2: QuizQuestion[] = [
         "The angels and the Son gave the same message, so both are to be obeyed alike",
         "Angels still bring God’s word today, so the readers must test what they hear",
       ],
+      notes: [
+        "The argument runs the other way: if the lesser word carried penalties, neglecting the greater one is more dangerous.",
+        "The point isn’t that both stand equal. The Son’s word is greater, so ignoring it is worse.",
+        "The verse looks back to the Law given at Sinai; it says nothing about angels bringing messages today.",
+      ],
       why: "The message declared by angels was real, and every disobedience received a just penalty: Lot’s wife looked back, and Zechariah could not speak until John was born. If the word of angels carried that weight, how much more the word of the Son? So how shall we escape if we neglect such a great salvation?",
     },
     ko: {
@@ -49,6 +64,11 @@ export const quiz2: QuizQuestion[] = [
         "천사들의 말씀은 엄했지만 아들의 말씀은 은혜이니, 덜 두려워해도 되기 때문입니다",
         "천사들과 아들이 같은 말씀을 전했으니, 둘 다 똑같이 따라야 하기 때문입니다",
         "천사들이 지금도 하나님의 말씀을 전하니, 듣는 것을 잘 분별해야 하기 때문입니다",
+      ],
+      notes: [
+        "논리는 반대 방향입니다. 더 작은 말씀에도 벌이 따랐다면, 더 큰 말씀을 소홀히 하는 것은 더 위험합니다.",
+        "둘이 똑같다는 말이 아닙니다. 아들의 말씀이 더 크기에, 그것을 무시하는 것이 더 무겁습니다.",
+        "이 구절은 시내산에서 주신 율법을 돌아보는 것이지, 오늘날 천사가 말씀을 전한다는 이야기가 아닙니다.",
       ],
       why: "천사들을 통한 말씀은 참되었고, 모든 불순종은 정당한 벌을 받았습니다. 롯의 아내는 뒤를 돌아보았고, 사가랴는 요한이 태어날 때까지 말을 하지 못했습니다. 천사들의 말씀이 그만큼 무거웠다면, 아들의 말씀은 얼마나 더하겠습니까? 그러니 이렇게도 귀중한 구원을 소홀히 하고서야 어떻게 피할 수 있겠습니까?",
     },
@@ -61,11 +81,11 @@ export const quiz2: QuizQuestion[] = [
     answer: false,
     en: {
       q: "In Hebrews 2:3, to “neglect” salvation means to rebel against it openly.",
-      why: "False. “Neglect” is not open rebellion. It means showing no concern, being careless. The warning is for people who simply stop paying attention.",
+      why: "“Neglect” is not open rebellion. It means showing no concern, being careless. The warning is for people who simply stop paying attention.",
     },
     ko: {
       q: "히브리서 2장 3절에서 구원을 “소홀히 한다”는 것은 공공연히 반역한다는 뜻입니다.",
-      why: "틀립니다. “소홀히 함”은 공공연한 반역이 아닙니다. 관심을 두지 않고 무심한 것을 뜻합니다. 이 경고는 그저 주의를 기울이지 않게 된 사람들을 향한 것입니다.",
+      why: "“소홀히 함”은 공공연한 반역이 아닙니다. 관심을 두지 않고 무심한 것을 뜻합니다. 이 경고는 그저 주의를 기울이지 않게 된 사람들을 향한 것입니다.",
     },
   },
   {
@@ -76,11 +96,11 @@ export const quiz2: QuizQuestion[] = [
     answer: false,
     en: {
       q: "When Hebrews 2 quotes Psalm 8, “son of man” is already used as Jesus’ title.",
-      why: "False. Here “son of man” means human beings. Psalm 8 has a double meaning: it speaks of humankind, crowned with glory and given rule over creation, and ultimately it points to Jesus Christ, the one who reaches what humankind could not.",
+      why: "Here “son of man” means human beings. Psalm 8 has a double meaning: it speaks of humankind, crowned with glory and given rule over creation, and ultimately it points to Jesus Christ, the one who reaches what humankind could not.",
     },
     ko: {
       q: "히브리서 2장이 시편 8편을 인용할 때, “인자”는 이미 예수님의 칭호로 쓰였습니다.",
-      why: "틀립니다. 여기서 “인자”는 사람을 뜻합니다. 시편 8편에는 두 가지 뜻이 있습니다. 영광의 면류관을 쓰고 피조물을 다스리게 된 인류를 말하면서, 결국에는 인류가 이르지 못한 것에 이르신 예수 그리스도를 가리킵니다.",
+      why: "여기서 “인자”는 사람을 뜻합니다. 시편 8편에는 두 가지 뜻이 있습니다. 영광의 면류관을 쓰고 피조물을 다스리게 된 인류를 말하면서, 결국에는 인류가 이르지 못한 것에 이르신 예수 그리스도를 가리킵니다.",
     },
   },
   {
@@ -96,6 +116,11 @@ export const quiz2: QuizQuestion[] = [
         "People already rule creation, but only believers can see that rule by faith",
         "After the fall God set his plan for people aside and gave it to the Son instead",
       ],
+      notes: [
+        "Verse 5 says the opposite: God did not subject the world to come to angels.",
+        "We don’t see it yet at all (v8). What we see instead is Jesus, crowned after suffering death (v9).",
+        "God did not drop his plan for people. Jesus fulfils it as a man, bringing many sons and daughters to glory (v10).",
+      ],
       why: "The plan God declared in Psalm 8 is still active; it has not been completed. God did not fail. People failed to reach it, because of sin and because they were enslaved by the fear of death. “But we see Jesus”: made lower than the angels for a little while, he tasted death and is now crowned with glory and honour.",
     },
     ko: {
@@ -105,6 +130,11 @@ export const quiz2: QuizQuestion[] = [
         "오는 세상은 사람이 아니라 천사들에게 주어질 것이기 때문입니다",
         "사람은 이미 피조물을 다스리고 있지만, 믿는 사람만 믿음으로 그것을 보기 때문입니다",
         "타락 뒤에 하나님께서 사람을 위한 계획을 접으시고 아들에게 대신 주셨기 때문입니다",
+      ],
+      notes: [
+        "5절은 정반대를 말합니다. 하나님은 오는 세상을 천사들에게 맡기지 않으셨습니다.",
+        "우리는 아직 그것을 보지 못합니다(8절). 대신 죽음의 고난을 받으시고 면류관을 쓰신 예수님을 봅니다(9절).",
+        "하나님은 사람을 위한 계획을 접지 않으셨습니다. 예수님이 사람으로서 그 계획을 이루시고, 많은 자녀를 영광으로 이끄십니다(10절).",
       ],
       why: "하나님께서 시편 8편에서 선언하신 계획은 여전히 살아 있고, 아직 완성되지 않았습니다. 하나님이 실패하신 것이 아닙니다. 사람들이 죄 때문에, 그리고 죽음의 두려움에 종노릇했기 때문에 거기에 이르지 못한 것입니다. “그러나 우리는 예수를 봅니다.” 잠시 천사들보다 낮아지셨던 그분은 죽음을 맛보시고, 이제 영광과 존귀의 면류관을 쓰셨습니다.",
     },
@@ -122,6 +152,11 @@ export const quiz2: QuizQuestion[] = [
         "Shown to be perfect: suffering proved to others what he already was",
         "Made divine: through suffering he was raised from man to God",
       ],
+      notes: [
+        "Jesus never had flaws to burn away; he was without sin (4:15). “Perfect” means brought to completion.",
+        "Suffering didn’t just display him. It carried him through to the full finish needed to be our saviour.",
+        "He did not become God through suffering. He was the Son from the start (1:2–3) and became fully our high priest.",
+      ],
       why: "“Perfect” does not mean Jesus was once flawed. It means carried through to the full finish: complete, mature, fully developed. To become the source of salvation for many sons and daughters, he had to suffer and share human weakness, and he came through it perfect.",
     },
     ko: {
@@ -131,6 +166,11 @@ export const quiz2: QuizQuestion[] = [
         "도덕적으로 깨끗해진 것, 곧 고난이 그에게 있던 연약함을 태워 없앤 것입니다",
         "완전함이 드러난 것, 곧 고난이 그가 이미 어떤 분인지 남들에게 보여 준 것입니다",
         "신이 된 것, 곧 고난을 통해 사람에서 하나님으로 높아진 것입니다",
+      ],
+      notes: [
+        "예수님께는 태워 없앨 결점이 없었습니다. 죄가 없으셨습니다(4:15). “완전하다”는 끝까지 이루어졌다는 뜻입니다.",
+        "고난은 그를 보여 주기만 한 것이 아닙니다. 구원자가 되시는 데 필요한 끝까지 그를 이끌었습니다.",
+        "그는 고난으로 하나님이 되신 것이 아닙니다. 처음부터 아들이셨고(1:2–3), 우리의 대제사장으로서 온전해지셨습니다.",
       ],
       why: "“완전하다”는 예수님께 한때 흠이 있었다는 뜻이 아닙니다. 끝까지 다 이루어진 것, 곧 온전하고 성숙하고 충분히 자란 것을 뜻합니다. 많은 자녀에게 구원의 근원이 되시려면 그분은 고난을 받으시고 사람의 연약함을 함께 지셔야 했고, 그 모든 것을 온전하게 통과하셨습니다.",
     },
@@ -148,6 +188,11 @@ export const quiz2: QuizQuestion[] = [
         "Believers are made holy by following him faithfully, and so earn their place",
         "He calls them brothers out of kindness, though they are really his servants",
       ],
+      notes: [
+        "The family isn’t Israel by birth. It is everyone he makes holy, children of the one Father.",
+        "No one earns a place in this family. Jesus is the one who makes them holy (v11).",
+        "They are truly his brothers and sisters, not servants given a polite name. That is why he isn’t ashamed.",
+      ],
       why: "He who sanctifies and those who are sanctified have one source. The NLT puts it plainly: Jesus and the ones he makes holy have the same Father. The word adelphoi means every believer, man or woman, made one family under God.",
     },
     ko: {
@@ -157,6 +202,11 @@ export const quiz2: QuizQuestion[] = [
         "유대인으로 태어나셨으니, 온 이스라엘이 그의 가족이기 때문입니다",
         "믿는 사람들이 그를 신실하게 따라 거룩해지고, 그렇게 자리를 얻기 때문입니다",
         "실제로는 종이지만, 친절을 베푸셔서 형제라고 불러 주시는 것이기 때문입니다",
+      ],
+      notes: [
+        "이 가족은 혈통으로 된 이스라엘이 아닙니다. 그가 거룩하게 하시는 모든 사람, 한 아버지의 자녀입니다.",
+        "누구도 이 가족의 자리를 스스로 얻지 않습니다. 거룩하게 하시는 분은 예수님이십니다(11절).",
+        "그들은 예의상 형제라 불리는 종이 아니라 참으로 그의 형제자매입니다. 그래서 부끄러워하지 않으십니다.",
       ],
       why: "거룩하게 하시는 분과 거룩하게 되는 사람들은 한 근원에서 났습니다. NLT는 이것을 분명히 말합니다. 예수님과 그분이 거룩하게 하시는 사람들은 같은 아버지를 모십니다. 아델포이라는 말은 남자든 여자든 하나님 아래 한 가족이 된 모든 신자를 뜻합니다.",
     },
@@ -171,8 +221,13 @@ export const quiz2: QuizQuestion[] = [
       options: [
         "A hold through sin and fear: he tempts and accuses, but death is God’s to decide",
         "An authority God gave him at the fall, kept till the judgement",
-        "The power to take sinners’ lives, held back by the high priest",
+        "The right to decide when each person dies",
         "Rule over the place of the dead, where he keeps everyone who has died",
+      ],
+      notes: [
+        "God never handed the devil an authority over death. His hold comes through sin and the fear it breeds.",
+        "Life and death belong to God alone. The devil’s power is to tempt and accuse, keeping people in fear.",
+        "The point isn’t a realm he rules. It is the fear of death that keeps people slaves all their lives (v15).",
       ],
       why: "It does not mean the devil decides between life and death; that authority is God’s. It is a legal and psychological dominion that comes through sin. “Devil” means accuser: he tempts people into sin, then tells them they can never be restored, so they live in fear. Jesus broke that chain by going through death and rising again.",
     },
@@ -181,8 +236,13 @@ export const quiz2: QuizQuestion[] = [
       options: [
         "죄와 두려움으로 붙잡는 것입니다. 유혹하고 고발하지만, 죽음은 하나님께서 정하십니다",
         "타락 때 하나님께서 주신 권한으로, 심판 때까지 가지는 것입니다",
-        "죄인의 목숨을 거두는 힘으로, 대제사장만 막을 수 있었습니다",
+        "각 사람이 언제 죽을지 정하는 권한입니다",
         "죽은 자들의 세계를 다스리는 힘으로, 죽은 모든 사람을 그곳에 붙잡아 두는 것입니다",
+      ],
+      notes: [
+        "하나님은 악마에게 죽음을 다스릴 권한을 주신 적이 없습니다. 그의 장악은 죄와, 죄가 낳는 두려움을 통해 옵니다.",
+        "삶과 죽음은 하나님께만 속합니다. 악마의 힘은 유혹하고 고발하여 사람들을 두려움에 묶어 두는 것입니다.",
+        "그가 다스리는 영역을 말하는 것이 아닙니다. 평생 사람을 종으로 묶어 두는 죽음의 두려움을 말합니다(15절).",
       ],
       why: "악마가 생명과 죽음을 정한다는 뜻이 아닙니다. 그 권한은 하나님께 있습니다. 이것은 죄를 통해 생기는 법적이고 심리적인 지배입니다. “악마”는 고발하는 자라는 뜻입니다. 사람을 죄로 유혹한 뒤 결코 회복될 수 없다고 말하여 두려움 속에 살게 합니다. 예수님은 죽음을 통과하시고 다시 살아나심으로 그 사슬을 끊으셨습니다.",
     },

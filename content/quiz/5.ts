@@ -14,6 +14,11 @@ export const quiz5: QuizQuestion[] = [
         "The Day of Atonement covered every sin, so he had no need to be harsh",
         "As a Levite he was raised to understand the people’s failings",
       ],
+      notes: [
+        "God did appoint him, but verse 2 gives the reason for his gentleness: he was weak himself.",
+        "The Day of Atonement didn’t make him gentle. Sharing the people’s weakness did.",
+        "Being raised a Levite isn’t the point. Every high priest was a weak man who had sins of his own.",
+      ],
       why: "The ignorant stumble through weakness or lack of understanding; the wayward turn aside on purpose. A high priest chosen from among men could deal gently with both, because he was weak himself. That same weakness meant he had to offer for his own sins before he offered for the people.",
     },
     ko: {
@@ -24,6 +29,11 @@ export const quiz5: QuizQuestion[] = [
         "속죄일이 모든 죄를 덮었으니, 엄하게 대할 필요가 없었기 때문입니다",
         "레위 사람으로서 백성의 허물을 이해하도록 길러졌기 때문입니다",
       ],
+      notes: [
+        "하나님께서 그를 세우신 것은 맞지만, 2절은 너그러움의 이유를 말합니다. 그 자신이 연약했습니다.",
+        "속죄일이 그를 너그럽게 만든 것이 아닙니다. 백성과 같은 연약함을 지닌 것이 그렇게 했습니다.",
+        "레위 사람으로 자란 것이 요점이 아닙니다. 모든 대제사장은 자기 죄도 있는 연약한 사람이었습니다.",
+      ],
       why: "무지한 사람은 연약함이나 깨달음이 부족해서 넘어지고, 그릇된 사람은 일부러 길을 벗어납니다. 사람들 가운데서 뽑힌 대제사장은 자기도 연약했기에 두 사람 모두를 너그러이 대할 수 있었습니다. 바로 그 연약함 때문에 그는 백성을 위해 드리기 전에 자기 죄를 위해서도 드려야 했습니다.",
     },
   },
@@ -32,14 +42,14 @@ export const quiz5: QuizQuestion[] = [
     kind: "truefalse",
     mid: "m1",
     verses: "4",
-    answer: false,
+    answer: true,
     en: {
-      q: "A qualified man in Israel could take the honour of high priest for himself if he wanted it.",
-      why: "False. No one takes this honour for himself. The high priest was called and appointed by God, not by his own ambition, just as Aaron was. Verse 5 says the same of Christ: he did not exalt himself.",
+      q: "In Hebrews 5, Christ did not make himself high priest; he was appointed by the God who called him Son.",
+      why: "No one takes this honour for himself. The high priest was called and appointed by God, not by his own ambition, just as Aaron was. Verse 5 says the same of Christ: he did not exalt himself.",
     },
     ko: {
-      q: "이스라엘에서 자격을 갖춘 사람이라면 원할 경우 스스로 대제사장의 영예를 차지할 수 있었습니다.",
-      why: "틀립니다. 아무도 이 영예를 스스로 차지하지 못합니다. 대제사장은 자기 야망이 아니라, 아론처럼 하나님의 부르심을 받아 세워졌습니다. 5절은 그리스도에 대해서도 같은 말을 합니다. 그분은 스스로 높이지 않으셨습니다.",
+      q: "히브리서 5장에서 그리스도는 스스로 대제사장이 되지 않으시고, 그를 아들이라 부르신 하나님께 세움을 받으셨습니다.",
+      why: "아무도 이 영예를 스스로 차지하지 못합니다. 대제사장은 자기 야망이 아니라, 아론처럼 하나님의 부르심을 받아 세워졌습니다. 5절은 그리스도에 대해서도 같은 말을 합니다. 그분은 스스로 높이지 않으셨습니다.",
     },
   },
   {
@@ -55,6 +65,11 @@ export const quiz5: QuizQuestion[] = [
         "Both were coronation songs, so “priest” is a royal title",
         "His priesthood comes with his sonship, as Aaron’s sons inherited theirs",
       ],
+      notes: [
+        "The two psalms aren’t two events. Side by side, they show one God gave him both titles.",
+        "“Priest forever after the order of Melchizedek” is a true priesthood, not a royal nickname.",
+        "Aaron’s sons inherited by birth. Jesus was appointed by God’s word, not by family.",
+      ],
       why: "Side by side, the two verses show that the very same God who appointed Jesus as Son also appointed him high priest after the order of Melchizedek. Neither title came from any human. God gave both to him.",
     },
     ko: {
@@ -64,6 +79,11 @@ export const quiz5: QuizQuestion[] = [
         "시편 2편은 그를 왕으로, 110편은 제사장으로 세우는데, 서로 다른 때의 일입니다",
         "둘 다 즉위식 노래이니, “제사장”은 왕의 칭호일 뿐입니다",
         "아론의 아들들이 물려받았듯, 그의 제사장직은 아들 됨에 따라옵니다",
+      ],
+      notes: [
+        "두 시편은 서로 다른 두 사건이 아닙니다. 나란히 두면, 한 하나님께서 두 칭호를 다 주셨음을 보여 줍니다.",
+        "“멜기세덱의 계통을 따르는 영원한 제사장”은 왕의 별명이 아니라 참된 제사장직입니다.",
+        "아론의 아들들은 태어나서 물려받았습니다. 예수님은 혈통이 아니라 하나님의 말씀으로 세워지셨습니다.",
       ],
       why: "두 구절을 나란히 놓으면, 예수님을 아들로 세우신 바로 그 하나님께서 그분을 멜기세덱의 계통을 따른 대제사장으로도 세우셨음이 드러납니다. 두 칭호 모두 사람이 준 것이 아니라 하나님께서 주신 것입니다.",
     },
@@ -79,7 +99,12 @@ export const quiz5: QuizQuestion[] = [
         "Melchizedek was king and priest at once, which Israel’s kings could not be",
         "He served before the Law, so he needed no sacrifices",
         "Melchizedek was priest to the nations, while Aaron served Israel alone",
-        "Melchizedek was appointed by an angel rather than anointed by Moses",
+        "Melchizedek offered bread and wine instead of animal sacrifices",
+      ],
+      notes: [
+        "Living before the Law isn’t the difference Hebrews draws. What sets him apart is being king and priest at once.",
+        "Hebrews doesn’t contrast nations with Israel here. It points to the two offices joined in one man.",
+        "He did bring out bread and wine (Genesis 14), but Hebrews never builds on that. The point is king and priest in one.",
       ],
       why: "In ancient Israel no king could also be a priest; God had set the two offices apart. Melchizedek was the only official figure who was both: king of Salem and priest of God Most High. So Psalm 110:4 points to Jesus as both king and priest.",
     },
@@ -89,7 +114,12 @@ export const quiz5: QuizQuestion[] = [
         "멜기세덱은 왕이자 제사장이었는데, 이스라엘의 왕들은 그럴 수 없었습니다",
         "율법 이전에 섬겼으니, 제사가 필요 없었습니다",
         "멜기세덱은 이방 민족의 제사장이었고, 아론은 이스라엘만 섬겼습니다",
-        "멜기세덱은 모세에게 기름부음을 받지 않고 천사에게 세움을 받았습니다",
+        "멜기세덱은 짐승 대신 떡과 포도주를 드렸습니다",
+      ],
+      notes: [
+        "율법 이전에 살았다는 것은 히브리서가 짚는 차이가 아닙니다. 그를 구별하는 것은 왕이자 제사장이었다는 점입니다.",
+        "여기서 히브리서는 이방과 이스라엘을 대조하지 않습니다. 한 사람 안에 두 직분이 합쳐진 것을 가리킵니다.",
+        "그가 떡과 포도주를 가져온 것은 맞지만(창세기 14장), 히브리서는 그것을 근거로 삼지 않습니다. 요점은 왕과 제사장이 한 사람이라는 것입니다.",
       ],
       why: "고대 이스라엘에서는 어떤 왕도 제사장이 될 수 없었습니다. 하나님께서 두 직분을 나누어 두셨기 때문입니다. 멜기세덱은 살렘 왕이자 가장 높으신 하나님의 제사장으로, 둘 다였던 유일한 인물입니다. 그래서 시편 110편 4절은 예수님을 왕이자 제사장으로 가리킵니다.",
     },
@@ -107,6 +137,11 @@ export const quiz5: QuizQuestion[] = [
         "He grew in obedience as he understood the Law better",
         "He asked for the cup to pass, and only then obeyed",
       ],
+      notes: [
+        "“Learned” isn’t about new rules. It means he experienced obedience in real suffering.",
+        "He didn’t need better understanding of the Law. He learned obedience through what he suffered, not through study.",
+        "Praying for the cup to pass was not disobedience. He submitted to the Father throughout, with reverence.",
+      ],
       why: "“Learned” here does not mean learning from failing at a task. It is closer to experiencing. Jesus experienced the weaknesses of humankind, and through that suffering he obeyed God’s words in reverence. He did not escape from it; he obeyed.",
     },
     ko: {
@@ -116,6 +151,11 @@ export const quiz5: QuizQuestion[] = [
         "하나님으로서는 따를 필요가 없던 명령에, 사람으로서 순종하는 법을 배우셨다는 뜻입니다",
         "율법을 더 깊이 이해하면서 순종이 자랐다는 뜻입니다",
         "잔을 피하게 해 달라고 구하신 뒤에야 순종하셨다는 뜻입니다",
+      ],
+      notes: [
+        "“배우다”는 새로운 규칙을 익혔다는 뜻이 아닙니다. 실제 고난 속에서 순종을 겪으셨다는 뜻입니다.",
+        "율법을 더 잘 이해하실 필요가 없었습니다. 공부가 아니라 고난을 통해 순종을 배우셨습니다.",
+        "잔을 피하게 해 달라는 기도는 불순종이 아니었습니다. 처음부터 끝까지 경외함으로 아버지께 순종하셨습니다.",
       ],
       why: "여기서 “배우다”는 일에 실패하면서 배운다는 뜻이 아닙니다. 겪는다는 뜻에 가깝습니다. 예수님은 사람의 연약함을 겪으셨고, 그 고난을 통해 경외함으로 하나님의 말씀에 순종하셨습니다. 고난을 피하지 않고 순종하셨습니다.",
     },
@@ -128,11 +168,11 @@ export const quiz5: QuizQuestion[] = [
     answer: false,
     en: {
       q: "Like Aaron, Jesus had to offer a sacrifice for his own sins before he could offer for the people.",
-      why: "False. That is the ultimate difference. Human high priests had to offer for themselves first. Jesus learned obedience through suffering without sin, was made perfect, and became the source of eternal salvation.",
+      why: "That is the ultimate difference. Human high priests had to offer for themselves first. Jesus learned obedience through suffering without sin, was made perfect, and became the source of eternal salvation.",
     },
     ko: {
       q: "아론처럼 예수님도 백성을 위해 드리시기 전에 자기 죄를 위해 제사를 드리셔야 했습니다.",
-      why: "틀립니다. 그것이 결정적인 차이입니다. 사람 대제사장들은 먼저 자기를 위해 드려야 했습니다. 예수님은 죄 없이 고난을 통해 순종을 배우시고, 완전하게 되셔서 영원한 구원의 근원이 되셨습니다.",
+      why: "그것이 결정적인 차이입니다. 사람 대제사장들은 먼저 자기를 위해 드려야 했습니다. 예수님은 죄 없이 고난을 통해 순종을 배우시고, 완전하게 되셔서 영원한 구원의 근원이 되셨습니다.",
     },
   },
   {
@@ -148,6 +188,11 @@ export const quiz5: QuizQuestion[] = [
         "They had grown proud and stopped heeding their leaders",
         "False teachers had taught them first, and they needed to unlearn it all",
       ],
+      notes: [
+        "They weren’t new believers. “By this time you ought to be teachers” (v12): they had been taught long enough.",
+        "Hebrews doesn’t accuse them of pride. Their problem was dullness of hearing under pressure.",
+        "No false teachers are mentioned. They needed the basics again because they had let them slip.",
+      ],
       why: "The heavy persecution they were going through was pulling them toward giving up hope and going back to the old ways. “By this time” shows they had been taught for a long time, yet they needed someone to teach them the ABCs again.",
     },
     ko: {
@@ -157,6 +202,11 @@ export const quiz5: QuizQuestion[] = [
         "멜기세덱에 대한 가르침이 믿은 지 얼마 안 된 독자들에게 너무 어려웠기 때문입니다",
         "교만해져서 지도자들의 말을 듣지 않게 되었기 때문입니다",
         "거짓 교사들에게 먼저 배워서, 그것을 모두 버려야 했기 때문입니다",
+      ],
+      notes: [
+        "그들은 갓 믿은 사람들이 아니었습니다. 지금쯤은 선생이 되었어야 할 만큼(12절) 오래 배웠습니다.",
+        "히브리서는 그들을 교만하다고 탓하지 않습니다. 압박 속에서 귀가 둔해진 것이 문제였습니다.",
+        "거짓 교사는 언급되지 않습니다. 기초를 놓쳐 버렸기에 다시 배워야 했습니다.",
       ],
       why: "그들이 겪던 심한 박해는 그들을 소망을 버리고 옛 방식으로 돌아가는 쪽으로 끌어당기고 있었습니다. “시간으로 보면”이라는 말은 그들이 오랫동안 배웠음을 보여 줍니다. 그런데도 그들은 기초를 다시 배워야 했습니다.",
     },
@@ -174,6 +224,11 @@ export const quiz5: QuizQuestion[] = [
         "They have moved past Scripture’s basic stories to its deeper mysteries",
         "They have been in the faith long enough to teach others what they know",
       ],
+      notes: [
+        "Maturity isn’t knowing hard doctrine. It is discernment trained by practice (v14).",
+        "Solid food isn’t secret mysteries. It is truth put into practice until we can tell good from evil.",
+        "Time alone doesn’t make anyone mature. These readers had had plenty of it.",
+      ],
       why: "Milk stands for the beginning truths of the faith. Solid food is firm, like a foundation. The mature are those whose powers of discernment have been trained by constant practice to distinguish good from evil. Time alone does not make anyone mature; these readers had had plenty of it.",
     },
     ko: {
@@ -183,6 +238,11 @@ export const quiz5: QuizQuestion[] = [
         "멜기세덱의 계통 같은 가장 어려운 가르침을 이해합니다",
         "성경의 기본 이야기를 넘어 더 깊은 신비로 나아갔습니다",
         "믿음 안에서 충분히 오래되어 아는 것을 남에게 가르칠 수 있습니다",
+      ],
+      notes: [
+        "장성함은 어려운 교리를 아는 것이 아닙니다. 연습으로 훈련된 분별력입니다(14절).",
+        "단단한 음식은 숨겨진 신비가 아닙니다. 좋은 것과 나쁜 것을 분별할 때까지 실천하는 진리입니다.",
+        "시간만으로는 누구도 장성하지 않습니다. 이 독자들에게는 시간이 충분했습니다.",
       ],
       why: "젖은 믿음의 첫걸음이 되는 진리를 뜻합니다. 단단한 음식물은 기초처럼 견고합니다. 장성한 사람은 꾸준한 연습으로 분별하는 감각이 훈련되어 좋은 것과 나쁜 것을 가려내는 사람입니다. 시간만으로 성숙해지지 않습니다. 이 독자들에게는 시간이 충분히 있었습니다.",
     },

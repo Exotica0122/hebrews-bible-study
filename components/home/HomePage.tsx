@@ -93,14 +93,23 @@ export function HomePage({ verse }: HomePageProps) {
                   →
                 </span>
               </Link>
-              <Link href={QUIZ_HREF} className={`${s.path} ${s.pathQuiz}`}>
+              <div className={`${s.path} ${s.pathQuiz}`}>
                 <span className={s.pathKicker}>{t.practice}</span>
-                <span className={s.pathTitle}>{t.takeQuiz}</span>
+                <Link
+                  href={QUIZ_HREF}
+                  className={`${s.pathTitle} ${s.stretch}`}
+                >
+                  {t.takeQuiz}
+                </Link>
                 <span className={s.pathSub}>{quizSub}</span>
                 <span aria-hidden="true" className={s.pathArrow}>
                   →
                 </span>
-              </Link>
+                <Link href={`${QUIZ_HREF}?quick`} className={s.quick}>
+                  {t.quickRound}
+                  <small>{t.quickSub}</small>
+                </Link>
+              </div>
             </div>
           </div>
         </section>

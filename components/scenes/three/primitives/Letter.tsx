@@ -113,6 +113,7 @@ export function Papyrus({
       alphaTest: 0.5,
       side: DoubleSide,
     });
+    material.userData.textures = [ink];
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, uniforms);
       shader.fragmentShader = shader.fragmentShader
