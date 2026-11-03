@@ -111,6 +111,14 @@ export function Header({
               ▼
             </span>
           </button>
+          <Link
+            href={
+              chapter && isLive(chapter) ? `${QUIZ_HREF}/${chapter}` : QUIZ_HREF
+            }
+            className={`hb-eyebrow ${s.chapterBtn} ${s.quizLink}`}
+          >
+            {t.quiz}
+          </Link>
         </div>
 
         {open && (
@@ -154,30 +162,6 @@ export function Header({
                     );
                   },
                 )}
-              </div>
-              <div className={s.menuLinks}>
-                <Link
-                  role="menuitem"
-                  href="/"
-                  className={s.menuLink}
-                  onClick={() => setOpen(false)}
-                >
-                  {t.home}
-                </Link>
-                <Link
-                  role="menuitem"
-                  href={
-                    chapter && isLive(chapter)
-                      ? `${QUIZ_HREF}/${chapter}`
-                      : QUIZ_HREF
-                  }
-                  className={s.menuLink}
-                  onClick={() => setOpen(false)}
-                >
-                  {chapter && isLive(chapter)
-                    ? t.testYourself(chapter)
-                    : t.takeQuiz}
-                </Link>
               </div>
             </div>
           </>
