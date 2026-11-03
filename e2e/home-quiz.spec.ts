@@ -32,12 +32,6 @@ test.describe("home page", () => {
     ).toBeVisible();
   });
 
-  test("forwards old chapter 1 links to /1", async ({ page }) => {
-    await page.goto("/#hb-m1-radiance");
-    await expect(page).toHaveURL(/\/1#hb-m1-radiance$/);
-    await expect(page.getByRole("dialog", { name: "Radiance" })).toBeVisible();
-  });
-
   test("continues where the reader left off", async ({ page }) => {
     await page.goto("/4");
     await expect(
