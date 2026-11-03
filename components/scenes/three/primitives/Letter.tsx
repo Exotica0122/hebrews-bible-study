@@ -133,8 +133,8 @@ for (int i = 0; i < ${MAX_LINES}; i++) {
   if (i >= uLines) break;
   vec4 b = uBands[i];
   if (vMapUv.y <= b.x && vMapUv.y >= b.y) {
-    float edge = mix(b.z, b.w + 0.01, uReveal[i]);
-    shown = max(shown, smoothstep(edge, edge - 0.004, vMapUv.x));
+    float edge = mix(b.z - 0.01, b.w + 0.01, uReveal[i]);
+    shown = max(shown, 1.0 - smoothstep(edge - 0.004, edge, vMapUv.x));
   }
 }
 diffuseColor.rgb = mix(diffuseColor.rgb, ink.rgb, ink.a * shown);`,
@@ -465,7 +465,7 @@ export function ContactShadows() {
       0.42,
       LETTER.scroll.depth * 1.15,
     ],
-    [LETTER.lamp.x - 0.06, LETTER.lamp.z, 0.62, 0.5],
+    [LETTER.lamp.x + 0.05, LETTER.lamp.z, 0.42, 0.38],
   ];
   return (
     <>
