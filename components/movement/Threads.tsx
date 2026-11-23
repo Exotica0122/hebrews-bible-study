@@ -15,6 +15,7 @@ interface ThreadsProps {
 export function Threads({ movementId, chips, openId, onToggle }: ThreadsProps) {
   const { lang, t } = useLang();
   const open = chips.find((c) => c.id === openId);
+  if (!chips.length) return null;
   return (
     <div className={s.threads}>
       <div className="hb-eyebrow">{t.threads}</div>

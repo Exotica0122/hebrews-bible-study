@@ -40,9 +40,9 @@ test.describe("home page", () => {
     ).toHaveAttribute("href", "/quiz");
     const grid = page.locator("#hb-book ol > li");
     await expect(grid).toHaveCount(13);
-    await expect(
-      page.getByRole("link", { name: "Hebrews 12 · Coming soon" }),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Coming soon/ })).toHaveCount(
+      0,
+    );
   });
 
   test("continues where the reader left off", async ({ page }) => {

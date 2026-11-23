@@ -223,7 +223,9 @@ export function ChapterPage({
           onBegin={() => go(movements[0].id)}
           onMap={() => go("map")}
           artNote={
-            showArtNotes && !isMobile ? HERO_ART[chapter.setting] : undefined
+            showArtNotes && !isMobile && chapter.setting
+              ? HERO_ART[chapter.setting]
+              : undefined
           }
           reduceMotion={reduceMotion}
         />

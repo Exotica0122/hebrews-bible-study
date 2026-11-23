@@ -17,7 +17,7 @@ STR = r'"((?:[^"\\]|\\.)*)"'
 BOOKS = {
     "Gen": "gen", "Exod": "exo", "Lev": "lev", "Num": "num", "Deut": "deu", "Josh": "jos",
     "1 Sam": "1sa", "2 Sam": "2sa", "1 Kgs": "1ki", "2 Kgs": "2ki", "1 Chr": "1ch", "2 Chr": "2ch",
-    "Ps": "psa", "Isa": "isa", "Jer": "jer", "Hab": "hab", "Matt": "mat", "Luke": "luk",
+    "Ps": "psa", "Prov": "pro", "Hag": "hag", "Isa": "isa", "Jer": "jer", "Hab": "hab", "Matt": "mat", "Luke": "luk",
     "John": "jhn", "Acts": "act", "Rom": "rom", "1 Cor": "1co", "2 Cor": "2co", "Gal": "gal",
     "Phil": "php", "Col": "col", "Heb": "heb", "1 Pet": "1pe", "Rev": "rev",
 }

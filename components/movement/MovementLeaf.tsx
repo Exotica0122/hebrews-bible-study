@@ -5,7 +5,7 @@ import type { Movement } from "@/content/types";
 import { keysOf } from "@/content/parse";
 import { ORD_KO } from "@/content/ui";
 import { useLang } from "@/lib/lang";
-import { SceneFrame } from "@/components/scenes/SceneFrame";
+import { PlainFrame, SceneFrame } from "@/components/scenes/SceneFrame";
 import { Scripture } from "./Scripture";
 import { Commentary } from "./Commentary";
 import { Threads } from "./Threads";
@@ -47,6 +47,13 @@ export function MovementLeaf(p: MovementLeafProps) {
     [t.loading, t.reduced],
   );
 
+  const quote = (
+    <div className={s.quoteBlock}>
+      <div className={`hb-eyebrow ${s.sref}`}>{c.sref}</div>
+      <p className={s.quote}>{alt ? c.altQuote : c.quote}</p>
+    </div>
+  );
+
   return (
     <section
       id={`hb-${m.id}`}
@@ -60,38 +67,43 @@ export function MovementLeaf(p: MovementLeafProps) {
         </div>
 
         <div className={s.mat}>
-          <SceneFrame
-            id={m.id}
-            scene={alt ? "seal" : m.scene}
-            labels={labels}
-            artNote={p.artNote}
-            reduceMotion={p.reduceMotion}
-          >
-            <div className={s.quoteBlock}>
-              <div className={`hb-eyebrow ${s.sref}`}>{c.sref}</div>
-              <p className={s.quote}>{alt ? c.altQuote : c.quote}</p>
-            </div>
-            {hasAlt && (
-              <div role="group" aria-label="Scene view" className={s.altGroup}>
-                <button
-                  type="button"
-                  className={s.altBtn}
-                  aria-pressed={!alt}
-                  onClick={() => p.onAlt(false)}
+          {m.scene ? (
+            <SceneFrame
+              id={m.id}
+              scene={alt ? "seal" : m.scene}
+              labels={labels}
+              artNote={p.artNote}
+              reduceMotion={p.reduceMotion}
+            >
+              {quote}
+              {hasAlt && (
+                <div
+                  role="group"
+                  aria-label="Scene view"
+                  className={s.altGroup}
                 >
-                  {t.altA}
-                </button>
-                <button
-                  type="button"
-                  className={s.altBtn}
-                  aria-pressed={alt}
-                  onClick={() => p.onAlt(true)}
-                >
-                  {t.altB}
-                </button>
-              </div>
-            )}
-          </SceneFrame>
+                  <button
+                    type="button"
+                    className={s.altBtn}
+                    aria-pressed={!alt}
+                    onClick={() => p.onAlt(false)}
+                  >
+                    {t.altA}
+                  </button>
+                  <button
+                    type="button"
+                    className={s.altBtn}
+                    aria-pressed={alt}
+                    onClick={() => p.onAlt(true)}
+                  >
+                    {t.altB}
+                  </button>
+                </div>
+              )}
+            </SceneFrame>
+          ) : (
+            <PlainFrame id={m.id}>{quote}</PlainFrame>
+          )}
         </div>
         <p className={s.caption}>{alt ? c.altCap : c.cap}</p>
 

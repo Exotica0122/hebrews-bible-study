@@ -61,6 +61,14 @@ const chapters: Record<number, ChapterEntry> = {
     load: () => import("./11").then((m) => m.chapter11),
     title: { en: "By faith", ko: "믿음으로" },
   },
+  12: {
+    load: () => import("./12").then((m) => m.chapter12),
+    title: { en: "Run with endurance", ko: "참으면서 달려갑시다" },
+  },
+  13: {
+    load: () => import("./13").then((m) => m.chapter13),
+    title: { en: "Outside the camp", ko: "진영 밖으로" },
+  },
 };
 
 export const LIVE_COUNT = Object.keys(chapters).length;

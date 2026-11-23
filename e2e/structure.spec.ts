@@ -284,6 +284,31 @@ test("renders Hebrews 11 with seven movements and 새번역 in Korean", async ({
   );
 });
 
+for (const [n, title, ko, last] of [
+  [12, "Twenty-nine verses, five movements", "히브리서 12장", "태워 없애는 불"],
+  [13, "Twenty-five verses, five movements", "히브리서 13장", "은혜가 있기를"],
+] as const) {
+  test(`renders Hebrews ${n} without scenes and 새번역 in Korean`, async ({
+    page,
+  }) => {
+    await page.goto(`/${n}`);
+    await expect(
+      page.getByRole("heading", { level: 1, name: `Hebrews ${n}` }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: title }),
+    ).toBeVisible();
+    for (const id of ["m1", "m2", "m3", "m4", "m5"])
+      await expect(page.locator(`[data-plain="${id}"]`)).toBeAttached();
+    await expect(page.locator("canvas")).toHaveCount(0);
+    await page.getByRole("button", { name: "한국어" }).click();
+    await expect(
+      page.getByRole("heading", { level: 1, name: ko }),
+    ).toBeVisible();
+    await expect(page.locator("#hb-m5")).toContainText(last);
+  });
+}
+
 test("desktop header shows the section nav; mobile shows the active label", async ({
   page,
 }, testInfo) => {

@@ -11,7 +11,7 @@ import s from "./hero.module.css";
 
 interface HeroProps {
   copy: ChapterCopy;
-  setting: Setting;
+  setting?: Setting;
   onBegin: () => void;
   onMap: () => void;
   artNote?: string;
@@ -47,7 +47,7 @@ export function Hero({
   const hostRef = useRef<HTMLElement>(null);
   const captionRefs = useRef<(HTMLElement | null)[]>([]);
   const [live, setLive] = useState(false);
-  const { scene, scrim } = STAGES[setting];
+  const stage = setting ? STAGES[setting] : undefined;
 
   return (
     <section
@@ -56,17 +56,21 @@ export function Hero({
       aria-label={copy.heroTitle}
       className={s.hero}
     >
-      <div className={`${s.stillLayer} ${live ? s.stillHidden : ""}`}>
-        <SceneStill scene={scene} priority />
-      </div>
-      <HeroStage
-        scene={scene}
-        hostRef={hostRef}
-        captionRefs={captionRefs}
-        reduceMotion={reduceMotion}
-        onReadyChange={setLive}
-      />
-      {scrim && <div aria-hidden="true" className={s.scrim} />}
+      {stage && (
+        <>
+          <div className={`${s.stillLayer} ${live ? s.stillHidden : ""}`}>
+            <SceneStill scene={stage.scene} priority />
+          </div>
+          <HeroStage
+            scene={stage.scene}
+            hostRef={hostRef}
+            captionRefs={captionRefs}
+            reduceMotion={reduceMotion}
+            onReadyChange={setLive}
+          />
+        </>
+      )}
+      {stage?.scrim && <div aria-hidden="true" className={s.scrim} />}
       <DoubleFrame />
       {copy.fragments &&
         HERO_FRAGMENTS.map((f, i) => (

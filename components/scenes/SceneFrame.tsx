@@ -63,6 +63,22 @@ export function useSceneGate(
   };
 }
 
+/** The panel for a movement whose scene isn't built yet: the quote on a plain ground. */
+export function PlainFrame({
+  id,
+  children,
+}: {
+  id: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className={s.panel} data-plain={id}>
+      <div aria-hidden="true" className={s.bottomFade} />
+      <div className={s.overlay}>{children}</div>
+    </div>
+  );
+}
+
 export function SceneFrame({
   id,
   scene,

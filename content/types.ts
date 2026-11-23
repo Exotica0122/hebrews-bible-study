@@ -115,8 +115,9 @@ export interface Movement {
   id: string;
   num: string;
   range: string;
-  scene: SceneId;
-  art: string;
+  /** Left out until the chapter's scenes are built; the panel shows the quote on a plain ground. */
+  scene?: SceneId;
+  art?: string;
   en: MovementCopy;
   ko: MovementCopy;
   words: Record<Lang, Record<string, WordStudy>>;
@@ -178,7 +179,7 @@ export interface Appendix {
 
 export interface ChapterContent {
   number: number;
-  setting: Setting;
+  setting?: Setting;
   copy: Record<Lang, ChapterCopy>;
   movements: Movement[];
   summary: Record<Lang, Summary>;

@@ -110,13 +110,6 @@ test.describe("search", () => {
     await expect(page.getByText("찾지 못했습니다")).toBeVisible();
   });
 
-  test("an unwritten chapter says it is coming soon", async ({ page }) => {
-    await page.goto("/1");
-    const input = await openSearch(page);
-    await input.fill("12:1");
-    await expect(page.getByText("Hebrews 12 is coming soon.")).toBeVisible();
-  });
-
   test("nothing found says so", async ({ page }) => {
     await page.goto("/1");
     const input = await openSearch(page);
@@ -133,10 +126,10 @@ test.describe("search", () => {
     await page.unroute("**/search-index/en");
     await page.getByRole("button", { name: "Try again" }).click();
     await expect(dialog.getByRole("alert")).toHaveCount(0);
-    await expect(page.getByText("Hebrews 1–11", { exact: true })).toBeVisible();
+    await expect(page.getByText("Hebrews 1–13", { exact: true })).toBeVisible();
   });
 
-  test("works on a coming-soon page", async ({ page }) => {
+  test("works on a chapter without scenes", async ({ page }) => {
     await page.goto("/12");
     const input = await openSearch(page);
     await input.fill("anchor of the soul");

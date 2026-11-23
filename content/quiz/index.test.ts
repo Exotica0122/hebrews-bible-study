@@ -22,9 +22,9 @@ function texts(q: QuizQuestion): string[] {
 }
 
 describe("quiz registry", () => {
-  it("has a quiz for every live chapter and none for the rest", () => {
+  it("has a quiz only for live chapters", () => {
     expect(QUIZ_CHAPTERS).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-    for (let n = 1; n <= 13; n++) expect(hasQuiz(n)).toBe(isLive(n));
+    for (let n = 1; n <= 13; n++) if (hasQuiz(n)) expect(isLive(n)).toBe(true);
   });
 
   it("keeps QUIZ_COUNTS in step with the question files", async () => {
